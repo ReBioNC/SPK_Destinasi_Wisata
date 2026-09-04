@@ -1,8 +1,19 @@
-# TravelFit — Sistem Pendukung Keputusan Rekomendasi Destinasi Wisata Berbasis Budget
+# TravelFit — Sistem Pendukung Keputusan Rekomendasi Destinasi Wisata Multi-Kriteria
 
-Aplikasi web berbasis Sistem Pendukung Keputusan (SPK) yang membantu wisatawan menemukan destinasi wisata terbaik di Indonesia sesuai dengan budget, kategori minat, dan hobi yang mereka miliki. Aplikasi ini menggabungkan teknik **Data Mining** (clustering destinasi berdasarkan karakteristiknya) dengan metode **Multi-Criteria Decision Making/MCDM** (AHP dan TOPSIS) untuk menghasilkan rekomendasi destinasi yang terukur, transparan, dan dapat dipertanggungjawabkan secara matematis — bukan sekadar rekomendasi acak berdasarkan popularitas di media sosial.
+Aplikasi web berbasis Sistem Pendukung Keputusan (SPK) yang membantu wisatawan menemukan destinasi wisata terbaik di Indonesia berdasarkan **banyak variabel penentu**, bukan budget semata. Budget hanyalah satu dari enam kriteria yang dipertimbangkan — berdampingan dengan rating pengunjung, jarak/waktu tempuh, kelengkapan fasilitas, kesesuaian kategori minat, dan kesesuaian hobi. Aplikasi ini menggabungkan teknik **Data Mining** (clustering destinasi berdasarkan karakteristiknya) dengan metode **Multi-Criteria Decision Making/MCDM** (AHP dan TOPSIS) untuk menghasilkan rekomendasi destinasi yang terukur, transparan, dan dapat dipertanggungjawabkan secara matematis — bukan sekadar rekomendasi acak berdasarkan popularitas di media sosial, dan bukan sekadar daftar destinasi termurah.
 
-User cukup memasukkan budget maksimal, kota/wilayah tujuan, kategori wisata yang diminati (alam, budaya, kuliner, hiburan, religi), dan hobi terkait wisata (hiking, fotografi, kuliner lokal, dsb). Sistem kemudian memproses data ratusan destinasi wisata untuk menghasilkan daftar rekomendasi peringkat teratas lengkap dengan skor kesesuaian dan alasan di balik setiap rekomendasi.
+User memasukkan profil preferensinya secara lengkap: budget maksimal, kota/wilayah tujuan, kategori wisata yang diminati (alam, budaya, kuliner, hiburan, religi), dan hobi terkait wisata (hiking, fotografi, kuliner lokal, dsb). Sistem kemudian memproses data ratusan destinasi wisata dengan menimbang **seluruh variabel tersebut secara bersamaan** untuk menghasilkan daftar rekomendasi peringkat teratas lengkap dengan skor kesesuaian dan alasan di balik setiap rekomendasi.
+
+## Variabel Penentu Keputusan
+
+Keputusan rekomendasi TravelFit ditentukan oleh enam kriteria (C1–C6) yang dihitung bersama, bukan oleh satu variabel tunggal:
+
+- **Budget** berperan sebagai *batas kelayakan* (destinasi di luar budget maksimal tersaring sejak awal) sekaligus sebagai *salah satu* kriteria cost (C1) di tahap perankingan — bukan satu-satunya penentu.
+- **Kualitas destinasi** diwakili rating pengunjung (C2) dan kelengkapan fasilitas (C4).
+- **Aksesibilitas** diwakili jarak/waktu tempuh dari kota asal user (C3).
+- **Kecocokan personal** diwakili kesesuaian kategori (C5) dan kesesuaian hobi (C6).
+
+Besarnya pengaruh tiap variabel tidak fixed: bobotnya dihitung dengan AHP dan dapat diubah user melalui sensitivity analysis. Artinya user yang memprioritaskan pengalaman (rating, hobi) bisa mendapatkan hasil berbeda dari user yang memprioritaskan hemat — walau budgetnya sama.
 
 ## Identitas Kelompok
 
@@ -15,7 +26,7 @@ User cukup memasukkan budget maksimal, kota/wilayah tujuan, kategori wisata yang
 
 ## Latar Belakang Masalah
 
-Wisatawan, khususnya kalangan mahasiswa dan backpacker dengan budget terbatas, sering kesulitan memilih destinasi wisata karena informasi harga tiket, rating, jarak, dan fasilitas tersebar di berbagai platform (Google Maps, Instagram, TripAdvisor) dan sulit dibandingkan secara objektif. Banyak orang akhirnya memilih destinasi hanya berdasarkan tren media sosial, tanpa mempertimbangkan value-for-money yang sesungguhnya relatif terhadap budget dan preferensi pribadi mereka.
+Wisatawan, khususnya kalangan mahasiswa dan backpacker, sering kesulitan memilih destinasi wisata karena informasi harga tiket, rating, jarak, dan fasilitas tersebar di berbagai platform (Google Maps, Instagram, TripAdvisor) dan sulit dibandingkan secara objektif. Banyak orang akhirnya memilih destinasi hanya berdasarkan tren media sosial atau patokan harga termurah, tanpa mempertimbangkan trade-off antar banyak faktor: destinasi murah bisa jadi jauh dan fasilitas minim, destinasi populer bisa jadi tidak cocok dengan hobi. Dibutuhkan alat bantu yang menimbang seluruh variabel tersebut secara seimbang dan transparan.
 
 ## Fungsi & Manfaat Aplikasi
 
@@ -27,8 +38,8 @@ Wisatawan, khususnya kalangan mahasiswa dan backpacker dengan budget terbatas, s
 - Menyediakan peta interaktif Indonesia (38 provinsi, 7 gugus pulau) sebagai antarmuka eksplorasi destinasi (`index.html`)
 
 **Manfaat:**
-- **Bagi wisatawan:** menghemat waktu riset, keputusan liburan lebih terarah sesuai budget nyata, tidak perlu membandingkan puluhan sumber informasi secara manual
-- **Bagi pelaku UMKM/agen travel kecil:** dapat digunakan sebagai alat bantu menyusun paket wisata yang sesuai budget klien
+- **Bagi wisatawan:** menghemat waktu riset, keputusan liburan lebih terarah sesuai keseluruhan preferensi (budget, kualitas, akses, dan kecocokan minat), tidak perlu membandingkan puluhan sumber informasi secara manual
+- **Bagi pelaku UMKM/agen travel kecil:** dapat digunakan sebagai alat bantu menyusun paket wisata yang sesuai profil dan prioritas klien, bukan sekadar menyesuaikan harga
 - **Bagi pengembangan pariwisata:** data hasil clustering dapat memberi gambaran destinasi mana yang under-explored namun punya value tinggi, berpotensi mendukung pemerataan kunjungan wisata
 
 ## Metode yang Digunakan
@@ -87,14 +98,16 @@ Semakin tinggi nilai Vi (mendekati 1), semakin ideal destinasi tersebut terhadap
 ## Tahapan Algoritma (Alur Sistem)
 
 ```text
-1. User input: budget maksimal, kota tujuan, kategori wisata, hobi
+1. User input: profil preferensi multi-variabel —
+   budget maksimal, kota tujuan, kategori wisata, hobi
         ↓
-2. Filter awal data destinasi berdasarkan kota & kategori
+2. Filter awal data destinasi berdasarkan kota, kategori,
+   dan batas kelayakan budget
         ↓
 3. [DATA MINING] K-Means Clustering
-   → Kelompokkan destinasi menjadi beberapa segmen budget
-     (rendah / menengah / tinggi / premium)
-   → Pilih cluster yang sesuai dengan budget user
+   → Kelompokkan destinasi menjadi beberapa segmen karakteristik
+     (kedekatan harga, rating, dan kategori)
+   → Pilih cluster yang sesuai dengan profil user
         ↓
 4. [SPK] AHP
    → Hitung bobot tiap kriteria (harga, rating, jarak,
