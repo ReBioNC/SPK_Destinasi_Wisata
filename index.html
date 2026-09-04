@@ -114,7 +114,10 @@
   .pill.active{background:#fff; color:#0a1230; border-color:#fff}
   .dot{width:20px; height:20px; border-radius:50%; border:2px solid rgba(0,0,0,.3)}
   .map-body{position:relative; z-index:1}
-  svg#map{width:100%; height:auto; display:block}
+  svg#map{width:100%; height:auto; display:block; cursor:grab; touch-action:none}
+  svg#map.grabbing{cursor:grabbing}
+  .zoom-group{display:inline-flex; gap:6px; align-items:center}
+  .zoom-btn{min-width:38px; font-size:16px; line-height:1; padding:8px 10px}
   path.province{stroke:#060b1c; stroke-width:.9; stroke-linejoin:round; cursor:pointer; transition:fill .15s ease, opacity .2s ease}
   path.province[data-pulau="Sumatera"]{fill:#ffc53d}
   path.province[data-pulau="Jawa"]{fill:#5ea8ff}
@@ -222,7 +225,11 @@
     <div class="map-bar">
       <label class="search"><span>⌕</span><input id="search" type="search" placeholder="Cari provinsi — mis. Jawa Barat, Bali, Papua…" autocomplete="off" /></label>
       <button class="mini-btn" id="resetBtn">Reset</button>
-      <button class="mini-btn sun" id="zoomBtn">Fokus pulau</button>
+      <span class="zoom-group" role="group" aria-label="Kontrol zoom peta">
+        <button class="mini-btn zoom-btn" id="zoomOutBtn" title="Perkecil">−</button>
+        <button class="mini-btn zoom-btn" id="zoomInBtn" title="Perbesar">+</button>
+        <button class="mini-btn" id="zoomResetBtn" title="Kembalikan zoom 1:1">⤾ 1:1</button>
+      </span>
     </div>
     <div class="pills" id="islandFilters"></div>
     <div class="map-body">
@@ -282,7 +289,7 @@
     </div>
     <div class="map-foot">
       <div class="legend" id="legend"></div>
-      <span style="margin-left:auto">Klik 2× pada peta untuk reset zoom</span>
+      <span style="margin-left:auto">Ctrl + scroll / tombol +/− untuk zoom • seret untuk geser • klik 2× untuk perbesar</span>
     </div>
   </section>
   <div id="tooltip"></div>
@@ -468,6 +475,7 @@ document.getElementById("resetBtn").onclick = () => {
   paths.forEach(p => p.classList.remove("match", "hover-js", "selected"));
   selected = null; tooltip.style.display = "none";
   preview.classList.remove("show");
+  vb = { ...VB_BASE }; applyVB();
   infoKicker.textContent = "Pratinjau provinsi";
   infoNama.textContent = "Arahkan kursor";
   infoSub.textContent = "Hover peta — warna provinsi berubah. Klik untuk kunci.";
@@ -480,16 +488,90 @@ document.getElementById("clearBtn").onclick = () => {
   detailSub.textContent = "Klik salah satu provinsi di peta hero.";
   detailProv.textContent = "—"; detailPulau.textContent = "—"; detailIbukota.textContent = "—";
 };
-document.getElementById("zoomBtn").onclick = () => {
-  const ref = selected ? selected.dataset.pulau : (activeIsland !== "Semua" ? activeIsland : null);
-  if(!ref) return;
-  const list = paths.filter(p => p.dataset.pulau === ref);
-  let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
-  list.forEach(p => { const b = p.getBBox(); minX = Math.min(minX, b.x); minY = Math.min(minY, b.y); maxX = Math.max(maxX, b.x + b.width); maxY = Math.max(maxY, b.y + b.height); });
-  const pad = 22;
-  svg.setAttribute("viewBox", (minX - pad) + " " + (minY - pad) + " " + ((maxX - minX) + pad * 2) + " " + ((maxY - minY) + pad * 2));
-};
-svg.addEventListener("dblclick", () => svg.setAttribute("viewBox", "0 0 1000 440"));
+/* ===== ZOOM MURNI: hanya mengubah tampilan, data/warna/filter tak tersentuh ===== */
+const VB_BASE = { x: 0, y: 0, w: 1000, h: 440 };
+const VB_MIN_W = VB_BASE.w / 8; // maksimal 8x zoom
+let vb = { ...VB_BASE };
+function applyVB(){
+  svg.setAttribute("viewBox", vb.x + " " + vb.y + " " + vb.w + " " + vb.h);
+}
+function svgPoint(clientX, clientY){
+  const pt = new DOMPoint(clientX, clientY);
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+function zoomAt(sx, sy, factor){
+  const w2 = Math.min(VB_BASE.w, Math.max(VB_MIN_W, vb.w * factor));
+  const k = w2 / vb.w;
+  vb.x = sx - (sx - vb.x) * k;
+  vb.y = sy - (sy - vb.y) * k;
+  vb.w = w2;
+  vb.h = vb.h * k;
+  applyVB();
+}
+function zoomCenter(factor){
+  zoomAt(vb.x + vb.w / 2, vb.y + vb.h / 2, factor);
+}
+document.getElementById("zoomInBtn").onclick = () => zoomCenter(1 / 1.4);
+document.getElementById("zoomOutBtn").onclick = () => zoomCenter(1.4);
+document.getElementById("zoomResetBtn").onclick = () => { vb = { ...VB_BASE }; applyVB(); };
+svg.addEventListener("wheel", e => {
+  if(!e.ctrlKey) return; // tanpa Ctrl: biarkan halaman scroll normal
+  e.preventDefault();
+  const p = svgPoint(e.clientX, e.clientY);
+  zoomAt(p.x, p.y, Math.exp(e.deltaY * 0.0015));
+}, { passive: false });
+svg.addEventListener("dblclick", e => {
+  const p = svgPoint(e.clientX, e.clientY);
+  zoomAt(p.x, p.y, 1 / 1.6);
+});
+// seret untuk geser (drag pan) + cubit untuk zoom (pinch), klik tetap untuk pilih
+const pointers = new Map();
+let pinchDist = 0, dragMoved = 0, suppressClick = false;
+svg.addEventListener("pointerdown", e => {
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if(pointers.size === 2){
+    const [a, b] = [...pointers.values()];
+    pinchDist = Math.hypot(a.x - b.x, a.y - b.y);
+  }
+  dragMoved = 0;
+  svg.classList.add("grabbing");
+});
+svg.addEventListener("pointermove", e => {
+  if(!pointers.has(e.pointerId)) return;
+  const prev = pointers.get(e.pointerId);
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if(pointers.size === 1 && e.buttons){
+    const ctm = svg.getScreenCTM();
+    const dx = (e.clientX - prev.x) / ctm.a;
+    const dy = (e.clientY - prev.y) / ctm.d;
+    dragMoved += Math.abs(e.clientX - prev.x) + Math.abs(e.clientY - prev.y);
+    vb.x -= dx; vb.y -= dy;
+    applyVB();
+  } else if(pointers.size === 2){
+    const [a, b] = [...pointers.values()];
+    const d = Math.hypot(a.x - b.x, a.y - b.y);
+    if(pinchDist > 0 && d > 0){
+      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+      const p = svgPoint(mx, my);
+      zoomAt(p.x, p.y, pinchDist / d);
+    }
+    pinchDist = d;
+    dragMoved = 99; // cubit selalu dianggap gesture, bukan klik
+  }
+});
+function endPointer(e){
+  pointers.delete(e.pointerId);
+  if(pointers.size < 2) pinchDist = 0;
+  if(pointers.size === 0){
+    svg.classList.remove("grabbing");
+    if(dragMoved > 6) suppressClick = true; // habis seret: jangan pilih provinsi
+  }
+}
+svg.addEventListener("pointerup", endPointer);
+svg.addEventListener("pointercancel", endPointer);
+svg.addEventListener("click", e => {
+  if(suppressClick){ e.stopPropagation(); suppressClick = false; }
+}, true);
 document.getElementById("toggleDotsBtn").onclick = (e) => {
   showDots = !showDots;
   e.target.classList.toggle("sun", showDots);
