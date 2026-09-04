@@ -1,6 +1,6 @@
 # TravelFit — Sistem Pendukung Keputusan Rekomendasi Destinasi Wisata Berbasis Budget
 
-TravelFit adalah aplikasi web berbasis Sistem Pendukung Keputusan (SPK) yang membantu wisatawan menemukan destinasi wisata terbaik di Indonesia sesuai dengan budget, kategori minat, dan hobi yang mereka miliki. Aplikasi ini menggabungkan teknik **Data Mining** (clustering destinasi berdasarkan karakteristiknya) dengan metode **Multi-Criteria Decision Making/MCDM** (AHP dan TOPSIS) untuk menghasilkan rekomendasi destinasi yang terukur, transparan, dan dapat dipertanggungjawabkan secara matematis — bukan sekadar rekomendasi acak berdasarkan popularitas di media sosial.
+Aplikasi web berbasis Sistem Pendukung Keputusan (SPK) yang membantu wisatawan menemukan destinasi wisata terbaik di Indonesia sesuai dengan budget, kategori minat, dan hobi yang mereka miliki. Aplikasi ini menggabungkan teknik **Data Mining** (clustering destinasi berdasarkan karakteristiknya) dengan metode **Multi-Criteria Decision Making/MCDM** (AHP dan TOPSIS) untuk menghasilkan rekomendasi destinasi yang terukur, transparan, dan dapat dipertanggungjawabkan secara matematis — bukan sekadar rekomendasi acak berdasarkan popularitas di media sosial.
 
 User cukup memasukkan budget maksimal, kota/wilayah tujuan, kategori wisata yang diminati (alam, budaya, kuliner, hiburan, religi), dan hobi terkait wisata (hiking, fotografi, kuliner lokal, dsb). Sistem kemudian memproses data ratusan destinasi wisata untuk menghasilkan daftar rekomendasi peringkat teratas lengkap dengan skor kesesuaian dan alasan di balik setiap rekomendasi.
 
@@ -8,8 +8,8 @@ User cukup memasukkan budget maksimal, kota/wilayah tujuan, kategori wisata yang
 
 | Nama | NIM | Peran |
 |---|---|---|
-| Kristofer Ryan Giggs | 412024005 | Anggota |
-| Cristian Dion | 412024006 | Lead Integrasi Teknis SPK & Data Mining |
+| Kristofer Ryan Giggs | 412024005 | Ketua |
+| Cristian Dion | 412024006 | Anggota |
 | Reynard Liu | 412025022 | Anggota |
 | Justin Augusto Liusri | 412025029 | Anggota |
 
