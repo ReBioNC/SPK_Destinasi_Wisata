@@ -1,6 +1,6 @@
 # TravelFit — Sistem Pendukung Keputusan Rekomendasi Destinasi Wisata Multi-Kriteria
 
-Aplikasi web berbasis Sistem Pendukung Keputusan (SPK) yang membantu wisatawan menemukan destinasi wisata terbaik di Indonesia berdasarkan **banyak variabel penentu**, bukan budget semata. Budget hanyalah satu dari enam kriteria yang dipertimbangkan — berdampingan dengan rating pengunjung, jarak/waktu tempuh, kelengkapan fasilitas, kesesuaian kategori minat, dan kesesuaian hobi. Aplikasi ini menggabungkan teknik **Data Mining** (clustering destinasi berdasarkan karakteristiknya) dengan metode **Multi-Criteria Decision Making/MCDM** (AHP dan TOPSIS) untuk menghasilkan rekomendasi destinasi yang terukur, transparan, dan dapat dipertanggungjawabkan secara matematis — bukan sekadar rekomendasi acak berdasarkan popularitas di media sosial, dan bukan sekadar daftar destinasi termurah.
+Aplikasi web berbasis Sistem Pendukung Keputusan (SPK) yang membantu wisatawan menemukan destinasi wisata terbaik di Indonesia berdasarkan **banyak variabel penentu**, bukan budget semata. Budget hanyalah satu dari enam kriteria yang dipertimbangkan — berdampingan dengan rating pengunjung, jarak/waktu tempuh, kelengkapan fasilitas, kesesuaian kategori minat, dan kesesuaian hobi. Pengembangan proses data mining mengikuti kerangka **CRISP-DM** (*Cross-Industry Standard Process for Data Mining*), menggunakan **K-Means Clustering** pada tahap pemodelan, lalu menggabungkannya dengan metode **Multi-Criteria Decision Making/MCDM** (AHP dan TOPSIS). Kombinasi ini menghasilkan rekomendasi destinasi yang terukur, transparan, dan dapat dipertanggungjawabkan secara matematis — bukan sekadar rekomendasi acak berdasarkan popularitas di media sosial, dan bukan sekadar daftar destinasi termurah.
 
 User memasukkan profil preferensinya secara lengkap: budget maksimal, kota/wilayah tujuan, kategori wisata yang diminati (alam, budaya, kuliner, hiburan, religi), dan hobi terkait wisata (hiking, fotografi, kuliner lokal, dsb). Sistem kemudian memproses data ratusan destinasi wisata dengan menimbang **seluruh variabel tersebut secara bersamaan** untuk menghasilkan daftar rekomendasi peringkat teratas lengkap dengan skor kesesuaian dan alasan di balik setiap rekomendasi.
 
@@ -46,17 +46,122 @@ Wisatawan, khususnya kalangan mahasiswa dan backpacker, sering kesulitan memilih
 
 | Tahap | Metode | Fungsi |
 |---|---|---|
+| Kerangka Data Mining | CRISP-DM | Mengarahkan proses data mining dari pemahaman masalah sampai penerapan dan evaluasi sistem |
 | Data Mining | K-Means Clustering | Mengelompokkan destinasi ke dalam segmen berdasarkan karakteristik (harga, rating, kategori) |
 | SPK — Pembobotan Kriteria | AHP (Analytic Hierarchy Process) | Menentukan bobot kepentingan tiap kriteria secara terstruktur dan teruji konsistensinya |
 | SPK — Perankingan Alternatif | TOPSIS (Technique for Order Preference by Similarity to Ideal Solution) | Meranking destinasi berdasarkan kedekatannya terhadap solusi ideal |
 
 ### Alasan Pemilihan Metode
 
+**CRISP-DM** dipilih sebagai kerangka kerja karena menyediakan tahapan pengembangan data mining yang sistematis, iteratif, dan mudah didokumentasikan. Kerangka ini memastikan proses tidak hanya berfokus pada pembuatan model, tetapi juga dimulai dari pemahaman kebutuhan wisatawan, pemeriksaan kualitas data, evaluasi hasil, hingga penerapan model ke dalam aplikasi.
+
 **K-Means** dipilih karena data destinasi wisata tidak memiliki label "benar/salah" (bersifat unsupervised) — tujuannya murni mengelompokkan destinasi yang mirip karakteristiknya, sehingga proses filtering sebelum tahap SPK menjadi lebih efisien dan terstruktur dibanding membandingkan seluruh destinasi satu per satu. K-Means juga ringan secara komputasi dan mudah di-deploy ulang secara real-time dibanding metode clustering lain seperti Hierarchical Clustering.
 
 **AHP** dipilih untuk menentukan bobot kriteria karena metode ini memungkinkan perbandingan berpasangan antar kriteria secara terstruktur dan dilengkapi mekanisme uji konsistensi (Consistency Ratio), sehingga bobot yang dihasilkan dapat dipertanggungjawabkan secara metodologis, bukan ditentukan secara subjektif sepihak.
 
 **TOPSIS** dipilih untuk tahap perankingan karena mempertimbangkan jarak alternatif terhadap solusi ideal positif *dan* negatif sekaligus, sehingga hasilnya lebih robust terhadap data outlier (misalnya destinasi murah tapi rating sangat rendah) dibanding metode SAW (Simple Additive Weighting) yang hanya menjumlahkan skor tertimbang. TOPSIS juga secara konsep lebih mudah dijelaskan ke pengguna awam ("destinasi ini paling dekat dengan kondisi ideal Anda"), mendukung aspek *explainability* aplikasi.
+
+## Penerapan CRISP-DM
+
+CRISP-DM digunakan sebagai kerangka utama pengembangan data mining. Prosesnya bersifat iteratif, sehingga hasil evaluasi pada suatu tahap dapat mengarahkan pengembang kembali ke tahap sebelumnya untuk memperbaiki data, fitur, atau model.
+
+### 1. Business Understanding
+
+Tahap ini berfokus pada pemahaman masalah, kebutuhan pengguna, dan tujuan aplikasi.
+
+- **Permasalahan bisnis:** wisatawan kesulitan membandingkan banyak destinasi secara objektif karena informasi harga, rating, jarak, fasilitas, kategori, dan aktivitas tersebar di berbagai sumber.
+- **Tujuan bisnis:** membantu pengguna menemukan destinasi yang paling sesuai dengan budget, lokasi, minat, dan hobinya melalui rekomendasi yang transparan.
+- **Tujuan data mining:** menemukan kelompok destinasi dengan karakteristik serupa agar kandidat rekomendasi lebih terstruktur sebelum diproses oleh AHP dan TOPSIS.
+- **Target pengguna:** wisatawan umum, mahasiswa, backpacker, serta pelaku UMKM atau agen perjalanan skala kecil.
+- **Kriteria keberhasilan:** sistem mampu menghasilkan rekomendasi relevan, menampilkan alasan rekomendasi, memberikan hasil perhitungan yang konsisten, serta merespons perubahan preferensi pengguna.
+- **Batasan:** kualitas rekomendasi bergantung pada kelengkapan dan kebaruan data destinasi; harga, rating, fasilitas, dan waktu tempuh dapat berubah.
+
+**Output tahap:** rumusan masalah, tujuan sistem, kebutuhan pengguna, batasan proyek, dan indikator keberhasilan.
+
+### 2. Data Understanding
+
+Tahap ini digunakan untuk mengumpulkan, mengenali, dan memeriksa data destinasi yang akan digunakan.
+
+- Mengumpulkan data destinasi dari sumber yang relevan dan dapat dipertanggungjawabkan.
+- Mengidentifikasi atribut utama: nama destinasi, provinsi/kota, koordinat, harga tiket, rating, jarak atau waktu tempuh, fasilitas, kategori wisata, dan tag aktivitas/hobi.
+- Memeriksa tipe data, jumlah data, rentang nilai, distribusi, dan hubungan antaratribut.
+- Mengidentifikasi data kosong, data ganda, format yang tidak konsisten, nilai ekstrem, serta kemungkinan data yang sudah tidak terbaru.
+- Melakukan eksplorasi awal untuk mengetahui pola harga, rating, persebaran wilayah, kategori wisata, dan karakteristik calon cluster.
+
+**Output tahap:** deskripsi dataset, kamus data, statistik deskriptif, visualisasi eksploratif, dan laporan kualitas data.
+
+### 3. Data Preparation
+
+Tahap ini menyiapkan data agar dapat digunakan oleh K-Means, AHP, dan TOPSIS.
+
+- Menghapus data duplikat dan menangani nilai kosong.
+- Menyeragamkan format harga, rating, koordinat, kategori, fasilitas, dan tag hobi.
+- Mengubah atribut kategorikal menjadi representasi numerik yang sesuai, misalnya *one-hot encoding* untuk kategori wisata.
+- Mengubah fasilitas menjadi skor kelengkapan berdasarkan jumlah atau bobot fasilitas yang tersedia.
+- Menghitung jarak atau estimasi waktu tempuh dari lokasi asal pengguna ke destinasi.
+- Menghitung kesesuaian hobi menggunakan **Jaccard Similarity** antara hobi pengguna dan tag aktivitas destinasi.
+- Melakukan normalisasi atau standardisasi fitur numerik sebelum K-Means agar fitur berskala besar, seperti harga dan jarak, tidak mendominasi pembentukan cluster.
+- Memilih fitur clustering yang relevan, misalnya harga, rating, fasilitas, serta representasi kategori. Jarak dari pengguna dan skor kecocokan personal dihitung saat rekomendasi karena nilainya bergantung pada setiap pengguna.
+
+**Output tahap:** dataset bersih dan dataset transformasi yang siap digunakan untuk pemodelan serta perankingan.
+
+### 4. Modeling
+
+Tahap pemodelan terdiri atas clustering destinasi dan proses SPK.
+
+1. Menentukan kandidat jumlah cluster (`k`) dan nilai awal centroid.
+2. Menjalankan **K-Means Clustering** pada data destinasi yang telah dinormalisasi.
+3. Membandingkan beberapa nilai `k` menggunakan metode seperti *Elbow Method* dan *Silhouette Score*.
+4. Menginterpretasikan setiap cluster, misalnya destinasi ekonomis, destinasi premium berfasilitas lengkap, atau destinasi dengan rating tinggi.
+5. Memilih destinasi dari cluster yang relevan dengan profil pengguna sebagai kandidat alternatif.
+6. Menggunakan **AHP** untuk menghitung bobot C1–C6 dan memastikan nilai *Consistency Ratio* kurang dari 0,1.
+7. Menggunakan **TOPSIS** untuk menghitung nilai preferensi dan menentukan peringkat akhir destinasi.
+
+**Output tahap:** model K-Means, profil setiap cluster, bobot kriteria AHP, nilai preferensi TOPSIS, dan daftar rekomendasi terurut.
+
+### 5. Evaluation
+
+Tahap ini memastikan model dan hasil rekomendasi telah memenuhi tujuan sistem.
+
+- Mengevaluasi kualitas cluster menggunakan *Silhouette Score*, nilai *inertia/SSE*, ukuran setiap cluster, dan kemudahan interpretasi cluster.
+- Memastikan cluster tidak hanya baik secara matematis, tetapi juga masuk akal dalam konteks destinasi wisata.
+- Menguji konsistensi bobot AHP dengan syarat `CR < 0,1`.
+- Memeriksa hasil TOPSIS secara manual menggunakan beberapa skenario profil pengguna.
+- Melakukan *sensitivity analysis* untuk melihat stabilitas peringkat saat bobot kriteria berubah.
+- Memvalidasi apakah rekomendasi memenuhi filter wajib seperti budget, wilayah, dan kategori pilihan pengguna.
+- Jika hasil belum memenuhi kriteria keberhasilan, proses dapat kembali ke tahap Data Understanding, Data Preparation, atau Modeling.
+
+**Output tahap:** laporan evaluasi cluster, hasil uji konsistensi AHP, validasi ranking TOPSIS, hasil sensitivity analysis, dan keputusan kelayakan model.
+
+### 6. Deployment
+
+Tahap ini menerapkan hasil data mining dan SPK ke dalam aplikasi TravelFit.
+
+- Menyimpan hasil clustering dan profil cluster agar dapat digunakan aplikasi.
+- Mengintegrasikan input preferensi pengguna, proses filter, AHP, dan TOPSIS ke antarmuka web.
+- Menampilkan rekomendasi Top-5 atau Top-10 beserta skor dan alasan pada setiap kriteria.
+- Menyediakan peta interaktif dan fitur sensitivity analysis untuk mengeksplorasi hasil.
+- Menyusun dokumentasi penggunaan, struktur data, metode perhitungan, dan keterbatasan sistem.
+- Menetapkan proses pemutakhiran dataset, pelatihan ulang K-Means, dan evaluasi berkala ketika terdapat data destinasi baru.
+
+**Output tahap:** aplikasi rekomendasi yang dapat digunakan, model dan data yang terintegrasi, dokumentasi sistem, serta rencana pemeliharaan.
+
+### Hubungan CRISP-DM dengan Metode Sistem
+
+```text
+CRISP-DM
+├── Business Understanding
+├── Data Understanding
+├── Data Preparation
+├── Modeling
+│   ├── K-Means → clustering destinasi
+│   ├── AHP     → pembobotan kriteria
+│   └── TOPSIS  → perankingan destinasi
+├── Evaluation
+└── Deployment
+```
+
+CRISP-DM bukan pengganti K-Means, AHP, atau TOPSIS. CRISP-DM merupakan kerangka siklus pengembangan proyek, sedangkan K-Means adalah algoritma data mining dan AHP–TOPSIS adalah metode SPK yang digunakan di dalam tahap pemodelan dan evaluasi.
 
 ## Rumus Utama
 
@@ -98,31 +203,40 @@ Semakin tinggi nilai Vi (mendekati 1), semakin ideal destinasi tersebut terhadap
 ## Tahapan Algoritma (Alur Sistem)
 
 ```text
-1. User input: profil preferensi multi-variabel —
+1. [CRISP-DM] Business Understanding dan Data Understanding
+   → Tetapkan kebutuhan pengguna, tujuan, atribut, dan kualitas data
+        ↓
+2. [CRISP-DM] Data Preparation
+   → Bersihkan, transformasikan, dan normalisasi data destinasi
+        ↓
+3. User input: profil preferensi multi-variabel —
    budget maksimal, kota tujuan, kategori wisata, hobi
         ↓
-2. Filter awal data destinasi berdasarkan kota, kategori,
+4. Filter awal data destinasi berdasarkan kota, kategori,
    dan batas kelayakan budget
         ↓
-3. [DATA MINING] K-Means Clustering
+5. [CRISP-DM — MODELING] K-Means Clustering
    → Kelompokkan destinasi menjadi beberapa segmen karakteristik
      (kedekatan harga, rating, dan kategori)
    → Pilih cluster yang sesuai dengan profil user
         ↓
-4. [SPK] AHP
+6. [CRISP-DM — MODELING/SPK] AHP
    → Hitung bobot tiap kriteria (harga, rating, jarak,
      fasilitas, kesesuaian kategori, kesesuaian hobi)
    → Uji konsistensi bobot (CR < 0.1)
         ↓
-5. [SPK] TOPSIS
+7. [CRISP-DM — MODELING/SPK] TOPSIS
    → Normalisasi matriks keputusan
    → Hitung jarak ke solusi ideal positif & negatif
    → Hitung nilai preferensi akhir & ranking
         ↓
-6. Output: Top-5/10 destinasi wisata terbaik,
+8. [CRISP-DM — EVALUATION] Evaluasi cluster, konsistensi AHP,
+   validasi ranking TOPSIS, dan sensitivity analysis
+        ↓
+9. [CRISP-DM — DEPLOYMENT] Output Top-5/10 destinasi wisata terbaik,
    lengkap dengan skor dan breakdown alasan per kriteria
         ↓
-7. (Opsional) Sensitivity Analysis:
+10. (Opsional) Sensitivity Analysis:
    User dapat mengubah bobot kriteria untuk melihat
    perubahan hasil rekomendasi secara langsung
 ```
