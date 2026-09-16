@@ -19,7 +19,7 @@ Besarnya pengaruh tiap variabel tidak fixed. Bobot dasar dihitung dengan AHP mel
 
 | Nama | NIM | Peran |
 |---|---|---|
-| Kristofer Ryan Giggs | 412024005 | Ketua |
+| Kristofer Ryan Giggs aka Ganyol | 412024005 | Ketua |
 | Cristian Dion | 412024006 | Anggota |
 | Reynard Liu | 412025022 | Anggota |
 | Justin Augusto Liusri | 412025029 | Anggota |
