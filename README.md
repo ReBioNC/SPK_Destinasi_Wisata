@@ -67,13 +67,6 @@ Dua keterbatasan TOPSIS yang disadari dan ditangani:
 - **Rank reversal** — solusi ideal dihitung dari himpunan kandidat, sehingga peringkat bisa berubah saat kandidat bertambah/berkurang akibat perubahan filter. Ini dimitigasi dengan menguji kestabilan ranking pada beberapa skenario filter di tahap Evaluation dan, bila perlu, menggunakan nilai ideal tetap dari seluruh dataset (*fixed reference TOPSIS*).
 - **Sensitivitas normalisasi vektor terhadap outlier** — nilai ekstrem (misalnya tiket sangat mahal) memengaruhi penyebut normalisasi. Ini dimitigasi dengan pemeriksaan outlier di tahap Data Understanding dan penerapan batas budget sebagai filter awal.
 
-**Mengapa bukan SAW, SMART, atau WP sebagai metode utama?**
-
-- **SAW** paling sederhana dan paling mudah dijelaskan, tetapi sepenuhnya kompensatoris dan dianggap terlalu dasar untuk masalah dengan trade-off enam kriteria. SAW tetap digunakan — sebagai *baseline* pembanding pada tahap Evaluation, bukan sebagai metode utama.
-- **SMART / ROC** memberi cara pembobotan yang sangat ramah user (rating langsung atau urutan kepentingan), tetapi tidak memiliki mekanisme uji konsistensi. Kebutuhan kemudahan input tersebut dipenuhi lewat profil preset AHP + slider sensitivity analysis.
-- **WP (Weighted Product)** menghukum nilai buruk secara multiplikatif, tetapi kurang intuitif bagi pengguna awam dan sensitif terhadap nilai nol (misalnya skor hobi 0 saat tidak ada tag yang cocok).
-- **VIKOR / PROMETHEE / ELECTRE** lebih kompleks untuk dijelaskan dan diimplementasikan tanpa keuntungan berarti untuk skala masalah ini.
-
 ## Penerapan CRISP-DM
 
 CRISP-DM digunakan sebagai kerangka utama pengembangan data mining. Prosesnya bersifat iteratif, sehingga hasil evaluasi pada suatu tahap dapat mengarahkan pengembang kembali ke tahap sebelumnya untuk memperbaiki data, fitur, atau model.
