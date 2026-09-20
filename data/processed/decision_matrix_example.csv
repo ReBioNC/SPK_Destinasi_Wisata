@@ -1,0 +1,72 @@
+﻿place_id,place_name,city,province,category_clean,activity_tags,c1_ticket_price,c2_rating,c3_distance_km,c4_facility_score,c5_category_match,c6_hobby_match,c4_facility_source,activity_tags_source
+5,Atlantis Water Adventure,Jakarta,DKI Jakarta,hiburan,berenang|rekreasi_keluarga,94000.0,4.5,8.786973676671826,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+37,Bumi Perkemahan Cibubur,Jakarta,DKI Jakarta,hiburan,camping|rekreasi_keluarga,10000.0,4.5,19.75374304406314,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+71,Cibubur Garden Diary (Cibugary),Jakarta,DKI Jakarta,alam,,50000.0,4.5,21.804721278431394,0.0,1.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+69,Freedom Library,Jakarta,DKI Jakarta,budaya,budaya,0.0,5.0,3.1600670455885695,0.0,1.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+49,Galeri Indonesia Kaya,Jakarta,DKI Jakarta,budaya,budaya|edukasi,0.0,4.8,0.682616520133157,0.0,1.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+40,Galeri Nasional Indonesia,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,0.0,4.6,2.974283803951016,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+23,Gereja Katedral,Jakarta,DKI Jakarta,religi,religi,0.0,4.8,3.8707083083913796,0.16666666666666666,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+35,Grand Indonesia Mall,Jakarta,DKI Jakarta,belanja,belanja,0.0,4.7,0.6769660747876244,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+78,Hutan Kota Srengseng,Jakarta,DKI Jakarta,hiburan,rekreasi_keluarga,1000.0,4.3,5.902960260423955,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+38,Istana Negara Republik Indonesia,Jakarta,DKI Jakarta,budaya,budaya,0.0,4.6,3.640458250981872,0.0,1.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+51,Jakarta Planetarium,Jakarta,DKI Jakarta,hiburan,edukasi|rekreasi_keluarga,12000.0,4.1,2.685810967434944,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+16,Jembatan Kota Intan,Jakarta,DKI Jakarta,budaya,budaya,0.0,4.3,7.6512337341695495,0.0,1.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+52,Kampung Cina,Jakarta,DKI Jakarta,budaya,budaya,15000.0,4.5,19.33895905670552,0.0,1.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+84,Kawasan Kuliner BSM,Jakarta,DKI Jakarta,belanja,belanja|kuliner,0.0,4.6,1.9289467047349325,0.16666666666666666,0.0,0.25,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+7,Kebun Binatang Ragunan,Jakarta,DKI Jakarta,alam,belanja,4000.0,4.5,12.510857625642933,0.0,1.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+55,Klenteng Jin De Yuan,Jakarta,DKI Jakarta,religi,religi,0.0,4.5,6.190851455519171,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+2,Kota Tua,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,0.0,4.6,6.9337502811163745,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+81,Mall Thamrin City,Jakarta,DKI Jakarta,belanja,belanja,0.0,4.4,0.6140094828166783,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+67,Margasatwa Muara Angke,Jakarta,DKI Jakarta,alam,,25000.0,4.2,10.714542800737558,0.0,1.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+22,Masjid Istiqlal,Jakarta,DKI Jakarta,religi,religi|sejarah,0.0,4.7,3.6931500860530004,0.16666666666666666,0.0,0.25,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+1,Monumen Nasional,Jakarta,DKI Jakarta,budaya,budaya|sejarah,20000.0,4.6,2.970231926630127,0.0,1.0,0.25,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+44,Monumen Selamat Datang,Jakarta,DKI Jakarta,budaya,budaya|sejarah,0.0,4.7,0.8955833314687163,0.0,1.0,0.25,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+41,Museum Bahari Jakarta,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,2000.0,4.4,8.171547609639969,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+18,Museum Bank Indonesia,Jakarta,DKI Jakarta,budaya,budaya|edukasi|religi|sejarah,2000.0,4.7,7.0030918509753946,0.16666666666666666,1.0,0.16666666666666666,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+65,Museum Basoeki Abdullah,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,1000.0,4.6,10.3145240632909,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+17,Museum Fatahillah,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,5000.0,4.4,7.077979641248155,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+50,Museum Joang 45,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,2000.0,4.0,2.6719924760246285,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+63,Museum Kebangkitan Nasional,Jakarta,DKI Jakarta,budaya,belanja|budaya|edukasi|sejarah,2000.0,4.7,3.3745812616664805,0.0,1.0,0.16666666666666666,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+66,Museum Layang-layang,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,10000.0,4.5,12.355120800652424,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+39,Museum Macan (Modern and Contemporary Art in Nusantara),Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,100000.0,4.5,5.518059807434405,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+24,Museum Nasional,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,5000.0,4.6,2.679077182918488,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+73,Museum Perangko,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,5000.0,4.4,14.920797462939056,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+64,Museum Sasmita Loka Ahmad Yani,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,2000.0,4.7,2.2520028509245567,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+82,Museum Satria Mandala,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,5000.0,4.5,3.530596857989622,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+42,Museum Seni Rupa dan Kramik,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,5000.0,4.4,7.313842815078404,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+59,Museum Sumpah Pemuda,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,2000.0,4.7,3.422688384073343,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+20,Museum Taman Prasasti,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,2000.0,4.5,3.0987167010726746,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+60,Museum Tekstil,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,5000.0,4.5,1.5511186980081761,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+74,Museum Tengah Kebun,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,0.0,4.6,7.551629437557525,0.16666666666666666,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+21,Museum Wayang,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,5000.0,4.5,7.253267085089715,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+56,Pantai Ancol,Jakarta,DKI Jakarta,bahari,,25000.0,4.4,9.697018424053995,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+68,Pasar Petak Sembilan,Jakarta,DKI Jakarta,belanja,belanja|kuliner,0.0,4.4,6.277153571469499,0.16666666666666666,0.0,0.25,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+15,Pasar Seni,Jakarta,DKI Jakarta,belanja,belanja|budaya,0.0,4.4,3.7945691209247765,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+34,Pasar Taman Puring,Jakarta,DKI Jakarta,belanja,belanja,0.0,4.4,5.522338389197803,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+25,Pasar Tanah Abang,Jakarta,DKI Jakarta,belanja,belanja|religi,0.0,4.0,1.330933860677591,0.3333333333333333,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+26,Pecinan Glodok,Jakarta,DKI Jakarta,belanja,belanja|sejarah,0.0,4.3,6.371531180087875,0.0,0.0,0.25,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+70,Perpustakaan Nasional,Jakarta,DKI Jakarta,budaya,budaya|sejarah,0.0,4.7,2.3647119931458143,0.0,1.0,0.25,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+80,Plaza Indonesia,Jakarta,DKI Jakarta,belanja,belanja|budaya|kuliner,0.0,4.7,0.9099279288216513,0.16666666666666666,0.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+11,Pulau Bidadari,Jakarta,DKI Jakarta,bahari,,5000.0,4.6,19.81689507979191,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+13,Pulau Pramuka,Jakarta,DKI Jakarta,bahari,,5000.0,4.2,55.2551220800091,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+46,Pulau Semak Daun,Jakarta,DKI Jakarta,bahari,berenang|diving|snorkeling,40000.0,4.0,58.914830914310244,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+53,Rumah Sipitung,Jakarta,DKI Jakarta,budaya,budaya|edukasi|sejarah,5000.0,4.5,19.396779053157708,0.0,1.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+32,Setu Babakan,Jakarta,DKI Jakarta,budaya,budaya|kuliner,0.0,4.4,15.772667438237676,0.16666666666666666,1.0,0.25,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+54,Taman Agrowisata Cilangkap,Jakarta,DKI Jakarta,hiburan,rekreasi_keluarga,0.0,4.2,18.171761022843498,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+58,Taman Ayodya,Jakarta,DKI Jakarta,hiburan,belanja|rekreasi_keluarga,0.0,4.4,5.588051793917878,0.16666666666666666,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+76,Taman Cattleya,Jakarta,DKI Jakarta,hiburan,belanja|rekreasi_keluarga,20000.0,4.5,3.1533482909180854,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+77,Taman Hutan Tebet,Jakarta,DKI Jakarta,hiburan,rekreasi_keluarga,0.0,4.4,5.731370195997598,0.3333333333333333,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+6,Taman Impian Jaya Ancol,Jakarta,DKI Jakarta,hiburan,rekreasi_keluarga,25000.0,4.5,10.263407036545257,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+48,Taman Ismail Marzuki,Jakarta,DKI Jakarta,budaya,budaya,5000.0,4.6,2.821238910741044,0.0,1.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+57,Taman Lapangan Banteng,Jakarta,DKI Jakarta,hiburan,rekreasi_keluarga|religi|sejarah,0.0,4.7,3.8509140735543332,0.16666666666666666,0.0,0.2,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+62,Taman Legenda Keong Emas,Jakarta,DKI Jakarta,hiburan,rekreasi_keluarga,30000.0,4.5,14.344979101121544,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+30,Taman Menteng,Jakarta,DKI Jakarta,hiburan,rekreasi_keluarga,0.0,4.5,1.4501086221893975,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+4,Taman Mini Indonesia Indah (TMII),Jakarta,DKI Jakarta,hiburan,budaya|rekreasi_keluarga,10000.0,4.5,14.316774698642202,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+47,Taman Situ Lembang,Jakarta,DKI Jakarta,hiburan,rekreasi_keluarga,0.0,4.5,2.000438325274237,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+79,Taman Spathodea,Jakarta,DKI Jakarta,hiburan,rekreasi_keluarga,0.0,4.6,13.659088514350515,0.16666666666666666,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+33,Taman Suropati,Jakarta,DKI Jakarta,hiburan,rekreasi_keluarga,0.0,4.6,1.7614317557726997,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+43,The Escape Hunt,Jakarta,DKI Jakarta,hiburan,rekreasi_keluarga,70000.0,4.4,6.191185713794477,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+61,Tugu Proklamasi,Jakarta,DKI Jakarta,budaya,budaya|sejarah,0.0,4.6,3.329445452534743,0.0,1.0,0.25,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+28,Wisata Agro Edukatif Istana Susu Cibugary,Jakarta,DKI Jakarta,hiburan,edukasi|rekreasi_keluarga,35000.0,4.5,20.04911292197215,0.0,0.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+31,Wisata Alam Mangrove Angke,Jakarta,DKI Jakarta,alam,,25000.0,4.3,13.828427071440935,0.0,1.0,0.0,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified
+29,Wisata Kuliner Pecenongan,Jakarta,DKI Jakarta,belanja,belanja|kuliner,0.0,5.0,3.849377933494208,0.16666666666666666,0.0,0.25,description_keyword_heuristic_unverified,description_and_category_heuristic_unverified

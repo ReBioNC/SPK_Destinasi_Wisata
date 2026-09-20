@@ -1,0 +1,54 @@
+{
+  "raw_rows": {
+    "destinations": 437,
+    "ratings": 10000
+  },
+  "processed_rows": {
+    "destinations": 437,
+    "eligible_for_ranking": 437,
+    "valid_ratings": 9597
+  },
+  "quality_flags": {
+    "duplicate_place_id": 0,
+    "duplicate_name_coordinate": 0,
+    "invalid_price": 0,
+    "invalid_rating": 0,
+    "invalid_coordinate": 0,
+    "outside_indonesia_bbox_warning": 0,
+    "missing_time_minutes": 232
+  },
+  "coverage": {
+    "cities": [
+      "Bandung",
+      "Jakarta",
+      "Semarang",
+      "Surabaya",
+      "Yogyakarta"
+    ],
+    "provinces": [
+      "DI Yogyakarta",
+      "DKI Jakarta",
+      "Jawa Barat",
+      "Jawa Tengah",
+      "Jawa Timur"
+    ],
+    "categories": [
+      "alam",
+      "bahari",
+      "belanja",
+      "budaya",
+      "hiburan",
+      "religi"
+    ],
+    "destinations_with_facility_evidence": 82,
+    "destinations_with_activity_tags": 368
+  },
+  "method_notes": [
+    "C1 dan C2 berasal langsung dari dataset destinasi.",
+    "C3 dihitung secara dinamis menggunakan Haversine.",
+    "C4 sementara merupakan heuristik penyebutan fasilitas pada deskripsi.",
+    "C5 exact match; related-category map sengaja kosong sampai divalidasi.",
+    "C6 menggunakan Jaccard pada tag aktivitas hasil ekstraksi heuristik.",
+    "Budget dan wilayah adalah filter keras; kategori dan hobi bukan filter keras."
+  ]
+}

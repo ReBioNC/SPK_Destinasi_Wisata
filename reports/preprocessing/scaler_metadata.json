@@ -1,0 +1,18 @@
+{
+  "features": [
+    "c1_ticket_price",
+    "c2_rating",
+    "c4_facility_score"
+  ],
+  "mean": {
+    "c1_ticket_price": 24652.17391304348,
+    "c2_rating": 4.44279176201373,
+    "c4_facility_score": 0.03546910755148741
+  },
+  "scale": {
+    "c1_ticket_price": 66370.30556618795,
+    "c2_rating": 0.20834860139512007,
+    "c4_facility_score": 0.0809963060945246
+  },
+  "note": "C4 masih menggunakan skor heuristik sampai data fasilitas terverifikasi tersedia."
+}
