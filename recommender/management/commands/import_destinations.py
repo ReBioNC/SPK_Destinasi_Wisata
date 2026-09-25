@@ -23,6 +23,15 @@ XLSX = BASE_DIR / "Dataset_Wisata_38_Provinsi.xlsx"
 CLEAN_CSV = BASE_DIR / "data" / "processed" / "destinations_clean.csv"
 RATINGS_CSV = BASE_DIR / "data" / "processed" / "ratings_aggregated.csv"
 
+# Kanonik mengikuti kolom Province pada XLSX (38 provinsi).
+PROVINSI_ALIAS = {
+    "DI Yogyakarta": "Daerah Istimewa Yogyakarta",
+}
+
+
+def kanon_provinsi(nama):
+    return PROVINSI_ALIAS.get(str(nama).strip(), str(nama).strip())
+
 
 def norm(s):
     return str(s).strip().lower()
@@ -102,7 +111,7 @@ class Command(BaseCommand):
                 Destination.objects.update_or_create(
                     nama=nama, kota=kota,
                     defaults={
-                        "provinsi": str(row[ic["Province"]]),
+                        "provinsi": kanon_provinsi(row[ic["Province"]]),
                         "kategori": str(row[ic["Category_Clean"]]),
                         "sub_kategori": "" if row[ic["Sub_Category"]] is None else str(row[ic["Sub_Category"]]),
                         "harga_tiket": int(row[ic["c1_ticket_price"]]),
@@ -132,7 +141,7 @@ class Command(BaseCommand):
                 Destination.objects.update_or_create(
                     nama=nama, kota=kota,
                     defaults={
-                        "provinsi": str(r["province"]),
+                        "provinsi": kanon_provinsi(r["province"]),
                         "kategori": str(r["category_clean"]),
                         "sub_kategori": "",
                         "harga_tiket": int(r["c1_ticket_price"]),

@@ -21,3 +21,9 @@ class ImportTest(TestCase):
     def test_overlay_jawa_bertanda_sumber(self):
         call_command("import_destinations")
         self.assertEqual(Destination.objects.filter(sumber_data="csv_jawa").count(), 437)
+
+    def test_provinsi_tepat_38_tanpa_alias(self):
+        call_command("import_destinations")
+        prov = set(Destination.objects.values_list("provinsi", flat=True).distinct())
+        self.assertEqual(len(prov), 38)
+        self.assertNotIn("DI Yogyakarta", prov)
