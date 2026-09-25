@@ -25,6 +25,8 @@ def rank(scores, weights, is_cost):
     for i in range(n):
         dp = math.sqrt(sum((v[i][j] - ideal_pos[j]) ** 2 for j in range(m)))
         dn = math.sqrt(sum((v[i][j] - ideal_neg[j]) ** 2 for j in range(m)))
-        out.append({"idx": i, "vi": dn / (dp + dn), "d_pos": dp, "d_neg": dn,
+        # Satu-satunya kandidat: ideal == anti-ideal -> Vi = 1 tanpa crash.
+        vi = dn / (dp + dn) if (dp + dn) else 1.0
+        out.append({"idx": i, "vi": vi, "d_pos": dp, "d_neg": dn,
                     "gap": [abs(v[i][j] - ideal_pos[j]) for j in range(m)]})
     return sorted(out, key=lambda r: r["vi"], reverse=True)

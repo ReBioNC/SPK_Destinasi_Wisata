@@ -18,8 +18,14 @@ KOTA_ASAL = {
 
 
 def parse_budget(value):
-    """Terima '250000', '250.000', '250,000', 'Rp 250000' -> int."""
-    digits = "".join(ch for ch in str(value) if ch.isdigit())
+    """Terima '250000', '250.000', '250,000', 'Rp 250000' -> int.
+
+    Tanda minus di depan ditolak (budget negatif tidak masuk akal).
+    """
+    teks = str(value).strip()
+    if teks.startswith("-"):
+        raise forms.ValidationError("Masukkan budget dalam angka, contoh: 250000.")
+    digits = "".join(ch for ch in teks if ch.isdigit())
     if not digits:
         raise forms.ValidationError("Masukkan budget dalam angka, contoh: 250000.")
     return int(digits)
@@ -34,6 +40,7 @@ class PreferensiForm(forms.Form):
     hobi = forms.MultipleChoiceField(label="Hobi", choices=[], required=False,
                                      widget=forms.CheckboxSelectMultiple)
     profil = forms.ChoiceField(label="Profil prioritas", choices=[], widget=forms.RadioSelect)
+    sentuh_bobot = forms.CharField(required=False, widget=forms.HiddenInput)
     w1 = forms.FloatField(required=False, min_value=0, max_value=100)
     w2 = forms.FloatField(required=False, min_value=0, max_value=100)
     w3 = forms.FloatField(required=False, min_value=0, max_value=100)

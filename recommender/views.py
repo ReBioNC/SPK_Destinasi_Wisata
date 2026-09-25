@@ -46,8 +46,9 @@ def rekomendasi(request):
     cd = form.cleaned_data
     bobot = list(profiles.ACTIVE_PROFILES[cd["profil"]]["weights"])
     mode_custom = False
-    slider_keys = ("w1", "w2", "w3", "w4", "w5", "w6")
-    slider_disentuh = any(k in form.data for k in slider_keys)
+    # Slider selalu terkirim browser; hanya jadi sinyal bila user
+    # benar-benar menggesernya (hidden sentuh_bobot = "1" via onchange).
+    slider_disentuh = cd.get("sentuh_bobot") == "1"
     slider = [(cd.get(f"w{i}") or 0) for i in range(1, 7)]
     if slider_disentuh:
         if sum(slider) > 0:
@@ -90,7 +91,8 @@ def rekomendasi(request):
         untuk_sesi.append({"nama": d.nama, "provinsi": d.provinsi, "vi": r["vi"],
                            "latitude": d.latitude, "longitude": d.longitude})
     request.session["hasil_terakhir"] = untuk_sesi
-    konteks.update({"hasil": hasil, "bobot_efektif": bobot, "mode_custom": mode_custom})
+    konteks.update({"hasil": hasil, "bobot_efektif": bobot, "mode_custom": mode_custom,
+                    "bobot_persen": [round(w * 100) for w in bobot]})
     return render(request, "recommender/form_hasil.html", konteks)
 
 

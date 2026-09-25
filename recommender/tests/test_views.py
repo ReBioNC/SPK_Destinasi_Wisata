@@ -52,6 +52,11 @@ class RekomendasiViewTest(TestCase):
         r = self.post_valid(budget="gratis")
         self.assertContains(r, "Masukkan budget dalam angka")
 
+    def test_budget_negatif_ditolak(self):
+        r = self.post_valid(budget="-50000")
+        self.assertContains(r, "Masukkan budget dalam angka")
+        self.assertIsNone(r.context["hasil"])
+
     def test_kandidat_kosong_ramah(self):
         r = self.post_valid(budget="1000")
         self.assertContains(r, "longgarkan")
@@ -62,15 +67,41 @@ class RekomendasiViewTest(TestCase):
         self.assertEqual(len(r.context["hasil"]), 10)
 
     def test_slider_mengubah_urutan(self):
-        r = self.post_valid(**{"w1": "100", "w2": "0", "w3": "0", "w4": "0", "w5": "0", "w6": "0"})
+        r = self.post_valid(**{"w1": "100", "w2": "0", "w3": "0", "w4": "0", "w5": "0", "w6": "0",
+                               "sentuh_bobot": "1"})
         names = [h["nama"] for h in r.context["hasil"]]
         self.assertTrue(r.context["mode_custom"])
         self.assertEqual(names[0], "Museum Geologi Bandung")
 
     def test_slider_nol_semua_kembali_ke_profil(self):
-        r = self.post_valid(**{f"w{i}": "0" for i in range(1, 7)})
+        r = self.post_valid(**{f"w{i}": "0" for i in range(1, 7)}, sentuh_bobot="1")
         self.assertFalse(r.context["mode_custom"])
         self.assertContains(r, "dipakai bobot profil")
+
+    def test_submit_normal_tanpa_sentuh_slider_pakai_profil(self):
+        # Payload browser asli: slider selalu terkirim dengan nilai default.
+        r = self.post_valid(**{"w1": "27", "w2": "18", "w3": "16", "w4": "8",
+                               "w5": "16", "w6": "16", "sentuh_bobot": "0"})
+        self.assertFalse(r.context["mode_custom"])
+        self.assertNotContains(r, "Memakai bobot kustom")
+
+    def test_slider_hasil_menampilkan_persen_bobot(self):
+        r = self.post_valid()
+        html = r.content.decode()
+        for val in ['name="w1" min="0" max="100" value="27"',
+                    'name="w4" min="0" max="100" value="8"']:
+            self.assertIn(val, html)
+
+    def test_satu_kandidat_tidak_500(self):
+        Destination.objects.exclude(pk=Destination.objects.first().pk).delete()
+        self.assertEqual(Destination.objects.count(), 1)
+        satu = Destination.objects.get()
+        r = self.post_valid(budget="999999999", wilayah=satu.provinsi,
+                            kategori_utama=satu.kategori, kategori_sekunder=satu.kategori,
+                            hobi=[])
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(len(r.context["hasil"]), 1)
+        self.assertEqual(r.context["hasil"][0]["vi"], 1.0)
 
 
 class HalamanTest(TestCase):

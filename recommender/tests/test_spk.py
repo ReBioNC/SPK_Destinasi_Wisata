@@ -80,3 +80,10 @@ class TopsisTest(SimpleTestCase):
         res = topsis.rank(nol_c6, W_SEIMBANG, IS_COST)
         self.assertEqual(len(res), 10)
         self.assertTrue(all(0.0 <= r["vi"] <= 1.0 for r in res))
+
+    def test_satu_kandidat_vi_satu_tanpa_crash(self):
+        from recommender.spk import topsis
+        from recommender.spk.profiles import IS_COST
+        res = topsis.rank([A10[1]], W_SEIMBANG, IS_COST)
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0]["vi"], 1.0)
