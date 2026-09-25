@@ -26,6 +26,12 @@ def _skor_c5(kategori, utama, sekunder):
     return 0.0
 
 
+def normalisasi_bobot(vektor):
+    """Normalisasi vektor bobot agar berjumlah 1."""
+    total = sum(vektor)
+    return [v / total for v in vektor]
+
+
 def rekomendasi(request):
     if request.method == "POST":
         form = PreferensiForm(request.POST)
@@ -38,6 +44,17 @@ def rekomendasi(request):
 
     cd = form.cleaned_data
     bobot = list(profiles.ACTIVE_PROFILES[cd["profil"]]["weights"])
+    mode_custom = False
+    slider_keys = ("w1", "w2", "w3", "w4", "w5", "w6")
+    slider_disentuh = any(k in form.data for k in slider_keys)
+    slider = [(cd.get(f"w{i}") or 0) for i in range(1, 7)]
+    if slider_disentuh:
+        if sum(slider) > 0:
+            bobot = normalisasi_bobot(slider)
+            mode_custom = True
+        else:
+            konteks["pesan"] = ("Bobot kustom nol semua, dipakai bobot profil "
+                                f"{profiles.ACTIVE_PROFILES[cd['profil']]['label']}.")
     olat, olon = KOTA_ASAL[cd["kota_asal"]]
     hobi_user = set(cd["hobi"])
 
@@ -72,5 +89,5 @@ def rekomendasi(request):
         untuk_sesi.append({"nama": d.nama, "provinsi": d.provinsi, "vi": r["vi"],
                            "latitude": d.latitude, "longitude": d.longitude})
     request.session["hasil_terakhir"] = untuk_sesi
-    konteks.update({"hasil": hasil, "bobot_efektif": bobot})
+    konteks.update({"hasil": hasil, "bobot_efektif": bobot, "mode_custom": mode_custom})
     return render(request, "recommender/form_hasil.html", konteks)

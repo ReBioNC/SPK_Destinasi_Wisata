@@ -34,6 +34,12 @@ class PreferensiForm(forms.Form):
     hobi = forms.MultipleChoiceField(label="Hobi", choices=[], required=False,
                                      widget=forms.CheckboxSelectMultiple)
     profil = forms.ChoiceField(label="Profil prioritas", choices=[], widget=forms.RadioSelect)
+    w1 = forms.FloatField(required=False, min_value=0, max_value=100)
+    w2 = forms.FloatField(required=False, min_value=0, max_value=100)
+    w3 = forms.FloatField(required=False, min_value=0, max_value=100)
+    w4 = forms.FloatField(required=False, min_value=0, max_value=100)
+    w5 = forms.FloatField(required=False, min_value=0, max_value=100)
+    w6 = forms.FloatField(required=False, min_value=0, max_value=100)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

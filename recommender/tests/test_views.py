@@ -60,3 +60,14 @@ class RekomendasiViewTest(TestCase):
         r = self.post_valid(hobi=[])
         self.assertEqual(r.status_code, 200)
         self.assertEqual(len(r.context["hasil"]), 10)
+
+    def test_slider_mengubah_urutan(self):
+        r = self.post_valid(**{"w1": "100", "w2": "0", "w3": "0", "w4": "0", "w5": "0", "w6": "0"})
+        names = [h["nama"] for h in r.context["hasil"]]
+        self.assertTrue(r.context["mode_custom"])
+        self.assertEqual(names[0], "Museum Geologi Bandung")
+
+    def test_slider_nol_semua_kembali_ke_profil(self):
+        r = self.post_valid(**{f"w{i}": "0" for i in range(1, 7)})
+        self.assertFalse(r.context["mode_custom"])
+        self.assertContains(r, "dipakai bobot profil")

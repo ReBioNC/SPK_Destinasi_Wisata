@@ -16,10 +16,22 @@
     <div class="col-md-4">{{ form.profil.label_tag }} {{ form.profil }}{{ form.profil.errors }}</div>
     <div class="col-12">{{ form.hobi.label_tag }} {{ form.hobi }}{{ form.hobi.errors }}</div>
   </div>
+  <details class="mt-3">
+    <summary>Analisis sensitivitas (ubah bobot manual, opsional)</summary>
+    <div class="row g-2 mt-1">
+      <div class="col-md-2"><label>C1 Harga</label><input type="range" class="form-range" name="w1" min="0" max="100" value="{{ bobot_efektif.0|default:27 }}" onchange="this.form.requestSubmit()"></div>
+      <div class="col-md-2"><label>C2 Rating</label><input type="range" class="form-range" name="w2" min="0" max="100" value="{{ bobot_efektif.1|default:18 }}" onchange="this.form.requestSubmit()"></div>
+      <div class="col-md-2"><label>C3 Jarak</label><input type="range" class="form-range" name="w3" min="0" max="100" value="{{ bobot_efektif.2|default:16 }}" onchange="this.form.requestSubmit()"></div>
+      <div class="col-md-2"><label>C4 Fasilitas</label><input type="range" class="form-range" name="w4" min="0" max="100" value="{{ bobot_efektif.3|default:8 }}" onchange="this.form.requestSubmit()"></div>
+      <div class="col-md-2"><label>C5 Kategori</label><input type="range" class="form-range" name="w5" min="0" max="100" value="{{ bobot_efektif.4|default:16 }}" onchange="this.form.requestSubmit()"></div>
+      <div class="col-md-2"><label>C6 Hobi</label><input type="range" class="form-range" name="w6" min="0" max="100" value="{{ bobot_efektif.5|default:16 }}" onchange="this.form.requestSubmit()"></div>
+    </div>
+    {% if mode_custom %}<p class="text-info mt-2">Memakai bobot kustom dari slider.</p>{% endif %}
+  </details>
   <button type="submit" class="btn btn-primary mt-3">Cari Rekomendasi</button>
 </form>
 
-{% if kandidat_kosong %}
+{% if pesan %}
 <div class="alert alert-warning">{{ pesan }}</div>
 {% endif %}
 
