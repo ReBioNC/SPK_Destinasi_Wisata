@@ -1,0 +1,9 @@
+/* TravelFit: aksen kustom di atas Bootstrap (<=60 baris). */
+.navbar-brand { font-weight: 700; letter-spacing: 0.5px; }
+.card-title { font-weight: 600; }
+form .form-control, form .form-select { margin-top: 0.25rem; }
+form ul { list-style: none; padding-left: 0; }
+form ul li { display: inline-block; margin-right: 0.75rem; }
+form input[type="checkbox"] { margin-right: 0.25rem; }
+details summary { cursor: pointer; font-weight: 600; }
+.badge { margin-right: 0.25rem; }

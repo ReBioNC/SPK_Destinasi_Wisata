@@ -1,5 +1,6 @@
 """View rekomendasi: form preferensi + ranking TOPSIS."""
 
+from django.db.models import Count
 from django.shortcuts import render
 
 from recommender.forms import KOTA_ASAL, PreferensiForm
@@ -91,3 +92,18 @@ def rekomendasi(request):
     request.session["hasil_terakhir"] = untuk_sesi
     konteks.update({"hasil": hasil, "bobot_efektif": bobot, "mode_custom": mode_custom})
     return render(request, "recommender/form_hasil.html", konteks)
+
+
+def peta(request):
+    """Peta interaktif + daftar hasil terakhir (fallback: agregat provinsi)."""
+    hasil = request.session.get("hasil_terakhir") or []
+    agregat = (Destination.objects.values("provinsi")
+               .annotate(jumlah=Count("id")).order_by("provinsi"))
+    return render(request, "recommender/peta.html",
+                  {"hasil_json": hasil, "agregat": list(agregat),
+                   "ada_hasil": bool(hasil)})
+
+
+def tentang(request):
+    """Metodologi singkat + tautan file bukti."""
+    return render(request, "recommender/tentang.html")

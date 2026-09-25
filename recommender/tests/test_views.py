@@ -71,3 +71,45 @@ class RekomendasiViewTest(TestCase):
         r = self.post_valid(**{f"w{i}": "0" for i in range(1, 7)})
         self.assertFalse(r.context["mode_custom"])
         self.assertContains(r, "dipakai bobot profil")
+
+
+class HalamanTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        flags = ["fas_toilet", "fas_parkir", "fas_warung", "fas_mushola", "fas_penginapan"]
+        for nama, harga, rating, lat, lon, kat, tag, n_true in FIXTURE:
+            kw = {f: (i < n_true) for i, f in enumerate(flags)}
+            Destination.objects.create(nama=nama, kota="Bandung", provinsi="Jawa Barat",
+                                       kategori=kat, harga_tiket=harga, rating=rating,
+                                       latitude=lat, longitude=lon,
+                                       tag_aktivitas=tag, **kw)
+
+    def test_peta_dan_tentang_200(self):
+        self.assertEqual(self.client.get("/peta/").status_code, 200)
+        self.assertEqual(self.client.get("/tentang/").status_code, 200)
+
+    def test_peta_memakai_hasil_session(self):
+        self.client.post("/", {"budget": "250000", "kota_asal": "Bandung", "wilayah": "Jawa Barat",
+                               "kategori_utama": "alam", "kategori_sekunder": "budaya",
+                               "hobi": ["hiking", "fotografi"], "profil": "seimbang"})
+        r = self.client.get("/peta/")
+        self.assertContains(r, "Tangkuban Perahu")
+
+    def test_peta_hasil_json_valid_array(self):
+        import json
+        import re
+        self.client.post("/", {"budget": "250000", "kota_asal": "Bandung", "wilayah": "Jawa Barat",
+                               "kategori_utama": "alam", "kategori_sekunder": "budaya",
+                               "hobi": ["hiking", "fotografi"], "profil": "seimbang"})
+        r = self.client.get("/peta/")
+        m = re.search(r'<script id="hasil-data" type="application/json">(.*?)</script>',
+                      r.content.decode(), re.S)
+        self.assertIsNotNone(m)
+        data = json.loads(m.group(1))
+        self.assertIsInstance(data, list)
+        self.assertEqual(len(data), 10)
+        self.assertEqual(data[0]["nama"], "Gunung Tangkuban Perahu")
+
+    def test_peta_tanpa_session_fallback_agregat(self):
+        r = self.client.get("/peta/")
+        self.assertContains(r, "Jawa Barat")
