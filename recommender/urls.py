@@ -1,3 +1,7 @@
 from django.urls import path
 
-urlpatterns = []
+from recommender import views
+
+urlpatterns = [
+    path("", views.rekomendasi, name="beranda"),
+]

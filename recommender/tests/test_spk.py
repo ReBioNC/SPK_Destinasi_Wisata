@@ -72,3 +72,11 @@ class TopsisTest(SimpleTestCase):
         t = [r["idx"] for r in topsis.rank(A10, W_SEIMBANG, IS_COST)]
         s = [i for i, _ in validation.saw_rank(A10, W_SEIMBANG, IS_COST)]
         self.assertAlmostEqual(validation.spearman(t, s), 0.2970, places=3)
+
+    def test_kolom_nol_semua_tidak_division_by_zero(self):
+        from recommender.spk import topsis
+        from recommender.spk.profiles import IS_COST
+        nol_c6 = [row[:5] + [0.0] for row in A10]
+        res = topsis.rank(nol_c6, W_SEIMBANG, IS_COST)
+        self.assertEqual(len(res), 10)
+        self.assertTrue(all(0.0 <= r["vi"] <= 1.0 for r in res))

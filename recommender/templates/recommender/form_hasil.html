@@ -1,0 +1,43 @@
+{% extends "recommender/base.html" %}
+{% block title %}Beranda{% endblock %}
+{% block content %}
+<h1 class="mb-3">Cari Destinasi Wisata Terbaik</h1>
+<p class="text-muted">Isi preferensi Anda. Sistem menimbang budget, rating, jarak, fasilitas, kategori, dan hobi secara bersamaan.</p>
+
+<form method="post" class="card card-body mb-4">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="row g-3">
+    <div class="col-md-4">{{ form.budget.label_tag }} {{ form.budget }}{{ form.budget.errors }}</div>
+    <div class="col-md-4">{{ form.kota_asal.label_tag }} {{ form.kota_asal }}{{ form.kota_asal.errors }}</div>
+    <div class="col-md-4">{{ form.wilayah.label_tag }} {{ form.wilayah }}{{ form.wilayah.errors }}</div>
+    <div class="col-md-4">{{ form.kategori_utama.label_tag }} {{ form.kategori_utama }}{{ form.kategori_utama.errors }}</div>
+    <div class="col-md-4">{{ form.kategori_sekunder.label_tag }} {{ form.kategori_sekunder }}{{ form.kategori_sekunder.errors }}</div>
+    <div class="col-md-4">{{ form.profil.label_tag }} {{ form.profil }}{{ form.profil.errors }}</div>
+    <div class="col-12">{{ form.hobi.label_tag }} {{ form.hobi }}{{ form.hobi.errors }}</div>
+  </div>
+  <button type="submit" class="btn btn-primary mt-3">Cari Rekomendasi</button>
+</form>
+
+{% if kandidat_kosong %}
+<div class="alert alert-warning">{{ pesan }}</div>
+{% endif %}
+
+{% if hasil %}
+<h2 class="mb-3">Top-{{ hasil|length }} Rekomendasi</h2>
+{% for h in hasil %}
+<div class="card mb-2">
+  <div class="card-body">
+    <h5 class="card-title">{{ forloop.counter }}. {{ h.nama }}</h5>
+    <p class="card-text mb-1">
+      <span class="badge bg-success">Skor {{ h.vi|floatformat:4 }}</span>
+      <span class="badge bg-info text-dark">{{ h.kategori }}</span>
+      <span class="badge bg-secondary">{{ h.cluster }}</span>
+      <span class="text-muted">Rp {{ h.harga }} | Rating {{ h.rating }}</span>
+    </p>
+    <p class="card-text"><small>{{ h.alasan }}</small></p>
+  </div>
+</div>
+{% endfor %}
+{% endif %}
+{% endblock %}

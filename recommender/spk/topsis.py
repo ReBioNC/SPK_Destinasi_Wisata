@@ -12,7 +12,11 @@ def rank(scores, weights, is_cost):
     """
     n, m = len(scores), len(scores[0])
     den = [math.sqrt(sum(scores[i][j] ** 2 for i in range(n))) for j in range(m)]
-    v = [[(scores[i][j] / den[j]) * weights[j] for j in range(m)] for i in range(n)]
+    # Kolom tanpa variansi (mis. semua C6 = 0) tidak membedakan alternatif;
+    # beri nilai ternormalisasi 0 agar tidak division-by-zero dan tak
+    # memengaruhi jarak ke solusi ideal.
+    v = [[(scores[i][j] / den[j] if den[j] else 0.0) * weights[j]
+          for j in range(m)] for i in range(n)]
     ideal_pos = [(min(v[i][j] for i in range(n)) if is_cost[j]
                   else max(v[i][j] for i in range(n))) for j in range(m)]
     ideal_neg = [(max(v[i][j] for i in range(n)) if is_cost[j]
