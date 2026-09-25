@@ -32,14 +32,21 @@ def parse_budget(value):
 
 
 class PreferensiForm(forms.Form):
-    budget = forms.CharField(label="Budget maksimal (Rp)", max_length=20)
-    kota_asal = forms.ChoiceField(label="Kota asal", choices=[])
-    wilayah = forms.ChoiceField(label="Wilayah tujuan (provinsi)", choices=[])
-    kategori_utama = forms.ChoiceField(label="Kategori utama", choices=[])
-    kategori_sekunder = forms.ChoiceField(label="Kategori sekunder", choices=[])
+    budget = forms.CharField(label="Budget maksimal (Rp)", max_length=20,
+        help_text="Contoh: 250000. Destinasi dengan harga tiket di atas budget otomatis tersaring.")
+    kota_asal = forms.ChoiceField(label="Kota asal", choices=[],
+        help_text="Titik berangkat Anda; menentukan jarak tempuh (C3) ke setiap destinasi.")
+    wilayah = forms.ChoiceField(label="Wilayah tujuan (provinsi)", choices=[],
+        help_text="Hanya destinasi di provinsi ini yang dinilai. Bisa juga dipilih lewat halaman Peta.")
+    kategori_utama = forms.ChoiceField(label="Kategori utama", choices=[],
+        help_text="Minat utama Anda; destinasi kategori ini mendapat skor penuh (1).")
+    kategori_sekunder = forms.ChoiceField(label="Kategori sekunder", choices=[],
+        help_text="Minat kedua; mendapat skor setengah (0,5). Kategori lain bernilai 0, bukan tersaring.")
     hobi = forms.MultipleChoiceField(label="Hobi", choices=[], required=False,
-                                     widget=forms.CheckboxSelectMultiple)
-    profil = forms.ChoiceField(label="Profil prioritas", choices=[], widget=forms.RadioSelect)
+                                     widget=forms.CheckboxSelectMultiple,
+        help_text="Dicocokkan dengan aktivitas destinasi (mis. hiking, fotografi). Boleh dikosongkan.")
+    profil = forms.ChoiceField(label="Profil prioritas", choices=[], widget=forms.RadioSelect,
+        help_text="Menentukan seberapa besar pengaruh tiap kriteria. Penjelasan tiap profil ada di bawah.")
     sentuh_bobot = forms.CharField(required=False, widget=forms.HiddenInput)
     w1 = forms.FloatField(required=False, min_value=0, max_value=100)
     w2 = forms.FloatField(required=False, min_value=0, max_value=100)

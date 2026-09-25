@@ -195,6 +195,6 @@
 /* --- TravelFit additions --- */
 .tf-backbar{background:#0d6efd;color:#fff;padding:.5rem 1rem}
 .tf-backbar a{color:#fff;font-weight:700;text-decoration:none}
-.btn-cari{display:inline-block;margin-top:.75rem;padding:.5rem 1rem;background:#0d6efd;color:#fff;border-radius:.5rem;text-decoration:none;font-weight:700}
+.btn-cari{display:inline-block;margin-top:.75rem;padding:.5rem 1rem;background:linear-gradient(135deg,#0d6efd,#6610f2);color:#fff;border-radius:.5rem;text-decoration:none;font-weight:700;box-shadow:0 4px 12px rgba(102,16,242,.3)}
 #daftar-hasil{margin:1rem auto;max-width:960px;padding:0 1rem;color:inherit}
 #daftar-hasil .hasil-item{padding:.25rem 0;border-bottom:1px solid rgba(128,128,128,.3)}

@@ -1,9 +1,49 @@
-/* TravelFit: aksen kustom di atas Bootstrap (<=60 baris). */
+/* TravelFit: tema Bootstrap modern. */
 .navbar-brand { font-weight: 700; letter-spacing: 0.5px; }
-.card-title { font-weight: 600; }
+.navbar { box-shadow: 0 2px 12px rgba(13, 110, 253, 0.25); }
+
+/* Hero gradient */
+.tf-hero {
+  background: linear-gradient(135deg, #0d6efd 0%, #6610f2 60%, #6f42c1 100%);
+  box-shadow: 0 8px 24px rgba(102, 16, 242, 0.25);
+}
+.tf-step {
+  background: rgba(255, 255, 255, 0.22);
+  font-size: 0.85rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+}
+.tf-step-link { text-decoration: none; }
+.tf-step-link:hover { background: rgba(255, 255, 255, 0.35); color: #fff; }
+
+/* Section form */
+.tf-section {
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 2px solid #e9ecef;
+}
 form .form-control, form .form-select { margin-top: 0.25rem; }
 form ul { list-style: none; padding-left: 0; }
 form ul li { display: inline-block; margin-right: 0.75rem; }
 form input[type="checkbox"] { margin-right: 0.25rem; }
 details summary { cursor: pointer; font-weight: 600; }
 .badge { margin-right: 0.25rem; }
+
+/* Kartu profil prioritas */
+.profil-info { cursor: pointer; transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s; }
+.profil-info:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(13, 110, 253, 0.18); border-color: #0d6efd; }
+.profil-info:has(input:checked) { border-color: #0d6efd; box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.35); }
+
+/* Kartu hasil + medali peringkat */
+.tf-hasil { border-left: 4px solid #0d6efd; }
+.tf-medal {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2rem; height: 2rem; border-radius: 50%;
+  background: #6c757d; color: #fff; font-size: 1rem; margin-right: 0.4rem;
+}
+.tf-medal-1 { background: linear-gradient(135deg, #ffc107, #ff9800); }
+.tf-medal-2 { background: linear-gradient(135deg, #adb5bd, #868e96); }
+.tf-medal-3 { background: linear-gradient(135deg, #fd7e14, #e8590c); }
+.tf-hasil .progress-bar { background: linear-gradient(90deg, #0d6efd, #6610f2); }

@@ -103,6 +103,28 @@ class RekomendasiViewTest(TestCase):
         self.assertEqual(len(r.context["hasil"]), 1)
         self.assertEqual(r.context["hasil"][0]["vi"], 1.0)
 
+    def test_wilayah_dari_peta_terisi_otomatis(self):
+        r = self.client.get("/", {"wilayah": "Jawa Barat"})
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'value="Jawa Barat" selected')
+        self.assertContains(r, "terisi dari peta")
+
+    def test_wilayah_param_invalid_diabaikan(self):
+        r = self.client.get("/", {"wilayah": "Atlantis"})
+        self.assertEqual(r.status_code, 200)
+        self.assertNotContains(r, "terisi dari peta")
+
+    def test_profil_ada_deskripsi_bobot(self):
+        r = self.client.get("/")
+        self.assertContains(r, "profil-info")
+        for teks in ["Hemat", "Kualitas", "Petualang", "Seimbang", "41%", "38%", "34%", "27%"]:
+            self.assertContains(r, teks)
+
+    def test_help_text_deskripsi_pilihan(self):
+        r = self.client.get("/")
+        self.assertContains(r, "otomatis tersaring")
+        self.assertContains(r, "menentukan jarak")
+
 
 class HalamanTest(TestCase):
     @classmethod

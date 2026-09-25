@@ -33,13 +33,40 @@ def normalisasi_bobot(vektor):
     return [v / total for v in vektor]
 
 
+PROFIL_BLURB = {
+    "hemat": "Pilih ini bila budget adalah prioritas utama liburan Anda.",
+    "kualitas": "Pilih ini bila pengalaman terbaik yang utama, soal harga nomor dua.",
+    "petualang": "Pilih ini bila ingin destinasi yang mudah dijangkau dan sesuai hobi.",
+    "seimbang": "Pilihan aman untuk umum; semua kriteria dipertimbangkan proporsional.",
+}
+
+
+def info_profil():
+    """Deskripsi tiap profil: kriteria dominan + persen bobot aktual."""
+    info = []
+    for key, p in profiles.ACTIVE_PROFILES.items():
+        j = max(range(len(p["weights"])), key=lambda i: p["weights"][i])
+        info.append({"key": key, "label": p["label"],
+                     "dominan": NAMA_KRITERIA[j],
+                     "persen": round(p["weights"][j] * 100),
+                     "blurb": PROFIL_BLURB[key]})
+    return info
+
+
 def rekomendasi(request):
+    wilayah_valid = set(Destination.objects.values_list("provinsi", flat=True).distinct())
     if request.method == "POST":
         form = PreferensiForm(request.POST)
     else:
-        form = PreferensiForm(initial={"wilayah": request.GET.get("wilayah", "")})
+        param = request.GET.get("wilayah", "")
+        form = PreferensiForm(initial={"wilayah": param} if param in wilayah_valid else None)
     konteks = {"form": form, "hasil": None, "kandidat_kosong": False,
-               "bobot_efektif": None, "mode_custom": False, "pesan": ""}
+               "bobot_efektif": None, "mode_custom": False, "pesan": "",
+               "pesan_class": "warning", "profil_info": info_profil()}
+    if request.method == "GET" and request.GET.get("wilayah", "") in wilayah_valid:
+        konteks["pesan"] = (f"Wilayah tujuan terisi dari peta: {request.GET['wilayah']} — "
+                            "lengkapi preferensi lain lalu klik Cari Rekomendasi.")
+        konteks["pesan_class"] = "success"
     if request.method != "POST" or not form.is_valid():
         return render(request, "recommender/form_hasil.html", konteks)
 
