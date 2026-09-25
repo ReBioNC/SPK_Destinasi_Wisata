@@ -307,6 +307,29 @@ SPK_Destinasi_Wisata/
 └── README.md    # Dokumentasi proyek
 ```
 
+## Menjalankan Website TravelFit
+
+```bash
+python -m venv .venv
+.venv/Scripts/Activate.ps1
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py import_destinations
+python manage.py test
+python manage.py runserver
+```
+
+Buka http://localhost:8000 — isi preferensi (budget, kota asal, wilayah, kategori,
+hobi, profil), lalu lihat Top-10 rekomendasi. Geser slider sensitivitas untuk
+mengubah bobot manual, dan buka halaman Peta untuk eksplorasi 38 provinsi.
+
+Catatan data: impor menggabungkan `Dataset_Wisata_38_Provinsi.xlsx` (1.900 baris
+basis + koordinat, 38 provinsi) dengan `data/processed/destinations_clean.csv`
+(437 baris detail Jawa sebagai suplemen; total 2.337 baris). Nama provinsi
+dinormalisasi ke varian XLSX (mis. "DI Yogyakarta" menjadi
+"Daerah Istimewa Yogyakarta"). `fas_penginapan` selalu False karena tidak ada
+kolom sumber yang berpadanan.
+
 ## Status Proyek
 
 Proyek ini masih dalam tahap pengembangan dan dapat terus dikembangkan sesuai kebutuhan serta fitur tambahan yang diinginkan.

@@ -1,0 +1,20 @@
+{% extends "recommender/base.html" %}
+{% block title %}Tentang{% endblock %}
+{% block content %}
+<h1 class="mb-3">Tentang TravelFit</h1>
+<p>TravelFit adalah Sistem Pendukung Keputusan rekomendasi destinasi wisata multi-kriteria.
+Pengembangan mengikuti kerangka <strong>CRISP-DM</strong>: data destinasi dikelompokkan dengan
+<strong>K-Means Clustering</strong> sebagai label segmen, kriteria dibobot dengan
+<strong>AHP</strong> per profil preferensi (uji konsistensi CR &lt; 0,1), dan alternatif diranking dengan
+<strong>TOPSIS</strong> berdasarkan kedekatan ke solusi ideal. Metode <strong>SAW</strong> dipakai hanya
+sebagai pembanding validasi.</p>
+<p>Enam kriteria: harga tiket (C1, cost), rating pengunjung (C2), jarak tempuh (C3, cost),
+kelengkapan fasilitas (C4), kesesuaian kategori (C5), dan kesesuaian hobi via Jaccard Similarity (C6).
+Budget dan wilayah adalah filter keras; kategori dan hobi tetap menjadi kriteria pembeda.</p>
+<h2 class="mt-4">File Bukti Perhitungan</h2>
+<ul>
+  <li><strong>Perhitungan_SPK_TravelFit.xlsx</strong> - 9 sheet formula AHP-TOPSIS yang dapat ditelusuri</li>
+  <li><strong>Dataset_Wisata_38_Provinsi.xlsx</strong> - dataset 1.900 destinasi 38 provinsi</li>
+  <li><strong>README.md</strong> - dokumentasi rumus utama dan alur algoritma</li>
+</ul>
+{% endblock %}
