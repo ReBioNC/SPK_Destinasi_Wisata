@@ -1,9 +1,12 @@
 """View rekomendasi: form preferensi + ranking TOPSIS."""
 
 from django.db.models import Count
-from django.shortcuts import render
+from django.http import JsonResponse
+from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
 
 from recommender.forms import KOTA_ASAL, PreferensiForm
+from recommender.kota_asal import PROVINSI_KOTA
 from recommender.models import Destination
 from recommender.spk import geo, profiles, similarity, topsis
 
@@ -108,7 +111,8 @@ def rekomendasi(request):
     konteks = {"form": form, "hasil": None, "kandidat_kosong": False,
                "bobot_efektif": None, "mode_custom": False, "pesan": "",
                "pesan_class": "warning", "profil_info": info_profil(),
-               "kota_list": list(KOTA_ASAL.keys()),
+                "kota_list": [(k, f"{k} ({PROVINSI_KOTA[k]})" if k in PROVINSI_KOTA else k)
+                              for k in sorted(KOTA_ASAL)],
                "wilayah_list": sorted(Destination.objects.values_list("provinsi", flat=True).distinct()),
                "kategori_list": sorted(Destination.objects.values_list("kategori", flat=True).distinct()),
                "hobi_list": sorted({t for raw in Destination.objects.values_list("tag_aktivitas", flat=True)
@@ -122,7 +126,16 @@ def rekomendasi(request):
         konteks["pesan"] = (f"Wilayah tujuan terisi dari peta: {request.GET['wilayah']} — "
                             "lengkapi preferensi lain lalu klik Cari Rekomendasi.")
         konteks["pesan_class"] = "success"
+    if request.method == "GET":
+        # Flash sekali tampil: refresh berikutnya bersih seperti sesi baru.
+        flash = request.session.pop("flash_hasil", None)
+        if flash:
+            konteks.update(flash)
     if request.method != "POST" or not form.is_valid():
+        if request.method == "POST" and _is_ajax(request):
+            return JsonResponse({"ok": False,
+                                 "pesan": "Preferensi belum lengkap atau tidak valid."},
+                                status=400)
         return render(request, "recommender/beranda.html", konteks)
 
     cd = form.cleaned_data
@@ -149,7 +162,14 @@ def rekomendasi(request):
         konteks["kandidat_kosong"] = True
         konteks["pesan"] = ("Tidak ada destinasi yang cocok. Coba longgarkan budget "
                             "atau pilih wilayah lain.")
-        return render(request, "recommender/beranda.html", konteks)
+        if _is_ajax(request):
+            return JsonResponse({"ok": True, "count": 0,
+                                 "html": render_to_string("recommender/_hasil.html",
+                                                          konteks, request)})
+        request.session["flash_hasil"] = {
+            "kandidat_kosong": True, "pesan": konteks["pesan"],
+            "pesan_class": konteks["pesan_class"]}
+        return redirect("beranda")
 
     matriks = []
     for d in kandidat:
@@ -213,7 +233,33 @@ def rekomendasi(request):
                                   "budget_fmt": _rupiah(cd["budget"]),
                                   "profil": profiles.ACTIVE_PROFILES[cd["profil"]]["label"],
                                   "n": len(kandidat)}})
-    return render(request, "recommender/beranda.html", konteks)
+    konteks.update({"hasil": hasil, "bobot_efektif": bobot, "mode_custom": mode_custom,
+                    "bobot_persen": [round(w * 100) for w in bobot],
+                    "cluster_list": sorted({h["cluster"] for h in hasil}),
+                    "ringkasan": {"wilayah": cd["wilayah"],
+                                  "budget_fmt": _rupiah(cd["budget"]),
+                                  "profil": profiles.ACTIVE_PROFILES[cd["profil"]]["label"],
+                                  "n": len(kandidat)}})
+    if _is_ajax(request):
+        return JsonResponse({"ok": True, "count": len(hasil),
+                             "html": render_to_string("recommender/_hasil.html",
+                                                      konteks, request)})
+    # POST-Redirect-GET: hasil tampil sekali, refresh berikutnya bersih.
+    request.session["flash_hasil"] = {
+        "hasil": hasil, "mode_custom": mode_custom,
+        "pesan": konteks["pesan"], "pesan_class": konteks["pesan_class"],
+        "bobot_persen": [round(w * 100) for w in bobot],
+        "cluster_list": sorted({h["cluster"] for h in hasil}),
+        "ringkasan": {"wilayah": cd["wilayah"],
+                      "budget_fmt": _rupiah(cd["budget"]),
+                      "profil": profiles.ACTIVE_PROFILES[cd["profil"]]["label"],
+                      "n": len(kandidat)}}
+    return redirect("beranda")
+
+
+def _is_ajax(request):
+    """True bila request fetch AJAX (header X-Requested-With)."""
+    return request.headers.get("x-requested-with") == "XMLHttpRequest"
 
 
 def peta(request):

@@ -32,8 +32,9 @@ class RekomendasiViewTest(TestCase):
         data = {"budget": "250000", "kota_asal": "Bandung", "wilayah": "Jawa Barat",
                 "kategori_utama": "alam", "kategori_sekunder": "budaya",
                 "hobi": ["hiking", "fotografi"], "profil": "seimbang"}
+        extra = {k: over.pop(k) for k in list(over) if k.startswith("HTTP_")}
         data.update(over)
-        return self.client.post("/", data)
+        return self.client.post("/", data, follow=True, **extra)
 
     def test_post_valid_menampilkan_10_hasil_urutan_benar(self):
         r = self.post_valid()
@@ -103,6 +104,14 @@ class RekomendasiViewTest(TestCase):
         self.assertEqual(len(r.context["hasil"]), 1)
         self.assertEqual(r.context["hasil"][0]["vi"], 1.0)
 
+    def test_refresh_membersihkan_hasil(self):
+        # Refresh = sesi baru: hasil hanya tampil sekali setelah redirect.
+        r = self.post_valid()
+        self.assertEqual(len(r.context["hasil"]), 10)
+        r2 = self.client.get("/")
+        self.assertIsNone(r2.context["hasil"])
+        self.assertContains(r2, "Siap menghitung rekomendasi.")
+
     def test_wilayah_dari_peta_terisi_otomatis(self):
         r = self.client.get("/", {"wilayah": "Jawa Barat"})
         self.assertEqual(r.status_code, 200)
@@ -124,6 +133,100 @@ class RekomendasiViewTest(TestCase):
         r = self.client.get("/")
         self.assertContains(r, "otomatis tersaring")
         self.assertContains(r, "menentukan jarak")
+
+    def test_profil_terpilih_terlihat_langsung(self):
+        r = self.client.get("/")
+        self.assertContains(r, ".profil-info:has(input:checked)")
+
+    def test_profil_satu_sumber_status_terpilih(self):
+        # Status terpilih hanya dari :has (sinkron DOM); tidak ada ring server
+        # basi yang bisa tampil bersamaan dengan kartu yang benar-benar dicentang.
+        r = self.client.get("/")
+        self.assertNotContains(r, "ring-primary/20")
+
+    def test_post_profil_hemat_tercerminkan(self):
+        r = self.post_valid(profil="hemat")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.context["ringkasan"]["profil"], "Hemat")
+
+    def test_ajax_hasil_tanpa_refresh(self):
+        r = self.post_valid(HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        self.assertEqual(r.status_code, 200)
+        data = r.json()
+        self.assertTrue(data["ok"])
+        self.assertEqual(data["count"], 10)
+        self.assertIn("Gunung Tangkuban Perahu", data["html"])
+        self.assertNotIn("<html", data["html"])
+
+    def test_ajax_form_invalid(self):
+        r = self.post_valid(budget="gratis", HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        self.assertEqual(r.status_code, 400)
+        self.assertFalse(r.json()["ok"])
+
+    def test_budget_format_ribuan_hook(self):
+        r = self.client.get("/")
+        self.assertContains(r, "formatBudgetRibuan")
+
+    def test_kota_asal_ratusan_kota_berkoordinat(self):
+        from recommender.kota_asal import KOTA_ASAL
+        self.assertGreaterEqual(len(KOTA_ASAL), 300)
+        lat, lon = KOTA_ASAL["Badung"]
+        self.assertAlmostEqual(lat, -8.5833, places=3)
+        self.assertAlmostEqual(lon, 115.1833, places=3)
+        for nama, (la, lo) in KOTA_ASAL.items():
+            self.assertTrue(-90 <= la <= 90, nama)
+            self.assertTrue(-180 <= lo <= 180, nama)
+
+    def test_dataset_kota_file(self):
+        import csv
+        from pathlib import Path
+        root = Path(__file__).resolve().parent.parent.parent
+        p = root / "data" / "kota_indonesia.csv"
+        self.assertTrue(p.exists(), "data/kota_indonesia.csv tidak ada")
+        with open(p, encoding="utf-8-sig") as f:
+            rows = list(csv.DictReader(f))
+        self.assertEqual(
+            list(rows[0].keys()),
+            ["nama", "tipe", "provinsi", "lat", "lon", "sumber"])
+        self.assertGreaterEqual(len(rows), 300)
+        self.assertTrue(all(r["sumber"].strip() for r in rows),
+                        "setiap baris wajib punya sumber")
+        self.assertTrue(any("Kemendagri" in r["sumber"] for r in rows))
+        from recommender.kota_asal import KOTA_ASAL
+        self.assertEqual(len(rows), len(KOTA_ASAL))
+
+    def test_kota_searchable_di_form(self):
+        r = self.client.get("/")
+        self.assertContains(r, "kota_asal_input")
+        self.assertContains(r, "kota-menu")
+        self.assertContains(r, "Badung (Bali)")
+
+    def test_kota_tanpa_lib_pihak_ketiga(self):
+        # Combobox milik sendiri: tidak ada sisa Tom Select yang bisa merusak layer/tema.
+        r = self.client.get("/")
+        html = r.content.decode()
+        self.assertNotIn("TomSelect", html)
+        self.assertNotIn("tom-select", html)
+
+    def test_kota_menu_punya_class_terstyle(self):
+        # Menu dibuat via JS harus membawa class yang ditarget CSS (.kota-menu),
+        # kalau tidak ia ter-render polos di ujung body, di luar viewport.
+        r = self.client.get("/")
+        self.assertContains(r, "menu.className = 'kota-menu'")
+
+    def test_kota_dropdown_terlihat_penuh(self):
+        # Menu milik sendiri: background/border/shadow eksplisit + di body.
+        r = self.client.get("/")
+        html = r.content.decode()
+        self.assertIn(".kota-menu", html)
+        self.assertNotIn("dropdownParent", html)  # sisa Tom Select harus hilang
+        self.assertIn("background:#fff", html.replace(" ", ""))
+
+    def test_post_kota_baru_valid(self):
+        r = self.post_valid(kota_asal="Badung")
+        self.assertEqual(r.status_code, 200)
+        self.assertFalse(r.context["form"].errors)
+        self.assertEqual(len(r.context["hasil"]), 10)
 
 
 class HalamanTest(TestCase):

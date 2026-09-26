@@ -2,6 +2,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-container-lowest": "#ffffff", "inverse-on-surface": "#ebf1ff", "ink-border": "rgba(30, 42, 59, 0.10)", "surface-tint": "#006b5c", "on-tertiary-fixed-variant": "#5c4300", "on-error": "#ffffff", "surface": "#f8f9ff", "outline-variant": "#bcc9c5", "on-secondary-fixed": "#360f00", "on-background": "#101c2c", "secondary-fixed-dim": "#ffb598", "error": "#ba1a1a", "secondary": "#a53c00", "on-primary-container": "#f4fffa", "background": "#f8f9ff", "primary-container": "#008472", "on-primary-fixed-variant": "#005045", "tertiary-fixed": "#ffdea0", "secondary-fixed": "#ffdbcd", "error-container": "#ffdad6", "inverse-surface": "#253142", "background-cream": "#FFFBEB", "surface-container-highest": "#d7e3fa", "outline": "#6d7a76", "primary-fixed-dim": "#63dac3", "on-tertiary": "#ffffff", "tertiary": "#765700", "on-secondary-container": "#612000", "on-surface-variant": "#3d4946", "on-primary-fixed": "#00201b", "primary": "#00685a", "on-tertiary-fixed": "#261900", "accent-lilac": "#B79CFF", "surface-bright": "#f8f9ff", "primary-fixed": "#81f7de", "on-error-container": "#93000a", "secondary-container": "#fb773a", "on-surface": "#101c2c", "on-primary": "#ffffff", "surface-container": "#e6eeff", "surface-white": "#FFFFFF", "accent-pink": "#FF7AB8", "on-tertiary-container": "#fffbff", "tertiary-container": "#956e00", "surface-dim": "#cedbf1", "on-secondary": "#ffffff", "on-secondary-fixed-variant": "#7e2c00", "inverse-primary": "#63dac3", "surface-container-high": "#dde9ff", "surface-container-low": "#eff3ff", "accent-sky": "#5EA8FF", "tertiary-fixed-dim": "#f7be36", "surface-variant": "#d7e3fa" }, "borderRadius": { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" }, "spacing": { "gutter": "1.5rem", "space-md": "1rem", "margin-mobile": "1.25rem", "space-xl": "2.5rem", "margin": "2rem", "gutter-mobile": "1rem", "space-sm": "0.5rem", "space-lg": "1.5rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": [ "Plus Jakarta Sans" ], "label-md": [ "Plus Jakarta Sans" ], "headline-md": [ "Plus Jakarta Sans" ], "display-lg-mobile": [ "Plus Jakarta Sans" ], "headline-lg": [ "Plus Jakarta Sans" ], "label-sm": [ "Plus Jakarta Sans" ], "body-lg": [ "Plus Jakarta Sans" ], "label-lg": [ "Plus Jakarta Sans" ], "headline-sm": [ "Plus Jakarta Sans" ], "display-accent": [ "Newsreader" ], "body-sm": [ "Plus Jakarta Sans" ], "display-lg": [ "Plus Jakarta Sans" ] }, "fontSize": { "body-md": [ "16px", { "lineHeight": "24px", "fontWeight": "400" } ], "label-md": [ "12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "700" } ], "headline-md": [ "24px", { "lineHeight": "32px", "fontWeight": "700" } ], "display-lg-mobile": [ "36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" } ], "headline-lg": [ "32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "800" } ], "label-sm": [ "11px", { "lineHeight": "14px", "fontWeight": "600" } ], "body-lg": [ "18px", { "lineHeight": "28px", "fontWeight": "500" } ], "label-lg": [ "14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" } ], "headline-sm": [ "20px", { "lineHeight": "28px", "fontWeight": "700" } ], "display-accent": [ "48px", { "lineHeight": "56px", "letterSpacing": "-0.01em", "fontWeight": "400" } ], "body-sm": [ "14px", { "lineHeight": "20px", "fontWeight": "400" } ], "display-lg": [ "48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800" } ] } } } };</script>
 <style id="tf-nusantara-css">
 /* === Transplanted from index.html (map only; page-level dark rules removed) === */
+/* Group C: kartu terpilih langsung terlihat (tanpa menunggu refresh). */
+.profil-info:has(input:checked){outline:3px solid #0d9488; outline-offset:2px; background:#fff;}
+/* Hover dibedakan dari status terpilih: abu-abu, bukan teal. */
+.profil-info:hover{border-color:#94a3b8;}
+/* Anchor hasil di bawah header fixed saat scroll. */
+#hasil{scroll-margin-top:90px;}
+/* Menu dropdown kota milik sendiri: fixed ke viewport, selalu di atas konten. */
+.kota-menu{position:fixed;z-index:9999;background:#fff;border:1px solid #e2e8f0;
+  border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.18);overflow-y:auto;padding:4px;}
+.kota-opt{padding:8px 12px;border-radius:8px;color:#1e293b;font-size:14px;cursor:pointer;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.kota-opt.active,.kota-opt:hover{background:#f1f5f9;color:#0f172a;}
+.kota-empty{padding:10px 12px;color:#64748b;font-size:14px;}
 :root{
     --sea-950:#050b1a; --sea-900:#081230; --sea-800:#0c1c48;
     --ink:#f4efe4; --muted:#a7b4d4; --line:rgba(255,255,255,.12);
@@ -152,7 +165,7 @@ path.province.match{stroke:#fff; stroke-width:1.8}
 .tf-nusantara-dark .panel .sub{color:#a7b4d4;}
 .tf-nusantara-dark .detail .big{color:#f4efe4;}
 </style>
-</head><body class="bg-background-cream font-body-md text-on-surface antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 bg-background-cream/90 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-7xl mx-auto px-margin flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-sm"><img alt="TravelFit Logo Mark" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VLNop3HVRB4WclBnNmP1t1D5yw7cl-9pXgefttya4WL8Qm0kKPpyZM2zPIriWJmt4yMJVn8QacQ-ARLLSTG5d53PF3bUtkp8xcZzLfCsNvppYMDOo2vYFkRSgGTB08oQ87Kt0wJadSNVV5BXwnCGUX6wcfpkrKruC1-RABTOjvXWIyTBcUqOp2pRuVKFENqxq5UAAVXKf52VclPe6fq-TIQK_CE861n4uJyqMZwWK6SliGTrA2wEVUnLw"><span class="font-headline-sm text-headline-sm text-on-surface font-extrabold tracking-tight">TravelFit</span><span class="hidden sm:inline-flex items-center px-space-sm py-space-xs rounded-full bg-surface-white font-label-sm text-label-sm text-primary uppercase shadow-[0_2px_8px_rgba(30,42,59,0.06)]">SPK WISATA INDONESIA</span></div><nav class="hidden md:flex items-center gap-space-xs p-space-xs rounded-full bg-surface-white/80 shadow-[0_2px_8px_rgba(30,42,59,0.04)]" data-active-classes="bg-primary-container text-on-primary-container font-bold rounded-full shadow-sm"><a aria-current="page" class="px-space-md py-space-xs transition-colors bg-primary-container text-on-primary-container font-bold rounded-full shadow-sm" data-path="beranda" href="#hero">Beranda</a><a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="hasil-rekomendasi" href="#hasil">Hasil</a><a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="peta-destinasi" href="#peta">Peta</a><a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="tentang-metode" href="#tentang">Tentang</a></nav></div></header><main class="w-full pt-20 bg-background-cream"><div class="flex flex-col w-full text-on-surface">
+</head><body class="bg-background-cream font-body-md text-on-surface antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 bg-background-cream/90 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-[1680px] mx-auto px-margin flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-sm"><img alt="TravelFit Logo Mark" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VLNop3HVRB4WclBnNmP1t1D5yw7cl-9pXgefttya4WL8Qm0kKPpyZM2zPIriWJmt4yMJVn8QacQ-ARLLSTG5d53PF3bUtkp8xcZzLfCsNvppYMDOo2vYFkRSgGTB08oQ87Kt0wJadSNVV5BXwnCGUX6wcfpkrKruC1-RABTOjvXWIyTBcUqOp2pRuVKFENqxq5UAAVXKf52VclPe6fq-TIQK_CE861n4uJyqMZwWK6SliGTrA2wEVUnLw"><span class="font-headline-sm text-headline-sm text-on-surface font-extrabold tracking-tight">TravelFit</span><span class="hidden sm:inline-flex items-center px-space-sm py-space-xs rounded-full bg-surface-white font-label-sm text-label-sm text-primary uppercase shadow-[0_2px_8px_rgba(30,42,59,0.06)]">SPK WISATA INDONESIA</span></div><nav class="hidden md:flex items-center gap-space-xs p-space-xs rounded-full bg-surface-white/80 shadow-[0_2px_8px_rgba(30,42,59,0.04)]" data-active-classes="bg-primary-container text-on-primary-container font-bold rounded-full shadow-sm"><a aria-current="page" class="px-space-md py-space-xs transition-colors bg-primary-container text-on-primary-container font-bold rounded-full shadow-sm" data-path="beranda" href="#hero">Beranda</a><a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="hasil-rekomendasi" href="#hasil">Hasil</a><a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="peta-destinasi" href="#peta">Peta</a><a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="tentang-metode" href="#tentang">Tentang</a></nav></div></header><main class="w-full pt-20 bg-background-cream"><div class="flex flex-col w-full text-on-surface">
 <!-- TOAST NOTIFICATION -->
 <div class="fixed bottom-6 right-6 z-50 transform transition-all duration-300 pointer-events-none bg-inverse-surface text-inverse-on-surface px-space-md py-space-sm rounded-full shadow-xl flex items-center gap-space-sm translate-y-24 opacity-0" id="toast-notification">
 <span class="material-symbols-outlined text-primary-fixed-dim text-headline-sm">check_circle</span>
@@ -163,9 +176,9 @@ path.province.match{stroke:#fff; stroke-width:1.8}
 <!-- Playful Background Accents -->
 <div class="absolute top-12 left-10 w-64 h-64 bg-tertiary-fixed/30 rounded-full blur-3xl pointer-events-none -z-10"></div>
 <div class="absolute bottom-10 right-16 w-80 h-80 bg-primary-fixed-dim/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
-<div class="max-w-7xl mx-auto grid grid-cols-1 gap-space-lg items-center">
+<div class="max-w-[1680px] mx-auto grid grid-cols-1 gap-space-lg items-center">
 <!-- Left Column: Copy & Badges -->
-<div class="flex flex-col gap-space-md max-w-3xl">
+<div class="flex flex-col gap-space-md max-w-5xl">
 <!-- Eyebrow Pill -->
 <div class="inline-flex items-center gap-space-xs self-start px-space-md py-space-xs rounded-full bg-surface-white shadow-sm border-2 border-on-surface/5">
 <span class="w-2.5 h-2.5 rounded-full bg-tertiary-fixed-dim animate-ping"></span>
@@ -176,7 +189,7 @@ path.province.match{stroke:#fff; stroke-width:1.8}
           Liburan <span class="font-display-accent text-display-accent italic text-secondary-container">paling pas</span> buat kantong dan hobimu.
         </h1>
 <!-- Subtitle -->
-<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl">
           TravelFit menimbang budget, rating, jarak, fasilitas, kategori, dan hobi kamu secara bersamaan — bukan cuma yang murah atau viral. Isi preferensi, pilih profil prioritas, dapatkan Top-10 + alasan tiap rekomendasi.
         </p>
 <!-- 3 Step Sticker Badges -->
@@ -195,15 +208,9 @@ path.province.match{stroke:#fff; stroke-width:1.8}
 <!-- Right Column: Playful Island Graphic & Sticker Cards -->
 
 </div>
-<!-- Wavy Sunset Divider -->
-<div class="w-full mt-12 overflow-hidden leading-none text-surface-white">
-<svg class="w-full h-12 text-surface-white fill-current" preserveAspectRatio="none" viewBox="0 0 1200 120">
-<path d="M0,0 C150,90 350,-40 500,60 C650,160 900,10 1200,40 L1200,120 L0,120 Z"></path>
-</svg>
-</div>
 </section>
 <section class="w-full py-space-xl px-margin" id="peta">
-<div class="max-w-7xl mx-auto flex flex-col gap-space-lg">
+<div class="max-w-[1680px] mx-auto flex flex-col gap-space-lg">
 <div class="flex flex-col gap-space-xs pb-space-md border-b border-on-surface/10">
 <span class="px-space-sm py-space-xs bg-primary/10 text-primary font-label-sm text-label-sm font-extrabold rounded-full uppercase tracking-wider self-start">Peta Nusantara • 38 Provinsi • 7 Gugus</span>
 <h2 class="font-headline-lg text-headline-lg text-on-surface mt-space-xs">Jelajahi Nusantara dari Sabang sampai Merauke.</h2>
@@ -284,7 +291,7 @@ path.province.match{stroke:#fff; stroke-width:1.8}
 
 
 </div><div class="mt-3 p-3 rounded-xl bg-surface-white border border-on-surface/10 shadow-sm flex items-center justify-between gap-2"><div class="flex items-center gap-2 min-w-0"><span class="material-symbols-outlined text-secondary-container text-base shrink-0">pin_drop</span><div class="truncate"><div class="font-label-sm text-xs font-bold truncate" id="selected-province-name">Daerah Istimewa Yogyakarta</div><div class="text-[11px] opacity-70 truncate" id="selected-province-info">Provinsi terpilih • Klik tombol untuk pasang di form</div></div></div><button class="px-4 py-1.5 rounded-full bg-primary text-on-primary font-label-sm text-xs font-extrabold shadow-sm hover:scale-105 transition-transform shrink-0" onclick="applyProvinceToForm()">Gunakan</button></div>
-<div class="max-w-7xl mx-auto tf-nusantara-dark">
+<div class="max-w-[1680px] mx-auto tf-nusantara-dark">
 <section class="strip reveal" id="pulau" aria-label="Gugus pulau"></section>
 
 <main class="explore reveal" id="jelajah">
@@ -314,7 +321,7 @@ path.province.match{stroke:#fff; stroke-width:1.8}
 
 <!-- SECTION 2 — FORM PREFERENSI -->
 <section class="w-full -mt-2 bg-surface-white py-space-xl px-margin" id="form">
-<div class="max-w-7xl mx-auto">
+<div class="max-w-[1680px] mx-auto">
 <!-- Section Header -->
 <div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md pb-space-lg border-b border-on-surface/10">
 <div>
@@ -364,12 +371,11 @@ path.province.match{stroke:#fff; stroke-width:1.8}
 <span class="hidden text-error font-label-sm text-label-sm font-bold" id="budget-error">Format angka tidak valid</span>
 {% if form.budget.errors %}<span class="text-error font-label-sm text-label-sm font-bold">{{ form.budget.errors.0 }}</span>{% endif %}
 </div>
-<!-- Kota Asal Dropdown -->
+<!-- Kota Asal Dropdown (combobox milik sendiri: search + scroll, tanpa lib) -->
 <div class="flex flex-col gap-1">
 <label class="font-label-lg text-label-lg text-on-surface" for="kota_asal">Kota Asal Kamu</label>
 <div class="relative">
-<select class="w-full px-space-md py-space-sm bg-surface-white rounded-full font-body-md text-body-md text-on-surface shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-primary pr-10" id="kota_asal" name="kota_asal">{% for k in kota_list %}<option value="{{ k }}"{% if k == cur.kota %} selected{% endif %}>{{ k }}</option>{% endfor %}</select>
-<span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-on-surface-variant">expand_more</span>
+<select class="w-full px-space-md py-space-sm bg-surface-white rounded-full font-body-md text-body-md text-on-surface shadow-sm focus:outline-none focus:ring-2 focus:ring-primary pr-10" id="kota_asal" name="kota_asal" placeholder="Ketik untuk mencari kota...">{% for k, label in kota_list %}<option value="{{ k }}"{% if k == cur.kota %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
 </div>
 <p class="font-body-sm text-body-sm text-on-surface-variant">
                 Titik berangkat Anda; menentukan jarak tempuh (C3) ke setiap destinasi.
@@ -441,9 +447,9 @@ path.province.match{stroke:#fff; stroke-width:1.8}
 <p class="font-body-sm text-body-sm text-on-surface-variant">
               Tentukan karakter perjalananmu. Tiap profil memiliki matriks bobot AHP yang terverifikasi konsisten (CR &lt; 0.1).
             </p>
-<div class="grid grid-cols-2 gap-space-sm" id="profil-selector">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm" id="profil-selector">
 {% for p in profil_cards %}
-<label class="profil-info cursor-pointer relative p-space-sm rounded-lg bg-surface-white border-2 {% if p.key == cur.profil %}border-primary shadow-sm ring-2 ring-primary/20{% else %}border-on-surface/10 hover:border-primary{% endif %} transition-all flex flex-col justify-between">
+<label class="profil-info cursor-pointer relative p-space-sm rounded-lg bg-surface-white border-2 border-on-surface/10 transition-all flex flex-col justify-between">
 <input{% if p.key == cur.profil %} checked=""{% endif %} class="sr-only" data-w="{{ p.w_pct|join:"," }}" name="profil" type="radio" value="{{ p.key }}">
 <div>
 <div class="flex items-center justify-between">
@@ -545,158 +551,14 @@ path.province.match{stroke:#fff; stroke-width:1.8}
 </form>
 </div>
 </section>
-<!-- SECTION 3 — HASIL TOP-10 DENGAN EXPLAINABILITY -->
-<section class="w-full py-space-xl px-margin" id="hasil">
-<div class="max-w-7xl mx-auto flex flex-col gap-space-lg">
-<!-- Result Header Card -->
-<div class="p-space-lg bg-surface-white rounded-xl shadow-md border-2 border-on-surface/5 flex flex-col md:flex-row md:items-center justify-between gap-space-md">
-<div>
-<div class="flex items-center gap-space-xs">
-<span class="text-headline-md">🏆</span>
-<h2 class="font-headline-lg text-headline-lg text-on-surface font-extrabold">Top-10 Rekomendasi Buat Kamu</h2>
-</div>
-<p class="font-body-md text-body-md text-on-surface-variant mt-1">
-            Wilayah <strong class="text-on-surface">{{ ringkasan.wilayah }}</strong> • Budget ≤ <strong class="text-on-surface">{{ ringkasan.budget_fmt }}</strong> • Profil <strong class="text-primary">{{ ringkasan.profil }}</strong> • <span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold">{{ ringkasan.n }} kandidat lolos filter</span>
-</p>
-</div>
-<div class="flex items-center gap-space-sm">
-<a class="px-space-md py-space-sm rounded-full bg-surface-container text-on-surface font-label-md text-label-md shadow-sm hover:bg-surface-container-high transition-colors flex items-center gap-1" href="#peta">
-<span class="">🗺️ Lihat di Peta</span>
-</a>
-<a class="px-space-md py-space-sm rounded-full bg-surface-white border-2 border-on-surface/10 text-on-surface font-label-md text-label-md shadow-sm hover:bg-surface-container-low transition-colors flex items-center gap-1" href="#form">
-<span class="">✏️ Ubah Preferensi</span>
-</a>
-</div>
-</div>
-{% if hasil %}
-<!-- Quick Filter & Sort Chips Row -->
-<div class="flex flex-wrap items-center justify-between gap-space-sm">
-<div class="flex flex-wrap items-center gap-space-xs" id="hasil-filters">
-<button class="px-space-md py-space-xs rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm" data-f="semua" onclick="filterHasil('semua', this)">Semua ({{ hasil|length }})</button>
-{% for c in cluster_list %}
-<button class="px-space-md py-space-xs rounded-full bg-surface-white text-on-surface border-2 border-on-surface/5 font-label-md text-label-md shadow-sm hover:bg-surface-container-low" data-f="{{ c }}" onclick="filterHasil('{{ c }}', this)">{{ c }}</button>
-{% endfor %}
-</div>
-<div class="flex items-center gap-space-xs">
-<span class="font-label-sm text-label-sm text-on-surface-variant font-bold">Urutkan:</span>
-<select class="px-space-md py-space-xs rounded-full bg-surface-white border-2 border-on-surface/10 font-label-sm text-label-sm text-on-surface shadow-sm focus:outline-none" id="sort-hasil" onchange="sortHasil(this.value)">
-<option value="vi">Skor TOPSIS Tertinggi (Vi)</option>
-<option value="harga">Harga Termurah</option>
-<option value="rating">Rating Tertinggi</option>
-<option value="jarak">Jarak Terdekat</option>
-</select>
-</div>
-</div>
-<!-- Ranked List 1 to 10 -->
-<div class="flex flex-col gap-space-md" id="hasil-list">
-{% for h in hasil %}
-{% if forloop.counter <= 3 %}
-<div class="hasil-card p-space-lg bg-surface-white rounded-xl {% if forloop.counter == 1 %}shadow-md border-2 border-tertiary-fixed-dim/40 hover:shadow-xl{% else %}shadow-sm border-2 border-on-surface/5 hover:shadow-md{% endif %} flex flex-col gap-space-{% if forloop.counter == 1 %}md{% else %}sm{% endif %} transition-all" data-cluster="{{ h.cluster }}" data-vi="{{ h.vi }}" data-harga="{{ h.harga }}" data-rating="{{ h.rating }}" data-jarak="{{ h.jarak_km }}">
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
-<div class="flex items-start gap-space-md">
-<div class="{% if forloop.counter == 1 %}w-14 h-14 rounded-full bg-gradient-to-br from-tertiary-fixed to-secondary-container text-on-primary font-headline-lg text-headline-lg{% elif forloop.counter == 2 %}w-12 h-12 rounded-full bg-surface-dim text-on-surface font-headline-md text-headline-md{% else %}w-12 h-12 rounded-full bg-secondary-fixed text-on-secondary-fixed font-headline-md text-headline-md{% endif %} flex items-center justify-center font-extrabold {% if forloop.counter == 1 %}shadow-md{% else %}shadow-sm{% endif %} shrink-0">{{ forloop.counter }}</div>
-<div class="flex flex-col gap-1">
-<div class="flex flex-wrap items-center gap-2">
-<h3 class="{% if forloop.counter == 1 %}font-headline-md text-headline-md{% else %}font-headline-sm text-headline-sm{% endif %} text-on-surface font-extrabold">{{ h.nama }}</h3>
-<span class="px-space-sm py-0.5 rounded-full bg-accent-sky text-on-surface font-label-sm text-label-sm font-bold">{{ h.kategori }}</span>
-<span class="px-space-sm py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-bold">Cluster: {{ h.cluster }}</span>
-<span class="px-space-sm py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold">Lolos Budget</span>
-</div>
-<div class="flex flex-wrap items-center gap-space-md text-on-surface-variant font-body-sm text-body-sm">
-<span class="font-bold text-primary">{{ h.harga_fmt }} / orang</span>
-<span class="">•</span>
-<span class="flex items-center text-tertiary font-bold">★ {{ h.rating }}</span>
-<span class="">•</span>
-<span class="">{{ h.jarak_txt }}</span>
-</div>
-</div>
-</div>
-<div class="flex flex-col items-start md:items-end gap-1 shrink-0">
-<div class="flex items-baseline gap-1">
-<span class="font-label-sm text-label-sm text-on-surface-variant font-bold">Skor TOPSIS:</span>
-<span class="{% if forloop.counter == 1 %}font-headline-md text-headline-md{% else %}font-headline-sm text-headline-sm{% endif %} font-extrabold text-primary">{{ h.vi|floatformat:4 }}</span>
-</div>
-<div class="{% if forloop.counter == 1 %}w-40 h-2.5{% else %}w-36 h-2{% endif %} rounded-full bg-surface-container-high overflow-hidden">
-<div class="h-full {% if forloop.counter == 1 %}bg-gradient-to-r from-primary to-secondary-container{% else %}bg-primary{% endif %} rounded-full" style="width: {{ h.vi_pct }}%;"></div>
-</div>
-{% if forloop.counter != 1 %}<button class="text-primary font-label-sm text-label-sm font-bold mt-1 hover:underline" onclick="toggleExplain('exp-{{ forloop.counter }}')">Lihat Alasan ▾</button>{% endif %}
-</div>
-</div>
-<div class="{% if forloop.counter == 1 %}p-space-md bg-background-cream rounded-lg border-2 border-on-surface/5 flex flex-col gap-space-sm{% else %}hidden p-space-md bg-background-cream rounded-lg mt-space-xs text-body-sm{% endif %}" id="exp-{{ forloop.counter }}">
-<div class="flex items-center gap-space-xs text-on-surface">
-<span class="text-lg">💡</span>
-<p class="font-body-md text-body-md font-bold">{{ h.alasan }}</p>
-</div>
-<div class="grid grid-cols-2 md:grid-cols-6 gap-space-sm pt-space-xs">
-{% for b in h.bars %}
-<div class="flex flex-col gap-1 p-2 bg-surface-white rounded-lg">
-<div class="flex justify-between font-label-sm text-label-sm">
-<span class="">{{ b.nama }}</span>
-<span class="font-bold {% if b.pct < 80 %}text-secondary-container{% else %}text-primary{% endif %}">{{ b.pct }}%</span>
-</div>
-<div class="w-full h-1.5 rounded-full bg-surface-container"><div class="h-full {% if b.pct < 80 %}bg-secondary-container{% else %}bg-primary{% endif %} rounded-full" style="width: {{ b.pct }}%;"></div></div>
-<span class="font-label-sm text-[10px] text-on-surface-variant truncate">{{ b.sub }}</span>
-</div>
-{% endfor %}
-</div>
-</div>
-</div>
-{% else %}
-{% if forloop.counter == 4 %}<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md" id="hasil-grid">{% endif %}
-<div class="hasil-card p-space-md bg-surface-white rounded-xl shadow-sm border-2 border-on-surface/5{% if forloop.last %} md:col-span-2{% endif %}" data-cluster="{{ h.cluster }}" data-vi="{{ h.vi }}" data-harga="{{ h.harga }}" data-rating="{{ h.rating }}" data-jarak="{{ h.jarak_km }}">
-<div class="flex items-center justify-between gap-space-sm">
-<div class="flex items-center gap-space-sm">
-<span class="w-9 h-9 rounded-full bg-surface-container text-primary font-bold flex items-center justify-center shrink-0">{{ forloop.counter }}</span>
-<div>
-<h4 class="font-headline-sm text-headline-sm text-on-surface">{{ h.nama }}</h4>
-<p class="font-body-sm text-body-sm text-on-surface-variant">{{ h.harga_fmt }} • ★ {{ h.rating }} • {{ h.cluster }}</p>
-</div>
-</div>
-<div class="text-right shrink-0">
-<div class="font-headline-sm text-headline-sm font-bold text-primary">{{ h.vi|floatformat:4 }}</div>
-<button class="font-label-sm text-label-sm text-primary font-bold hover:underline" onclick="toggleExplain('exp-{{ forloop.counter }}')">Alasan ▾</button>
-</div>
-</div>
-<div class="hidden p-space-sm bg-background-cream rounded-lg mt-space-xs text-body-sm" id="exp-{{ forloop.counter }}">
-<div class="font-bold mb-1">💡 {{ h.alasan }}</div>
-<div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-{% for b in h.bars %}
-<div class="flex flex-col gap-1 p-2 bg-surface-white rounded-lg">
-<div class="flex justify-between font-label-sm text-label-sm"><span>{{ b.nama }}</span><span class="font-bold">{{ b.pct }}%</span></div>
-<div class="w-full h-1.5 rounded-full bg-surface-container"><div class="h-full bg-primary rounded-full" style="width: {{ b.pct }}%;"></div></div>
-<span class="font-label-sm text-[10px] text-on-surface-variant truncate">{{ b.sub }}</span>
-</div>
-{% endfor %}
-</div>
-</div>
-</div>
-{% if forloop.last %}</div>{% endif %}
-{% endif %}
-{% endfor %}
-</div>
-{% elif kandidat_kosong %}
-<div class="p-space-xl bg-surface-white rounded-xl shadow-sm border-2 border-on-surface/5 text-center flex flex-col items-center gap-space-sm">
-<div class="text-5xl">🧭</div>
-<h3 class="font-headline-md text-headline-md text-on-surface font-extrabold">Tidak ada destinasi yang cocok.</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Tidak ada destinasi yang cocok. Coba longgarkan budget atau pilih wilayah lain.</p>
-<a class="px-space-md py-space-sm rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm" href="#form">Ubah Preferensi</a>
-</div>
-{% else %}
-<div class="p-space-xl bg-surface-white rounded-xl shadow-sm border-2 border-dashed border-on-surface/20 text-center flex flex-col items-center gap-space-sm">
-<div class="text-5xl">🗺-fe0f</div>
-<h3 class="font-headline-md text-headline-md text-on-surface font-extrabold">Siap menghitung rekomendasi.</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Isi preferensi di atas lalu klik Hitung Rekomendasi — Top-10 destinasi + alasan tiap peringkat akan muncul di sini.</p>
-</div>
-{% endif %}
-</div>
-</section>
+{% include "recommender/_hasil.html" %}
 <!-- SECTION 4 — PETA INTERAKTIF NUSANTARA -->
 
 <!-- SECTION 5 — TENTANG & METODOLOGI SPK -->
 <section class="w-full py-space-xl px-margin" id="tentang">
-<div class="max-w-7xl mx-auto flex flex-col gap-space-xl">
+<div class="max-w-[1680px] mx-auto flex flex-col gap-space-xl">
 <!-- Section Header -->
-<div class="text-center max-w-3xl mx-auto flex flex-col gap-space-xs">
+<div class="text-center max-w-5xl mx-auto flex flex-col gap-space-xs">
 <span class="px-space-md py-space-xs rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-bold uppercase self-center">
           Transparansi &amp; Metodologi SPK
         </span>
@@ -874,7 +736,7 @@ path.province.match{stroke:#fff; stroke-width:1.8}
 </div>
 <!-- Academic Disclaimer Note -->
 <div class="p-space-md bg-surface-container-high/40 rounded-lg text-center">
-<p class="font-body-sm text-body-sm text-on-surface-variant max-w-4xl mx-auto">
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-6xl mx-auto">
           ⚠️ <strong>Catatan Akademik:</strong> TravelFit merupakan Sistem Pendukung Keputusan (DSS) yang menyajikan rekomendasi analitis berdasarkan preferensi input. Hasil ranking berfungsi sebagai panduan pertimbangan liburan objektif, bukan instruksi mutlak. Tarif tiket, jam operasional, dan fasilitas aktual di lapangan dapat diperbarui sewaktu-waktu oleh pihak pengelola destinasi terkait.
         </p>
 </div>
@@ -1019,7 +881,129 @@ path.province.match{stroke:#fff; stroke-width:1.8}
     }, 2800);
   }
 
-</script></main><footer class="w-full bg-surface-white shadow-[0_-1px_12px_rgba(30,42,59,0.04)] py-space-xl mt-space-xl"><div class="max-w-7xl mx-auto px-margin flex flex-col md:flex-row items-center justify-between gap-space-lg text-center md:text-left"><div class="flex flex-col gap-space-xs"><div class="flex items-center justify-center md:justify-start gap-space-xs"><img alt="TravelFit Logo Mark" class="h-6 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VLNop3HVRB4WclBnNmP1t1D5yw7cl-9pXgefttya4WL8Qm0kKPpyZM2zPIriWJmt4yMJVn8QacQ-ARLLSTG5d53PF3bUtkp8xcZzLfCsNvppYMDOo2vYFkRSgGTB08oQ87Kt0wJadSNVV5BXwnCGUX6wcfpkrKruC1-RABTOjvXWIyTBcUqOp2pRuVKFENqxq5UAAVXKf52VclPe6fq-TIQK_CE861n4uJyqMZwWK6SliGTrA2wEVUnLw"><span class="font-headline-sm text-headline-sm text-on-surface">TravelFit</span></div><p class="font-body-sm text-body-sm text-on-surface-variant max-w-md">TravelFit — SPK Rekomendasi Destinasi Wisata (AHP-TOPSIS) • Tugas Akademik Informatika</p></div><div class="flex flex-wrap items-center justify-center gap-space-md"><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#hero">Beranda</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#hasil">Hasil</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#peta">Peta</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#tentang">Tentang</a></div><div class="font-label-sm text-label-sm text-on-surface-variant"><a class="hover:text-primary" href="/peta/">Peta layar penuh</a> · <a class="hover:text-primary" href="/tentang/">Tentang</a> · © 2025 TravelFit Team. Hak Cipta Dilindungi.</div></div></footer>
+  // Budget: tampilkan pemisah ribuan saat mengetik (1.000.000). Server tetap parsing angka.
+  function formatBudgetRibuan(el) {
+    const d = el.value.replace(/\D/g, '').slice(0, 15);
+    el.value = d.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+  const budgetInput = document.getElementById('budget');  if (budgetInput) {
+    budgetInput.addEventListener('input', () => formatBudgetRibuan(budgetInput));
+    if (budgetInput.value) formatBudgetRibuan(budgetInput);
+  }
+
+  // Kota asal: combobox milik sendiri (search + scroll, tanpa lib pihak ketiga).
+  // Select asli disembunyikan dan disinkronkan; submit form tidak berubah.
+  (function () {
+    const sel = document.getElementById('kota_asal');
+    if (!sel || sel.dataset.comboDone) return;
+    const input = document.createElement('input');
+    input.type = 'text'; input.id = 'kota_asal_input'; input.autocomplete = 'off';
+    input.placeholder = 'Ketik untuk mencari kota...';
+    input.className = sel.className;
+    input.setAttribute('role', 'combobox');
+    input.setAttribute('aria-expanded', 'false');
+    const cur = sel.options[sel.selectedIndex];
+    if (cur) input.value = cur.text;
+    sel.style.display = 'none';
+    sel.parentNode.insertBefore(input, sel);
+    const menu = document.createElement('div');
+    menu.id = 'kota-menu'; menu.className = 'kota-menu';
+    menu.setAttribute('role', 'listbox'); menu.hidden = true;
+    document.body.appendChild(menu);
+    const opts = Array.from(sel.options).map(o => ({ value: o.value, text: o.text }));
+    let items = [], active = -1;
+    function position() {
+      const r = input.getBoundingClientRect();
+      menu.style.width = r.width + 'px';
+      menu.style.left = r.left + 'px';
+      const below = window.innerHeight - r.bottom - 12;
+      if (below < 140) {
+        menu.style.maxHeight = Math.max(120, r.top - 12) + 'px';
+        menu.style.top = 'auto';
+        menu.style.bottom = (window.innerHeight - r.top + 6) + 'px';
+      } else {
+        menu.style.maxHeight = Math.min(280, below) + 'px';
+        menu.style.bottom = 'auto';
+        menu.style.top = (r.bottom + 6) + 'px';
+      }
+    }
+    function render() {
+      menu.innerHTML = '';
+      if (!items.length) {
+        menu.innerHTML = '<div class="kota-empty">Tidak ada kota yang cocok.</div>';
+        return;
+      }
+      items.slice(0, 200).forEach((it, i) => {
+        const d = document.createElement('div');
+        d.className = 'kota-opt' + (i === active ? ' active' : '');
+        d.textContent = it.text;
+        d.setAttribute('role', 'option');
+        d.addEventListener('mousedown', (e) => { e.preventDefault(); choose(i); });
+        menu.appendChild(d);
+      });
+    }
+    function filter() {
+      const q = input.value.trim().toLowerCase();
+      items = q ? opts.filter(o => o.text.toLowerCase().includes(q)) : opts.slice();
+      active = items.length ? 0 : -1;
+    }
+    function open() { filter(); render(); menu.hidden = false; position(); input.setAttribute('aria-expanded', 'true'); }
+    function close() { menu.hidden = true; input.setAttribute('aria-expanded', 'false'); active = -1; }
+    function choose(i) {
+      const it = items[i]; if (!it) return;
+      sel.value = it.value; input.value = it.text; close();
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    function scrollActive() {
+      const el = menu.children[active];
+      if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest' });
+    }
+    input.addEventListener('focus', open);
+    input.addEventListener('click', open);
+    input.addEventListener('input', open);
+    input.addEventListener('blur', () => setTimeout(close, 120));
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); if (menu.hidden) open(); active = Math.min(active + 1, items.length - 1); render(); scrollActive(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); active = Math.max(active - 1, 0); render(); scrollActive(); }
+      else if (e.key === 'Enter' && !menu.hidden && active >= 0) { e.preventDefault(); choose(active); }
+      else if (e.key === 'Escape') close();
+    });
+    document.addEventListener('mousedown', (e) => {
+      if (!menu.hidden && !menu.contains(e.target) && e.target !== input) close();
+    });
+    window.addEventListener('scroll', () => { if (!menu.hidden) position(); }, { passive: true });
+    window.addEventListener('resize', () => { if (!menu.hidden) position(); });
+    sel.dataset.comboDone = '1';
+  })();
+
+  // Submit via fetch: hasil muncul tanpa refresh + scroll otomatis ke #hasil.
+  // Gagal (offline/server error) -> fallback submit normal.
+  const travelForm = document.getElementById('travel-form');
+  if (travelForm) {
+    travelForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = travelForm.querySelector('[type="submit"]');
+      if (btn) btn.disabled = true;
+      try {
+        const res = await fetch(travelForm.action || '/', {
+          method: 'POST',
+          body: new FormData(travelForm),
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok || !data.html) { travelForm.submit(); return; }
+        document.getElementById('hasil').outerHTML = data.html;
+        document.getElementById('hasil').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (typeof showToast === 'function') showToast('Rekomendasi diperbarui.');
+      } catch (err) {
+        travelForm.submit();
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    });
+  }
+
+</script></main><footer class="w-full bg-surface-white shadow-[0_-1px_12px_rgba(30,42,59,0.04)] py-space-xl mt-space-xl"><div class="max-w-[1680px] mx-auto px-margin flex flex-col md:flex-row items-center justify-between gap-space-lg text-center md:text-left"><div class="flex flex-col gap-space-xs"><div class="flex items-center justify-center md:justify-start gap-space-xs"><img alt="TravelFit Logo Mark" class="h-6 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VLNop3HVRB4WclBnNmP1t1D5yw7cl-9pXgefttya4WL8Qm0kKPpyZM2zPIriWJmt4yMJVn8QacQ-ARLLSTG5d53PF3bUtkp8xcZzLfCsNvppYMDOo2vYFkRSgGTB08oQ87Kt0wJadSNVV5BXwnCGUX6wcfpkrKruC1-RABTOjvXWIyTBcUqOp2pRuVKFENqxq5UAAVXKf52VclPe6fq-TIQK_CE861n4uJyqMZwWK6SliGTrA2wEVUnLw"><span class="font-headline-sm text-headline-sm text-on-surface">TravelFit</span></div><p class="font-body-sm text-body-sm text-on-surface-variant max-w-xl">TravelFit — SPK Rekomendasi Destinasi Wisata (AHP-TOPSIS) • Tugas Akademik Informatika</p></div><div class="flex flex-wrap items-center justify-center gap-space-md"><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#hero">Beranda</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#hasil">Hasil</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#peta">Peta</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#tentang">Tentang</a></div><div class="font-label-sm text-label-sm text-on-surface-variant"><a class="hover:text-primary" href="/peta/">Peta layar penuh</a> · <a class="hover:text-primary" href="/tentang/">Tentang</a> · © 2025 TravelFit Team. Hak Cipta Dilindungi.</div></div></footer>
 
 
 <script id="tf-nusantara-js">
