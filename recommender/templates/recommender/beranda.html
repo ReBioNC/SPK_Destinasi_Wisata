@@ -435,7 +435,7 @@ path.province.match{stroke:#fff; stroke-width:1.8}
 <p class="font-body-sm text-body-sm text-on-surface-variant">
               Tentukan karakter perjalananmu. Tiap profil memiliki matriks bobot AHP yang terverifikasi konsisten (CR &lt; 0.1).
             </p>
-<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-sm" id="profil-selector">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm" id="profil-selector">
 {% for p in profil_cards %}
 <label class="profil-info cursor-pointer relative p-space-sm rounded-lg bg-surface-white border-2 {% if p.key == cur.profil %}border-primary shadow-sm ring-2 ring-primary/20{% else %}border-on-surface/10 hover:border-primary{% endif %} transition-all flex flex-col justify-between">
 <input{% if p.key == cur.profil %} checked=""{% endif %} class="sr-only" data-w="{{ p.w_pct|join:"," }}" name="profil" type="radio" value="{{ p.key }}">
