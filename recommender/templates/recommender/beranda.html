@@ -9,7 +9,13 @@
 /* Anchor hasil di bawah header fixed saat scroll. */
 #hasil{scroll-margin-top:90px;}
 /* Menu dropdown kota: selalu di atas konten form (lepas dari stacking context). */
-.ts-dropdown{z-index:9999 !important;}
+.ts-dropdown{z-index:9999 !important; background:#fff !important;
+  border:1px solid #e2e8f0 !important; border-radius:12px !important;
+  box-shadow:0 12px 32px rgba(15,23,42,.18) !important; overflow:hidden;}
+.ts-dropdown .ts-dropdown-content{background:#fff !important; max-height:280px;}
+.ts-dropdown .option{color:#1e293b !important; background:#fff !important; padding:8px 12px !important;}
+.ts-dropdown .option.active, .ts-dropdown .option:hover{color:#0f172a !important; background:#f1f5f9 !important;}
+.ts-dropdown .no-results{color:#64748b !important; padding:8px 12px !important;}
 :root{
     --sea-950:#050b1a; --sea-900:#081230; --sea-800:#0c1c48;
     --ink:#f4efe4; --muted:#a7b4d4; --line:rgba(255,255,255,.12);
@@ -366,8 +372,11 @@ path.province.match{stroke:#fff; stroke-width:1.8}
 <span class="hidden text-error font-label-sm text-label-sm font-bold" id="budget-error">Format angka tidak valid</span>
 {% if form.budget.errors %}<span class="text-error font-label-sm text-label-sm font-bold">{{ form.budget.errors.0 }}</span>{% endif %}
 </div>
-<!-- Kota Asal Dropdown (searchable, 300+ kota) -->
-<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+<!-- Kota Asal Dropdown (searchable, 300+ kota).
+     Pakai tema default Tom Select (mandiri); tema bootstrap5 butuh variabel
+     CSS Bootstrap (--bs-*) yang tidak ada di halaman Tailwind ini sehingga
+     menu transparan. -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.default.min.css" rel="stylesheet">
 <div class="flex flex-col gap-1">
 <label class="font-label-lg text-label-lg text-on-surface" for="kota_asal">Kota Asal Kamu</label>
 <div class="relative">

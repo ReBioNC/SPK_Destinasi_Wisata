@@ -199,6 +199,15 @@ class RekomendasiViewTest(TestCase):
         self.assertContains(r, "dropdownParent")
         self.assertContains(r, ".ts-dropdown")
 
+    def test_kota_dropdown_tema_mandiri(self):
+        # Tema bootstrap5 butuh variabel CSS Bootstrap (--bs-*) yang tidak ada
+        # di halaman Tailwind -> menu transparan. Wajib tema default + override.
+        r = self.client.get("/")
+        html = r.content.decode()
+        self.assertIn("tom-select.default.min.css", html)
+        self.assertNotIn("tom-select.bootstrap5", html)
+        self.assertIn(".ts-dropdown .option", html)
+
     def test_post_kota_baru_valid(self):
         r = self.post_valid(kota_asal="Badung")
         self.assertEqual(r.status_code, 200)
