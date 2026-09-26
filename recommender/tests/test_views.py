@@ -169,6 +169,24 @@ class RekomendasiViewTest(TestCase):
             self.assertTrue(-90 <= la <= 90, nama)
             self.assertTrue(-180 <= lo <= 180, nama)
 
+    def test_dataset_kota_file(self):
+        import csv
+        from pathlib import Path
+        root = Path(__file__).resolve().parent.parent.parent
+        p = root / "data" / "kota_indonesia.csv"
+        self.assertTrue(p.exists(), "data/kota_indonesia.csv tidak ada")
+        with open(p, encoding="utf-8-sig") as f:
+            rows = list(csv.DictReader(f))
+        self.assertEqual(
+            list(rows[0].keys()),
+            ["nama", "tipe", "provinsi", "lat", "lon", "sumber"])
+        self.assertGreaterEqual(len(rows), 300)
+        self.assertTrue(all(r["sumber"].strip() for r in rows),
+                        "setiap baris wajib punya sumber")
+        self.assertTrue(any("Kemendagri" in r["sumber"] for r in rows))
+        from recommender.kota_asal import KOTA_ASAL
+        self.assertEqual(len(rows), len(KOTA_ASAL))
+
     def test_kota_searchable_di_form(self):
         r = self.client.get("/")
         self.assertContains(r, "tom-select")
