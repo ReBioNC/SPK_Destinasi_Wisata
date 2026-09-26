@@ -2,19 +2,9 @@
 
 from django import forms
 
+from recommender.kota_asal import KOTA_ASAL
 from recommender.models import Destination
 from recommender.spk import profiles
-
-KOTA_ASAL = {
-    "Jakarta": (-6.2088, 106.8456),
-    "Bandung": (-6.9175, 107.6191),
-    "Semarang": (-6.9667, 110.4167),
-    "Surabaya": (-7.2575, 112.7521),
-    "Yogyakarta": (-7.7956, 110.3695),
-    "Medan": (3.5952, 98.6722),
-    "Makassar": (-5.1477, 119.4327),
-    "Denpasar": (-8.6705, 115.2126),
-}
 
 
 def parse_budget(value):

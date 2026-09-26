@@ -364,12 +364,12 @@ path.province.match{stroke:#fff; stroke-width:1.8}
 <span class="hidden text-error font-label-sm text-label-sm font-bold" id="budget-error">Format angka tidak valid</span>
 {% if form.budget.errors %}<span class="text-error font-label-sm text-label-sm font-bold">{{ form.budget.errors.0 }}</span>{% endif %}
 </div>
-<!-- Kota Asal Dropdown -->
+<!-- Kota Asal Dropdown (searchable, 300+ kota) -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
 <div class="flex flex-col gap-1">
 <label class="font-label-lg text-label-lg text-on-surface" for="kota_asal">Kota Asal Kamu</label>
 <div class="relative">
-<select class="w-full px-space-md py-space-sm bg-surface-white rounded-full font-body-md text-body-md text-on-surface shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-primary pr-10" id="kota_asal" name="kota_asal">{% for k in kota_list %}<option value="{{ k }}"{% if k == cur.kota %} selected{% endif %}>{{ k }}</option>{% endfor %}</select>
-<span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-on-surface-variant">expand_more</span>
+<select class="w-full px-space-md py-space-sm bg-surface-white rounded-full font-body-md text-body-md text-on-surface shadow-sm focus:outline-none focus:ring-2 focus:ring-primary pr-10" id="kota_asal" name="kota_asal" placeholder="Ketik untuk mencari kota...">{% for k, label in kota_list %}<option value="{{ k }}"{% if k == cur.kota %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
 </div>
 <p class="font-body-sm text-body-sm text-on-surface-variant">
                 Titik berangkat Anda; menentukan jarak tempuh (C3) ke setiap destinasi.
@@ -880,11 +880,26 @@ path.province.match{stroke:#fff; stroke-width:1.8}
     const d = el.value.replace(/\D/g, '').slice(0, 15);
     el.value = d.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   }
-  const budgetInput = document.getElementById('budget');
-  if (budgetInput) {
+  const budgetInput = document.getElementById('budget');  if (budgetInput) {
     budgetInput.addEventListener('input', () => formatBudgetRibuan(budgetInput));
     if (budgetInput.value) formatBudgetRibuan(budgetInput);
   }
+
+  // Kota asal: dropdown searchable (Tom Select CDN; fallback = select biasa).
+  (function () {
+    function initKotaSelect() {
+      const el = document.getElementById('kota_asal');
+      if (el && window.TomSelect && !el.tomselect) {
+        new TomSelect(el, { maxOptions: 1000, placeholder: 'Ketik untuk mencari kota...' });
+      }
+    }
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js';
+    s.onload = initKotaSelect;
+    document.head.appendChild(s);
+    if (document.readyState !== 'loading') initKotaSelect();
+    else document.addEventListener('DOMContentLoaded', initKotaSelect);
+  })();
 
   // Submit via fetch: hasil muncul tanpa refresh + scroll otomatis ke #hasil.
   // Gagal (offline/server error) -> fallback submit normal.

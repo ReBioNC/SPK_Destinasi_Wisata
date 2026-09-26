@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.template.loader import render_to_string
 
 from recommender.forms import KOTA_ASAL, PreferensiForm
+from recommender.kota_asal import PROVINSI_KOTA
 from recommender.models import Destination
 from recommender.spk import geo, profiles, similarity, topsis
 
@@ -110,7 +111,8 @@ def rekomendasi(request):
     konteks = {"form": form, "hasil": None, "kandidat_kosong": False,
                "bobot_efektif": None, "mode_custom": False, "pesan": "",
                "pesan_class": "warning", "profil_info": info_profil(),
-               "kota_list": list(KOTA_ASAL.keys()),
+                "kota_list": [(k, f"{k} ({PROVINSI_KOTA[k]})" if k in PROVINSI_KOTA else k)
+                              for k in sorted(KOTA_ASAL)],
                "wilayah_list": sorted(Destination.objects.values_list("provinsi", flat=True).distinct()),
                "kategori_list": sorted(Destination.objects.values_list("kategori", flat=True).distinct()),
                "hobi_list": sorted({t for raw in Destination.objects.values_list("tag_aktivitas", flat=True)

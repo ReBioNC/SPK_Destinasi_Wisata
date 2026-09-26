@@ -159,6 +159,27 @@ class RekomendasiViewTest(TestCase):
         r = self.client.get("/")
         self.assertContains(r, "formatBudgetRibuan")
 
+    def test_kota_asal_ratusan_kota_berkoordinat(self):
+        from recommender.kota_asal import KOTA_ASAL
+        self.assertGreaterEqual(len(KOTA_ASAL), 300)
+        lat, lon = KOTA_ASAL["Badung"]
+        self.assertAlmostEqual(lat, -8.5833, places=3)
+        self.assertAlmostEqual(lon, 115.1833, places=3)
+        for nama, (la, lo) in KOTA_ASAL.items():
+            self.assertTrue(-90 <= la <= 90, nama)
+            self.assertTrue(-180 <= lo <= 180, nama)
+
+    def test_kota_searchable_di_form(self):
+        r = self.client.get("/")
+        self.assertContains(r, "tom-select")
+        self.assertContains(r, "Badung")
+
+    def test_post_kota_baru_valid(self):
+        r = self.post_valid(kota_asal="Badung")
+        self.assertEqual(r.status_code, 200)
+        self.assertFalse(r.context["form"].errors)
+        self.assertEqual(len(r.context["hasil"]), 10)
+
 
 class HalamanTest(TestCase):
     @classmethod
