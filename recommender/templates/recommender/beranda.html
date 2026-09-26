@@ -8,14 +8,13 @@
 .profil-info:hover{border-color:#94a3b8;}
 /* Anchor hasil di bawah header fixed saat scroll. */
 #hasil{scroll-margin-top:90px;}
-/* Menu dropdown kota: selalu di atas konten form (lepas dari stacking context). */
-.ts-dropdown{z-index:9999 !important; background:#fff !important;
-  border:1px solid #e2e8f0 !important; border-radius:12px !important;
-  box-shadow:0 12px 32px rgba(15,23,42,.18) !important; overflow:hidden;}
-.ts-dropdown .ts-dropdown-content{background:#fff !important; max-height:280px;}
-.ts-dropdown .option{color:#1e293b !important; background:#fff !important; padding:8px 12px !important;}
-.ts-dropdown .option.active, .ts-dropdown .option:hover{color:#0f172a !important; background:#f1f5f9 !important;}
-.ts-dropdown .no-results{color:#64748b !important; padding:8px 12px !important;}
+/* Menu dropdown kota milik sendiri: fixed ke viewport, selalu di atas konten. */
+.kota-menu{position:fixed;z-index:9999;background:#fff;border:1px solid #e2e8f0;
+  border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.18);overflow-y:auto;padding:4px;}
+.kota-opt{padding:8px 12px;border-radius:8px;color:#1e293b;font-size:14px;cursor:pointer;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.kota-opt.active,.kota-opt:hover{background:#f1f5f9;color:#0f172a;}
+.kota-empty{padding:10px 12px;color:#64748b;font-size:14px;}
 :root{
     --sea-950:#050b1a; --sea-900:#081230; --sea-800:#0c1c48;
     --ink:#f4efe4; --muted:#a7b4d4; --line:rgba(255,255,255,.12);
@@ -372,11 +371,7 @@ path.province.match{stroke:#fff; stroke-width:1.8}
 <span class="hidden text-error font-label-sm text-label-sm font-bold" id="budget-error">Format angka tidak valid</span>
 {% if form.budget.errors %}<span class="text-error font-label-sm text-label-sm font-bold">{{ form.budget.errors.0 }}</span>{% endif %}
 </div>
-<!-- Kota Asal Dropdown (searchable, 300+ kota).
-     Pakai tema default Tom Select (mandiri); tema bootstrap5 butuh variabel
-     CSS Bootstrap (--bs-*) yang tidak ada di halaman Tailwind ini sehingga
-     menu transparan. -->
-<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.default.min.css" rel="stylesheet">
+<!-- Kota Asal Dropdown (combobox milik sendiri: search + scroll, tanpa lib) -->
 <div class="flex flex-col gap-1">
 <label class="font-label-lg text-label-lg text-on-surface" for="kota_asal">Kota Asal Kamu</label>
 <div class="relative">
@@ -896,21 +891,88 @@ path.province.match{stroke:#fff; stroke-width:1.8}
     if (budgetInput.value) formatBudgetRibuan(budgetInput);
   }
 
-  // Kota asal: dropdown searchable (Tom Select CDN; fallback = select biasa).
+  // Kota asal: combobox milik sendiri (search + scroll, tanpa lib pihak ketiga).
+  // Select asli disembunyikan dan disinkronkan; submit form tidak berubah.
   (function () {
-    function initKotaSelect() {
-      const el = document.getElementById('kota_asal');
-      if (el && window.TomSelect && !el.tomselect) {
-        new TomSelect(el, { maxOptions: 1000, dropdownParent: document.body,
-                            placeholder: 'Ketik untuk mencari kota...' });
+    const sel = document.getElementById('kota_asal');
+    if (!sel || sel.dataset.comboDone) return;
+    const input = document.createElement('input');
+    input.type = 'text'; input.id = 'kota_asal_input'; input.autocomplete = 'off';
+    input.placeholder = 'Ketik untuk mencari kota...';
+    input.className = sel.className;
+    input.setAttribute('role', 'combobox');
+    input.setAttribute('aria-expanded', 'false');
+    const cur = sel.options[sel.selectedIndex];
+    if (cur) input.value = cur.text;
+    sel.style.display = 'none';
+    sel.parentNode.insertBefore(input, sel);
+    const menu = document.createElement('div');
+    menu.id = 'kota-menu'; menu.setAttribute('role', 'listbox'); menu.hidden = true;
+    document.body.appendChild(menu);
+    const opts = Array.from(sel.options).map(o => ({ value: o.value, text: o.text }));
+    let items = [], active = -1;
+    function position() {
+      const r = input.getBoundingClientRect();
+      menu.style.width = r.width + 'px';
+      menu.style.left = r.left + 'px';
+      const below = window.innerHeight - r.bottom - 12;
+      if (below < 140) {
+        menu.style.maxHeight = Math.max(120, r.top - 12) + 'px';
+        menu.style.top = 'auto';
+        menu.style.bottom = (window.innerHeight - r.top + 6) + 'px';
+      } else {
+        menu.style.maxHeight = Math.min(280, below) + 'px';
+        menu.style.bottom = 'auto';
+        menu.style.top = (r.bottom + 6) + 'px';
       }
     }
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js';
-    s.onload = initKotaSelect;
-    document.head.appendChild(s);
-    if (document.readyState !== 'loading') initKotaSelect();
-    else document.addEventListener('DOMContentLoaded', initKotaSelect);
+    function render() {
+      menu.innerHTML = '';
+      if (!items.length) {
+        menu.innerHTML = '<div class="kota-empty">Tidak ada kota yang cocok.</div>';
+        return;
+      }
+      items.slice(0, 200).forEach((it, i) => {
+        const d = document.createElement('div');
+        d.className = 'kota-opt' + (i === active ? ' active' : '');
+        d.textContent = it.text;
+        d.setAttribute('role', 'option');
+        d.addEventListener('mousedown', (e) => { e.preventDefault(); choose(i); });
+        menu.appendChild(d);
+      });
+    }
+    function filter() {
+      const q = input.value.trim().toLowerCase();
+      items = q ? opts.filter(o => o.text.toLowerCase().includes(q)) : opts.slice();
+      active = items.length ? 0 : -1;
+    }
+    function open() { filter(); render(); menu.hidden = false; position(); input.setAttribute('aria-expanded', 'true'); }
+    function close() { menu.hidden = true; input.setAttribute('aria-expanded', 'false'); active = -1; }
+    function choose(i) {
+      const it = items[i]; if (!it) return;
+      sel.value = it.value; input.value = it.text; close();
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    function scrollActive() {
+      const el = menu.children[active];
+      if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest' });
+    }
+    input.addEventListener('focus', open);
+    input.addEventListener('click', open);
+    input.addEventListener('input', open);
+    input.addEventListener('blur', () => setTimeout(close, 120));
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); if (menu.hidden) open(); active = Math.min(active + 1, items.length - 1); render(); scrollActive(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); active = Math.max(active - 1, 0); render(); scrollActive(); }
+      else if (e.key === 'Enter' && !menu.hidden && active >= 0) { e.preventDefault(); choose(active); }
+      else if (e.key === 'Escape') close();
+    });
+    document.addEventListener('mousedown', (e) => {
+      if (!menu.hidden && !menu.contains(e.target) && e.target !== input) close();
+    });
+    window.addEventListener('scroll', () => { if (!menu.hidden) position(); }, { passive: true });
+    window.addEventListener('resize', () => { if (!menu.hidden) position(); });
+    sel.dataset.comboDone = '1';
   })();
 
   // Submit via fetch: hasil muncul tanpa refresh + scroll otomatis ke #hasil.

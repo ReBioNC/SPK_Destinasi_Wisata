@@ -189,24 +189,24 @@ class RekomendasiViewTest(TestCase):
 
     def test_kota_searchable_di_form(self):
         r = self.client.get("/")
-        self.assertContains(r, "tom-select")
-        self.assertContains(r, "Badung")
+        self.assertContains(r, "kota_asal_input")
+        self.assertContains(r, "kota-menu")
+        self.assertContains(r, "Badung (Bali)")
 
-    def test_kota_dropdown_tidak_tertutup_konten(self):
-        # Menu harus lepas dari stacking context form (dropdownParent body)
-        # dengan z-index di atas konten, kalau tidak tertutup field di bawahnya.
-        r = self.client.get("/")
-        self.assertContains(r, "dropdownParent")
-        self.assertContains(r, ".ts-dropdown")
-
-    def test_kota_dropdown_tema_mandiri(self):
-        # Tema bootstrap5 butuh variabel CSS Bootstrap (--bs-*) yang tidak ada
-        # di halaman Tailwind -> menu transparan. Wajib tema default + override.
+    def test_kota_tanpa_lib_pihak_ketiga(self):
+        # Combobox milik sendiri: tidak ada sisa Tom Select yang bisa merusak layer/tema.
         r = self.client.get("/")
         html = r.content.decode()
-        self.assertIn("tom-select.default.min.css", html)
-        self.assertNotIn("tom-select.bootstrap5", html)
-        self.assertIn(".ts-dropdown .option", html)
+        self.assertNotIn("TomSelect", html)
+        self.assertNotIn("tom-select", html)
+
+    def test_kota_dropdown_terlihat_penuh(self):
+        # Menu milik sendiri: background/border/shadow eksplisit + di body.
+        r = self.client.get("/")
+        html = r.content.decode()
+        self.assertIn(".kota-menu", html)
+        self.assertNotIn("dropdownParent", html)  # sisa Tom Select harus hilang
+        self.assertIn("background:#fff", html.replace(" ", ""))
 
     def test_post_kota_baru_valid(self):
         r = self.post_valid(kota_asal="Badung")
