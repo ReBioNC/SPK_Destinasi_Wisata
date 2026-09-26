@@ -907,7 +907,8 @@ path.province.match{stroke:#fff; stroke-width:1.8}
     sel.style.display = 'none';
     sel.parentNode.insertBefore(input, sel);
     const menu = document.createElement('div');
-    menu.id = 'kota-menu'; menu.setAttribute('role', 'listbox'); menu.hidden = true;
+    menu.id = 'kota-menu'; menu.className = 'kota-menu';
+    menu.setAttribute('role', 'listbox'); menu.hidden = true;
     document.body.appendChild(menu);
     const opts = Array.from(sel.options).map(o => ({ value: o.value, text: o.text }));
     let items = [], active = -1;

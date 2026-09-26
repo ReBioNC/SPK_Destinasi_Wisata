@@ -200,6 +200,12 @@ class RekomendasiViewTest(TestCase):
         self.assertNotIn("TomSelect", html)
         self.assertNotIn("tom-select", html)
 
+    def test_kota_menu_punya_class_terstyle(self):
+        # Menu dibuat via JS harus membawa class yang ditarget CSS (.kota-menu),
+        # kalau tidak ia ter-render polos di ujung body, di luar viewport.
+        r = self.client.get("/")
+        self.assertContains(r, "menu.className = 'kota-menu'")
+
     def test_kota_dropdown_terlihat_penuh(self):
         # Menu milik sendiri: background/border/shadow eksplisit + di body.
         r = self.client.get("/")
