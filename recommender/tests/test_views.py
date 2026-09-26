@@ -130,6 +130,12 @@ class RekomendasiViewTest(TestCase):
         r = self.client.get("/")
         self.assertContains(r, ".profil-info:has(input:checked)")
 
+    def test_profil_satu_sumber_status_terpilih(self):
+        # Status terpilih hanya dari :has (sinkron DOM); tidak ada ring server
+        # basi yang bisa tampil bersamaan dengan kartu yang benar-benar dicentang.
+        r = self.client.get("/")
+        self.assertNotContains(r, "ring-primary/20")
+
     def test_post_profil_hemat_tercerminkan(self):
         r = self.post_valid(profil="hemat")
         self.assertEqual(r.status_code, 200)

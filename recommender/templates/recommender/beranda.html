@@ -4,6 +4,8 @@
 /* === Transplanted from index.html (map only; page-level dark rules removed) === */
 /* Group C: kartu terpilih langsung terlihat (tanpa menunggu refresh). */
 .profil-info:has(input:checked){outline:3px solid #0d9488; outline-offset:2px; background:#fff;}
+/* Hover dibedakan dari status terpilih: abu-abu, bukan teal. */
+.profil-info:hover{border-color:#94a3b8;}
 /* Anchor hasil di bawah header fixed saat scroll. */
 #hasil{scroll-margin-top:90px;}
 :root{
@@ -441,7 +443,7 @@ path.province.match{stroke:#fff; stroke-width:1.8}
             </p>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm" id="profil-selector">
 {% for p in profil_cards %}
-<label class="profil-info cursor-pointer relative p-space-sm rounded-lg bg-surface-white border-2 {% if p.key == cur.profil %}border-primary shadow-sm ring-2 ring-primary/20{% else %}border-on-surface/10 hover:border-primary{% endif %} transition-all flex flex-col justify-between">
+<label class="profil-info cursor-pointer relative p-space-sm rounded-lg bg-surface-white border-2 border-on-surface/10 transition-all flex flex-col justify-between">
 <input{% if p.key == cur.profil %} checked=""{% endif %} class="sr-only" data-w="{{ p.w_pct|join:"," }}" name="profil" type="radio" value="{{ p.key }}">
 <div>
 <div class="flex items-center justify-between">
