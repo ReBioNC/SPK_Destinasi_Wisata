@@ -8,6 +8,8 @@
 .profil-info:hover{border-color:#94a3b8;}
 /* Anchor hasil di bawah header fixed saat scroll. */
 #hasil{scroll-margin-top:90px;}
+/* Menu dropdown kota: selalu di atas konten form (lepas dari stacking context). */
+.ts-dropdown{z-index:9999 !important;}
 :root{
     --sea-950:#050b1a; --sea-900:#081230; --sea-800:#0c1c48;
     --ink:#f4efe4; --muted:#a7b4d4; --line:rgba(255,255,255,.12);
@@ -890,7 +892,8 @@ path.province.match{stroke:#fff; stroke-width:1.8}
     function initKotaSelect() {
       const el = document.getElementById('kota_asal');
       if (el && window.TomSelect && !el.tomselect) {
-        new TomSelect(el, { maxOptions: 1000, placeholder: 'Ketik untuk mencari kota...' });
+        new TomSelect(el, { maxOptions: 1000, dropdownParent: document.body,
+                            placeholder: 'Ketik untuk mencari kota...' });
       }
     }
     const s = document.createElement('script');

@@ -192,6 +192,13 @@ class RekomendasiViewTest(TestCase):
         self.assertContains(r, "tom-select")
         self.assertContains(r, "Badung")
 
+    def test_kota_dropdown_tidak_tertutup_konten(self):
+        # Menu harus lepas dari stacking context form (dropdownParent body)
+        # dengan z-index di atas konten, kalau tidak tertutup field di bawahnya.
+        r = self.client.get("/")
+        self.assertContains(r, "dropdownParent")
+        self.assertContains(r, ".ts-dropdown")
+
     def test_post_kota_baru_valid(self):
         r = self.post_valid(kota_asal="Badung")
         self.assertEqual(r.status_code, 200)
