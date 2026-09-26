@@ -34,7 +34,7 @@ class RekomendasiViewTest(TestCase):
                 "hobi": ["hiking", "fotografi"], "profil": "seimbang"}
         extra = {k: over.pop(k) for k in list(over) if k.startswith("HTTP_")}
         data.update(over)
-        return self.client.post("/", data, **extra)
+        return self.client.post("/", data, follow=True, **extra)
 
     def test_post_valid_menampilkan_10_hasil_urutan_benar(self):
         r = self.post_valid()
@@ -104,6 +104,14 @@ class RekomendasiViewTest(TestCase):
         self.assertEqual(len(r.context["hasil"]), 1)
         self.assertEqual(r.context["hasil"][0]["vi"], 1.0)
 
+    def test_refresh_membersihkan_hasil(self):
+        # Refresh = sesi baru: hasil hanya tampil sekali setelah redirect.
+        r = self.post_valid()
+        self.assertEqual(len(r.context["hasil"]), 10)
+        r2 = self.client.get("/")
+        self.assertIsNone(r2.context["hasil"])
+        self.assertContains(r2, "Siap menghitung rekomendasi.")
+
     def test_wilayah_dari_peta_terisi_otomatis(self):
         r = self.client.get("/", {"wilayah": "Jawa Barat"})
         self.assertEqual(r.status_code, 200)
@@ -139,7 +147,7 @@ class RekomendasiViewTest(TestCase):
     def test_post_profil_hemat_tercerminkan(self):
         r = self.post_valid(profil="hemat")
         self.assertEqual(r.status_code, 200)
-        self.assertRegex(r.content.decode(), r'checked=""[^>]*value="hemat"')
+        self.assertEqual(r.context["ringkasan"]["profil"], "Hemat")
 
     def test_ajax_hasil_tanpa_refresh(self):
         r = self.post_valid(HTTP_X_REQUESTED_WITH="XMLHttpRequest")

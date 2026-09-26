@@ -2,7 +2,7 @@
 
 from django.db.models import Count
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 
 from recommender.forms import KOTA_ASAL, PreferensiForm
@@ -126,6 +126,11 @@ def rekomendasi(request):
         konteks["pesan"] = (f"Wilayah tujuan terisi dari peta: {request.GET['wilayah']} — "
                             "lengkapi preferensi lain lalu klik Cari Rekomendasi.")
         konteks["pesan_class"] = "success"
+    if request.method == "GET":
+        # Flash sekali tampil: refresh berikutnya bersih seperti sesi baru.
+        flash = request.session.pop("flash_hasil", None)
+        if flash:
+            konteks.update(flash)
     if request.method != "POST" or not form.is_valid():
         if request.method == "POST" and _is_ajax(request):
             return JsonResponse({"ok": False,
@@ -161,7 +166,10 @@ def rekomendasi(request):
             return JsonResponse({"ok": True, "count": 0,
                                  "html": render_to_string("recommender/_hasil.html",
                                                           konteks, request)})
-        return render(request, "recommender/beranda.html", konteks)
+        request.session["flash_hasil"] = {
+            "kandidat_kosong": True, "pesan": konteks["pesan"],
+            "pesan_class": konteks["pesan_class"]}
+        return redirect("beranda")
 
     matriks = []
     for d in kandidat:
@@ -225,11 +233,28 @@ def rekomendasi(request):
                                   "budget_fmt": _rupiah(cd["budget"]),
                                   "profil": profiles.ACTIVE_PROFILES[cd["profil"]]["label"],
                                   "n": len(kandidat)}})
+    konteks.update({"hasil": hasil, "bobot_efektif": bobot, "mode_custom": mode_custom,
+                    "bobot_persen": [round(w * 100) for w in bobot],
+                    "cluster_list": sorted({h["cluster"] for h in hasil}),
+                    "ringkasan": {"wilayah": cd["wilayah"],
+                                  "budget_fmt": _rupiah(cd["budget"]),
+                                  "profil": profiles.ACTIVE_PROFILES[cd["profil"]]["label"],
+                                  "n": len(kandidat)}})
     if _is_ajax(request):
         return JsonResponse({"ok": True, "count": len(hasil),
                              "html": render_to_string("recommender/_hasil.html",
                                                       konteks, request)})
-    return render(request, "recommender/beranda.html", konteks)
+    # POST-Redirect-GET: hasil tampil sekali, refresh berikutnya bersih.
+    request.session["flash_hasil"] = {
+        "hasil": hasil, "mode_custom": mode_custom,
+        "pesan": konteks["pesan"], "pesan_class": konteks["pesan_class"],
+        "bobot_persen": [round(w * 100) for w in bobot],
+        "cluster_list": sorted({h["cluster"] for h in hasil}),
+        "ringkasan": {"wilayah": cd["wilayah"],
+                      "budget_fmt": _rupiah(cd["budget"]),
+                      "profil": profiles.ACTIVE_PROFILES[cd["profil"]]["label"],
+                      "n": len(kandidat)}}
+    return redirect("beranda")
 
 
 def _is_ajax(request):
