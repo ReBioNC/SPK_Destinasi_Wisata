@@ -2,6 +2,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-container-lowest": "#ffffff", "inverse-on-surface": "#ebf1ff", "ink-border": "rgba(30, 42, 59, 0.10)", "surface-tint": "#006b5c", "on-tertiary-fixed-variant": "#5c4300", "on-error": "#ffffff", "surface": "#f8f9ff", "outline-variant": "#bcc9c5", "on-secondary-fixed": "#360f00", "on-background": "#101c2c", "secondary-fixed-dim": "#ffb598", "error": "#ba1a1a", "secondary": "#a53c00", "on-primary-container": "#f4fffa", "background": "#f8f9ff", "primary-container": "#008472", "on-primary-fixed-variant": "#005045", "tertiary-fixed": "#ffdea0", "secondary-fixed": "#ffdbcd", "error-container": "#ffdad6", "inverse-surface": "#253142", "background-cream": "#FFFBEB", "surface-container-highest": "#d7e3fa", "outline": "#6d7a76", "primary-fixed-dim": "#63dac3", "on-tertiary": "#ffffff", "tertiary": "#765700", "on-secondary-container": "#612000", "on-surface-variant": "#3d4946", "on-primary-fixed": "#00201b", "primary": "#00685a", "on-tertiary-fixed": "#261900", "accent-lilac": "#B79CFF", "surface-bright": "#f8f9ff", "primary-fixed": "#81f7de", "on-error-container": "#93000a", "secondary-container": "#fb773a", "on-surface": "#101c2c", "on-primary": "#ffffff", "surface-container": "#e6eeff", "surface-white": "#FFFFFF", "accent-pink": "#FF7AB8", "on-tertiary-container": "#fffbff", "tertiary-container": "#956e00", "surface-dim": "#cedbf1", "on-secondary": "#ffffff", "on-secondary-fixed-variant": "#7e2c00", "inverse-primary": "#63dac3", "surface-container-high": "#dde9ff", "surface-container-low": "#eff3ff", "accent-sky": "#5EA8FF", "tertiary-fixed-dim": "#f7be36", "surface-variant": "#d7e3fa" }, "borderRadius": { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" }, "spacing": { "gutter": "1.5rem", "space-md": "1rem", "margin-mobile": "1.25rem", "space-xl": "2.5rem", "margin": "2rem", "gutter-mobile": "1rem", "space-sm": "0.5rem", "space-lg": "1.5rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": [ "Plus Jakarta Sans" ], "label-md": [ "Plus Jakarta Sans" ], "headline-md": [ "Plus Jakarta Sans" ], "display-lg-mobile": [ "Plus Jakarta Sans" ], "headline-lg": [ "Plus Jakarta Sans" ], "label-sm": [ "Plus Jakarta Sans" ], "body-lg": [ "Plus Jakarta Sans" ], "label-lg": [ "Plus Jakarta Sans" ], "headline-sm": [ "Plus Jakarta Sans" ], "display-accent": [ "Newsreader" ], "body-sm": [ "Plus Jakarta Sans" ], "display-lg": [ "Plus Jakarta Sans" ] }, "fontSize": { "body-md": [ "16px", { "lineHeight": "24px", "fontWeight": "400" } ], "label-md": [ "12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "700" } ], "headline-md": [ "24px", { "lineHeight": "32px", "fontWeight": "700" } ], "display-lg-mobile": [ "36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" } ], "headline-lg": [ "32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "800" } ], "label-sm": [ "11px", { "lineHeight": "14px", "fontWeight": "600" } ], "body-lg": [ "18px", { "lineHeight": "28px", "fontWeight": "500" } ], "label-lg": [ "14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" } ], "headline-sm": [ "20px", { "lineHeight": "28px", "fontWeight": "700" } ], "display-accent": [ "48px", { "lineHeight": "56px", "letterSpacing": "-0.01em", "fontWeight": "400" } ], "body-sm": [ "14px", { "lineHeight": "20px", "fontWeight": "400" } ], "display-lg": [ "48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800" } ] } } } };</script>
 <style id="tf-nusantara-css">
 /* === Transplanted from index.html (map only; page-level dark rules removed) === */
+/* Group C: kartu terpilih langsung terlihat (tanpa menunggu refresh). */
+.profil-info:has(input:checked){outline:3px solid #0d9488; outline-offset:2px; background:#fff;}
+/* Anchor hasil di bawah header fixed saat scroll. */
+#hasil{scroll-margin-top:90px;}
 :root{
     --sea-950:#050b1a; --sea-900:#081230; --sea-800:#0c1c48;
     --ink:#f4efe4; --muted:#a7b4d4; --line:rgba(255,255,255,.12);
@@ -539,151 +543,7 @@ path.province.match{stroke:#fff; stroke-width:1.8}
 </form>
 </div>
 </section>
-<!-- SECTION 3 — HASIL TOP-10 DENGAN EXPLAINABILITY -->
-<section class="w-full py-space-xl px-margin" id="hasil">
-<div class="max-w-[1680px] mx-auto flex flex-col gap-space-lg">
-<!-- Result Header Card -->
-<div class="p-space-lg bg-surface-white rounded-xl shadow-md border-2 border-on-surface/5 flex flex-col md:flex-row md:items-center justify-between gap-space-md">
-<div>
-<div class="flex items-center gap-space-xs">
-<span class="text-headline-md">🏆</span>
-<h2 class="font-headline-lg text-headline-lg text-on-surface font-extrabold">Top-10 Rekomendasi Buat Kamu</h2>
-</div>
-<p class="font-body-md text-body-md text-on-surface-variant mt-1">
-            Wilayah <strong class="text-on-surface">{{ ringkasan.wilayah }}</strong> • Budget ≤ <strong class="text-on-surface">{{ ringkasan.budget_fmt }}</strong> • Profil <strong class="text-primary">{{ ringkasan.profil }}</strong> • <span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold">{{ ringkasan.n }} kandidat lolos filter</span>
-</p>
-</div>
-<div class="flex items-center gap-space-sm">
-<a class="px-space-md py-space-sm rounded-full bg-surface-container text-on-surface font-label-md text-label-md shadow-sm hover:bg-surface-container-high transition-colors flex items-center gap-1" href="#peta">
-<span class="">🗺️ Lihat di Peta</span>
-</a>
-<a class="px-space-md py-space-sm rounded-full bg-surface-white border-2 border-on-surface/10 text-on-surface font-label-md text-label-md shadow-sm hover:bg-surface-container-low transition-colors flex items-center gap-1" href="#form">
-<span class="">✏️ Ubah Preferensi</span>
-</a>
-</div>
-</div>
-{% if hasil %}
-<!-- Quick Filter & Sort Chips Row -->
-<div class="flex flex-wrap items-center justify-between gap-space-sm">
-<div class="flex flex-wrap items-center gap-space-xs" id="hasil-filters">
-<button class="px-space-md py-space-xs rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm" data-f="semua" onclick="filterHasil('semua', this)">Semua ({{ hasil|length }})</button>
-{% for c in cluster_list %}
-<button class="px-space-md py-space-xs rounded-full bg-surface-white text-on-surface border-2 border-on-surface/5 font-label-md text-label-md shadow-sm hover:bg-surface-container-low" data-f="{{ c }}" onclick="filterHasil('{{ c }}', this)">{{ c }}</button>
-{% endfor %}
-</div>
-<div class="flex items-center gap-space-xs">
-<span class="font-label-sm text-label-sm text-on-surface-variant font-bold">Urutkan:</span>
-<select class="px-space-md py-space-xs rounded-full bg-surface-white border-2 border-on-surface/10 font-label-sm text-label-sm text-on-surface shadow-sm focus:outline-none" id="sort-hasil" onchange="sortHasil(this.value)">
-<option value="vi">Skor TOPSIS Tertinggi (Vi)</option>
-<option value="harga">Harga Termurah</option>
-<option value="rating">Rating Tertinggi</option>
-<option value="jarak">Jarak Terdekat</option>
-</select>
-</div>
-</div>
-<!-- Ranked List 1 to 10 -->
-<div class="flex flex-col gap-space-md" id="hasil-list">
-{% for h in hasil %}
-{% if forloop.counter <= 3 %}
-<div class="hasil-card p-space-lg bg-surface-white rounded-xl {% if forloop.counter == 1 %}shadow-md border-2 border-tertiary-fixed-dim/40 hover:shadow-xl{% else %}shadow-sm border-2 border-on-surface/5 hover:shadow-md{% endif %} flex flex-col gap-space-{% if forloop.counter == 1 %}md{% else %}sm{% endif %} transition-all" data-cluster="{{ h.cluster }}" data-vi="{{ h.vi }}" data-harga="{{ h.harga }}" data-rating="{{ h.rating }}" data-jarak="{{ h.jarak_km }}">
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
-<div class="flex items-start gap-space-md">
-<div class="{% if forloop.counter == 1 %}w-14 h-14 rounded-full bg-gradient-to-br from-tertiary-fixed to-secondary-container text-on-primary font-headline-lg text-headline-lg{% elif forloop.counter == 2 %}w-12 h-12 rounded-full bg-surface-dim text-on-surface font-headline-md text-headline-md{% else %}w-12 h-12 rounded-full bg-secondary-fixed text-on-secondary-fixed font-headline-md text-headline-md{% endif %} flex items-center justify-center font-extrabold {% if forloop.counter == 1 %}shadow-md{% else %}shadow-sm{% endif %} shrink-0">{{ forloop.counter }}</div>
-<div class="flex flex-col gap-1">
-<div class="flex flex-wrap items-center gap-2">
-<h3 class="{% if forloop.counter == 1 %}font-headline-md text-headline-md{% else %}font-headline-sm text-headline-sm{% endif %} text-on-surface font-extrabold">{{ h.nama }}</h3>
-<span class="px-space-sm py-0.5 rounded-full bg-accent-sky text-on-surface font-label-sm text-label-sm font-bold">{{ h.kategori }}</span>
-<span class="px-space-sm py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-bold">Cluster: {{ h.cluster }}</span>
-<span class="px-space-sm py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold">Lolos Budget</span>
-</div>
-<div class="flex flex-wrap items-center gap-space-md text-on-surface-variant font-body-sm text-body-sm">
-<span class="font-bold text-primary">{{ h.harga_fmt }} / orang</span>
-<span class="">•</span>
-<span class="flex items-center text-tertiary font-bold">★ {{ h.rating }}</span>
-<span class="">•</span>
-<span class="">{{ h.jarak_txt }}</span>
-</div>
-</div>
-</div>
-<div class="flex flex-col items-start md:items-end gap-1 shrink-0">
-<div class="flex items-baseline gap-1">
-<span class="font-label-sm text-label-sm text-on-surface-variant font-bold">Skor TOPSIS:</span>
-<span class="{% if forloop.counter == 1 %}font-headline-md text-headline-md{% else %}font-headline-sm text-headline-sm{% endif %} font-extrabold text-primary">{{ h.vi|floatformat:4 }}</span>
-</div>
-<div class="{% if forloop.counter == 1 %}w-40 h-2.5{% else %}w-36 h-2{% endif %} rounded-full bg-surface-container-high overflow-hidden">
-<div class="h-full {% if forloop.counter == 1 %}bg-gradient-to-r from-primary to-secondary-container{% else %}bg-primary{% endif %} rounded-full" style="width: {{ h.vi_pct }}%;"></div>
-</div>
-{% if forloop.counter != 1 %}<button class="text-primary font-label-sm text-label-sm font-bold mt-1 hover:underline" onclick="toggleExplain('exp-{{ forloop.counter }}')">Lihat Alasan ▾</button>{% endif %}
-</div>
-</div>
-<div class="{% if forloop.counter == 1 %}p-space-md bg-background-cream rounded-lg border-2 border-on-surface/5 flex flex-col gap-space-sm{% else %}hidden p-space-md bg-background-cream rounded-lg mt-space-xs text-body-sm{% endif %}" id="exp-{{ forloop.counter }}">
-<div class="flex items-center gap-space-xs text-on-surface">
-<span class="text-lg">💡</span>
-<p class="font-body-md text-body-md font-bold">{{ h.alasan }}</p>
-</div>
-<div class="grid grid-cols-2 md:grid-cols-6 gap-space-sm pt-space-xs">
-{% for b in h.bars %}
-<div class="flex flex-col gap-1 p-2 bg-surface-white rounded-lg">
-<div class="flex justify-between font-label-sm text-label-sm">
-<span class="">{{ b.nama }}</span>
-<span class="font-bold {% if b.pct < 80 %}text-secondary-container{% else %}text-primary{% endif %}">{{ b.pct }}%</span>
-</div>
-<div class="w-full h-1.5 rounded-full bg-surface-container"><div class="h-full {% if b.pct < 80 %}bg-secondary-container{% else %}bg-primary{% endif %} rounded-full" style="width: {{ b.pct }}%;"></div></div>
-<span class="font-label-sm text-[10px] text-on-surface-variant truncate">{{ b.sub }}</span>
-</div>
-{% endfor %}
-</div>
-</div>
-</div>
-{% else %}
-{% if forloop.counter == 4 %}<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md" id="hasil-grid">{% endif %}
-<div class="hasil-card p-space-md bg-surface-white rounded-xl shadow-sm border-2 border-on-surface/5{% if forloop.last %} md:col-span-2{% endif %}" data-cluster="{{ h.cluster }}" data-vi="{{ h.vi }}" data-harga="{{ h.harga }}" data-rating="{{ h.rating }}" data-jarak="{{ h.jarak_km }}">
-<div class="flex items-center justify-between gap-space-sm">
-<div class="flex items-center gap-space-sm">
-<span class="w-9 h-9 rounded-full bg-surface-container text-primary font-bold flex items-center justify-center shrink-0">{{ forloop.counter }}</span>
-<div>
-<h4 class="font-headline-sm text-headline-sm text-on-surface">{{ h.nama }}</h4>
-<p class="font-body-sm text-body-sm text-on-surface-variant">{{ h.harga_fmt }} • ★ {{ h.rating }} • {{ h.cluster }}</p>
-</div>
-</div>
-<div class="text-right shrink-0">
-<div class="font-headline-sm text-headline-sm font-bold text-primary">{{ h.vi|floatformat:4 }}</div>
-<button class="font-label-sm text-label-sm text-primary font-bold hover:underline" onclick="toggleExplain('exp-{{ forloop.counter }}')">Alasan ▾</button>
-</div>
-</div>
-<div class="hidden p-space-sm bg-background-cream rounded-lg mt-space-xs text-body-sm" id="exp-{{ forloop.counter }}">
-<div class="font-bold mb-1">💡 {{ h.alasan }}</div>
-<div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-{% for b in h.bars %}
-<div class="flex flex-col gap-1 p-2 bg-surface-white rounded-lg">
-<div class="flex justify-between font-label-sm text-label-sm"><span>{{ b.nama }}</span><span class="font-bold">{{ b.pct }}%</span></div>
-<div class="w-full h-1.5 rounded-full bg-surface-container"><div class="h-full bg-primary rounded-full" style="width: {{ b.pct }}%;"></div></div>
-<span class="font-label-sm text-[10px] text-on-surface-variant truncate">{{ b.sub }}</span>
-</div>
-{% endfor %}
-</div>
-</div>
-</div>
-{% if forloop.last %}</div>{% endif %}
-{% endif %}
-{% endfor %}
-</div>
-{% elif kandidat_kosong %}
-<div class="p-space-xl bg-surface-white rounded-xl shadow-sm border-2 border-on-surface/5 text-center flex flex-col items-center gap-space-sm">
-<div class="text-5xl">🧭</div>
-<h3 class="font-headline-md text-headline-md text-on-surface font-extrabold">Tidak ada destinasi yang cocok.</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Tidak ada destinasi yang cocok. Coba longgarkan budget atau pilih wilayah lain.</p>
-<a class="px-space-md py-space-sm rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm" href="#form">Ubah Preferensi</a>
-</div>
-{% else %}
-<div class="p-space-xl bg-surface-white rounded-xl shadow-sm border-2 border-dashed border-on-surface/20 text-center flex flex-col items-center gap-space-sm">
-<div class="text-5xl">🗺-fe0f</div>
-<h3 class="font-headline-md text-headline-md text-on-surface font-extrabold">Siap menghitung rekomendasi.</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Isi preferensi di atas lalu klik Hitung Rekomendasi — Top-10 destinasi + alasan tiap peringkat akan muncul di sini.</p>
-</div>
-{% endif %}
-</div>
-</section>
+{% include "recommender/_hasil.html" %}
 <!-- SECTION 4 — PETA INTERAKTIF NUSANTARA -->
 
 <!-- SECTION 5 — TENTANG & METODOLOGI SPK -->
@@ -1011,6 +871,44 @@ path.province.match{stroke:#fff; stroke-width:1.8}
       toast.classList.remove('translate-y-0', 'opacity-100');
       toast.classList.add('translate-y-24', 'opacity-0');
     }, 2800);
+  }
+
+  // Budget: tampilkan pemisah ribuan saat mengetik (1.000.000). Server tetap parsing angka.
+  function formatBudgetRibuan(el) {
+    const d = el.value.replace(/\D/g, '').slice(0, 15);
+    el.value = d.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+  const budgetInput = document.getElementById('budget');
+  if (budgetInput) {
+    budgetInput.addEventListener('input', () => formatBudgetRibuan(budgetInput));
+    if (budgetInput.value) formatBudgetRibuan(budgetInput);
+  }
+
+  // Submit via fetch: hasil muncul tanpa refresh + scroll otomatis ke #hasil.
+  // Gagal (offline/server error) -> fallback submit normal.
+  const travelForm = document.getElementById('travel-form');
+  if (travelForm) {
+    travelForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = travelForm.querySelector('[type="submit"]');
+      if (btn) btn.disabled = true;
+      try {
+        const res = await fetch(travelForm.action || '/', {
+          method: 'POST',
+          body: new FormData(travelForm),
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok || !data.html) { travelForm.submit(); return; }
+        document.getElementById('hasil').outerHTML = data.html;
+        document.getElementById('hasil').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (typeof showToast === 'function') showToast('Rekomendasi diperbarui.');
+      } catch (err) {
+        travelForm.submit();
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    });
   }
 
 </script></main><footer class="w-full bg-surface-white shadow-[0_-1px_12px_rgba(30,42,59,0.04)] py-space-xl mt-space-xl"><div class="max-w-[1680px] mx-auto px-margin flex flex-col md:flex-row items-center justify-between gap-space-lg text-center md:text-left"><div class="flex flex-col gap-space-xs"><div class="flex items-center justify-center md:justify-start gap-space-xs"><img alt="TravelFit Logo Mark" class="h-6 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VLNop3HVRB4WclBnNmP1t1D5yw7cl-9pXgefttya4WL8Qm0kKPpyZM2zPIriWJmt4yMJVn8QacQ-ARLLSTG5d53PF3bUtkp8xcZzLfCsNvppYMDOo2vYFkRSgGTB08oQ87Kt0wJadSNVV5BXwnCGUX6wcfpkrKruC1-RABTOjvXWIyTBcUqOp2pRuVKFENqxq5UAAVXKf52VclPe6fq-TIQK_CE861n4uJyqMZwWK6SliGTrA2wEVUnLw"><span class="font-headline-sm text-headline-sm text-on-surface">TravelFit</span></div><p class="font-body-sm text-body-sm text-on-surface-variant max-w-xl">TravelFit — SPK Rekomendasi Destinasi Wisata (AHP-TOPSIS) • Tugas Akademik Informatika</p></div><div class="flex flex-wrap items-center justify-center gap-space-md"><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#hero">Beranda</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#hasil">Hasil</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#peta">Peta</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#tentang">Tentang</a></div><div class="font-label-sm text-label-sm text-on-surface-variant"><a class="hover:text-primary" href="/peta/">Peta layar penuh</a> · <a class="hover:text-primary" href="/tentang/">Tentang</a> · © 2025 TravelFit Team. Hak Cipta Dilindungi.</div></div></footer>

@@ -32,8 +32,9 @@ class RekomendasiViewTest(TestCase):
         data = {"budget": "250000", "kota_asal": "Bandung", "wilayah": "Jawa Barat",
                 "kategori_utama": "alam", "kategori_sekunder": "budaya",
                 "hobi": ["hiking", "fotografi"], "profil": "seimbang"}
+        extra = {k: over.pop(k) for k in list(over) if k.startswith("HTTP_")}
         data.update(over)
-        return self.client.post("/", data)
+        return self.client.post("/", data, **extra)
 
     def test_post_valid_menampilkan_10_hasil_urutan_benar(self):
         r = self.post_valid()
@@ -124,6 +125,33 @@ class RekomendasiViewTest(TestCase):
         r = self.client.get("/")
         self.assertContains(r, "otomatis tersaring")
         self.assertContains(r, "menentukan jarak")
+
+    def test_profil_terpilih_terlihat_langsung(self):
+        r = self.client.get("/")
+        self.assertContains(r, ".profil-info:has(input:checked)")
+
+    def test_post_profil_hemat_tercerminkan(self):
+        r = self.post_valid(profil="hemat")
+        self.assertEqual(r.status_code, 200)
+        self.assertRegex(r.content.decode(), r'checked=""[^>]*value="hemat"')
+
+    def test_ajax_hasil_tanpa_refresh(self):
+        r = self.post_valid(HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        self.assertEqual(r.status_code, 200)
+        data = r.json()
+        self.assertTrue(data["ok"])
+        self.assertEqual(data["count"], 10)
+        self.assertIn("Gunung Tangkuban Perahu", data["html"])
+        self.assertNotIn("<html", data["html"])
+
+    def test_ajax_form_invalid(self):
+        r = self.post_valid(budget="gratis", HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        self.assertEqual(r.status_code, 400)
+        self.assertFalse(r.json()["ok"])
+
+    def test_budget_format_ribuan_hook(self):
+        r = self.client.get("/")
+        self.assertContains(r, "formatBudgetRibuan")
 
 
 class HalamanTest(TestCase):

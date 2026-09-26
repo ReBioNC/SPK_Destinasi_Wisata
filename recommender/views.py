@@ -1,7 +1,9 @@
 """View rekomendasi: form preferensi + ranking TOPSIS."""
 
 from django.db.models import Count
+from django.http import JsonResponse
 from django.shortcuts import render
+from django.template.loader import render_to_string
 
 from recommender.forms import KOTA_ASAL, PreferensiForm
 from recommender.models import Destination
@@ -123,6 +125,10 @@ def rekomendasi(request):
                             "lengkapi preferensi lain lalu klik Cari Rekomendasi.")
         konteks["pesan_class"] = "success"
     if request.method != "POST" or not form.is_valid():
+        if request.method == "POST" and _is_ajax(request):
+            return JsonResponse({"ok": False,
+                                 "pesan": "Preferensi belum lengkap atau tidak valid."},
+                                status=400)
         return render(request, "recommender/beranda.html", konteks)
 
     cd = form.cleaned_data
@@ -149,6 +155,10 @@ def rekomendasi(request):
         konteks["kandidat_kosong"] = True
         konteks["pesan"] = ("Tidak ada destinasi yang cocok. Coba longgarkan budget "
                             "atau pilih wilayah lain.")
+        if _is_ajax(request):
+            return JsonResponse({"ok": True, "count": 0,
+                                 "html": render_to_string("recommender/_hasil.html",
+                                                          konteks, request)})
         return render(request, "recommender/beranda.html", konteks)
 
     matriks = []
@@ -213,7 +223,16 @@ def rekomendasi(request):
                                   "budget_fmt": _rupiah(cd["budget"]),
                                   "profil": profiles.ACTIVE_PROFILES[cd["profil"]]["label"],
                                   "n": len(kandidat)}})
+    if _is_ajax(request):
+        return JsonResponse({"ok": True, "count": len(hasil),
+                             "html": render_to_string("recommender/_hasil.html",
+                                                      konteks, request)})
     return render(request, "recommender/beranda.html", konteks)
+
+
+def _is_ajax(request):
+    """True bila request fetch AJAX (header X-Requested-With)."""
+    return request.headers.get("x-requested-with") == "XMLHttpRequest"
 
 
 def peta(request):
