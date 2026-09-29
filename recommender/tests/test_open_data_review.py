@@ -10,6 +10,8 @@ from scripts.open_data_review.legacy import load_legacy_candidates
 from scripts.open_data_review.osm import parse_osm_snapshot, INDONESIA_QUERY
 from scripts.open_data_review.schema import OsmPoint
 from scripts.open_data_review.services import nearby_service_evidence, service_score, _haversine_km
+from scripts.open_data_review.schema import Candidate, SourceEvidence
+from scripts.open_data_review.evidence import review_candidate, deduplicate_candidates
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -101,3 +103,70 @@ class ServiceScoreTests(TestCase):
         outside = self.point(7, 0.011, {"amenity": "bank"})
         evidence = nearby_service_evidence(0, 0, [boundary, outside], radius_km=radius)
         self.assertEqual(evidence["atm_bank"], ["node/6@2026-09-29"])
+
+
+class EvidenceGateTests(TestCase):
+    def setUp(self):
+        self.candidate = Candidate("synthetic_1900:1", "synthetic_1900", "Pantai A",
+                                   "Kota A", "Aceh", raw={"Price": 0})
+        self.c2 = {key: [] for key in ("transport", "healthcare", "atm_bank", "lodging")}
+
+    def ev(self, field, value, note="", reuse="open"):
+        return SourceEvidence(self.candidate.candidate_id, field, value,
+                              "https://example.org/entry", "2026-09-29", reuse, note)
+
+    def complete_evidence(self):
+        return [
+            self.ev("identity", "Pantai A"),
+            self.ev("location", {"lat": 5.0, "lon": 95.0, "city": "Kota A", "province": "Aceh"}),
+            self.ev("c1_ticket_price", 0, "explicit free; ticket_kind=domestic;currency=IDR"),
+            self.ev("c2_snapshot", "2026-09-29", "radius_km=2; Indonesia boundary"),
+            self.ev("c4_toilet", False, "explicit absent"),
+            self.ev("c4_parking", True, "explicit present"),
+            self.ev("c4_food", True, "explicit present"),
+            self.ev("c4_prayer", False, "explicit absent"),
+            self.ev("c5_category", "Pantai", "source tag=natural/beach"),
+            self.ev("c6_activity", "berenang", "explicit activity"),
+        ]
+
+    def test_generated_zero_is_not_free_entry(self):
+        result = review_candidate(self.candidate, [], self.c2)
+        self.assertEqual(result.status, "pending")
+        self.assertIn("missing:c1_ticket_price", result.reasons)
+
+    def test_fully_sourced_free_entry_can_pass(self):
+        result = review_candidate(self.candidate, self.complete_evidence(), self.c2)
+        self.assertEqual(result.status, "verified")
+        self.assertEqual(result.values["c1_ticket_price"], 0)
+        self.assertEqual(result.values["c2_services"], 0)
+
+    def test_unspecified_ticket_or_inferred_absence_cannot_pass(self):
+        evidence = self.complete_evidence()
+        evidence[2] = self.ev("c1_ticket_price", 0, "free maybe")
+        evidence[4] = self.ev("c4_toilet", False, "tag missing")
+        result = review_candidate(self.candidate, evidence, self.c2)
+        self.assertEqual(result.status, "pending")
+        self.assertIn("uncertain:c1_ticket_price", result.reasons)
+        self.assertIn("uncertain:c4_toilet", result.reasons)
+
+    def test_conflicting_location_and_unclear_rights(self):
+        candidate = Candidate("osm:node/1", "osm", "Pantai A", "Kota A", "Aceh",
+                              lat=0.0, lon=100.0, geometry_origin="node")
+        evidence = [SourceEvidence(candidate.candidate_id, e.field, e.value, e.source_ref,
+                                   e.accessed_at, e.reuse_status, e.note)
+                    for e in self.complete_evidence()]
+        evidence[2] = SourceEvidence(candidate.candidate_id, "c1_ticket_price", 0,
+                                     "https://example.org/entry", "2026-09-29", "unclear",
+                                     "explicit free; ticket_kind=domestic;currency=IDR")
+        result = review_candidate(candidate, evidence, self.c2)
+        self.assertEqual(result.status, "pending")
+        self.assertIn("conflict:location", result.reasons)
+        self.assertIn("reuse:c1_ticket_price", result.reasons)
+
+    def test_same_name_different_province_not_duplicate(self):
+        a = Candidate("a", "osm", "Pantai A", "X", "Aceh")
+        b = Candidate("b", "osm", "Pantai A", "X", "Bali")
+        c = Candidate("c", "osm", "Pantai A", "Y", "Aceh")
+        kept, flags = deduplicate_candidates([a, b, c])
+        self.assertEqual(len(kept), 3)
+        self.assertEqual([f.candidate_id for f in flags], ["a", "c"])
