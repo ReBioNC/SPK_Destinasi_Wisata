@@ -360,13 +360,13 @@ path.province.match{stroke:#fff; stroke-width:1.8}
 </div>
 <!-- Budget Input -->
 <div class="flex flex-col gap-1">
-<label class="font-label-lg text-label-lg text-on-surface" for="budget">Maksimal Budget Tiket (C1)</label>
+<label class="font-label-lg text-label-lg text-on-surface" for="budget">Maksimal Budget Total /orang (C1)</label>
 <div class="relative flex items-center">
 <span class="absolute left-4 font-headline-sm text-headline-sm text-on-surface-variant font-bold">Rp</span>
 <input class="w-full pl-14 pr-4 py-space-sm bg-surface-white rounded-full font-headline-sm text-headline-sm text-on-surface shadow-sm focus:outline-none focus:ring-2 focus:ring-primary border-0" id="budget" name="budget" placeholder="150000" required="" type="text" value="{{ cur.budget }}">
 </div>
 <p class="font-body-sm text-body-sm text-on-surface-variant">
-                ⚠️ Di atas budget otomatis tersaring keras (hard-filter C1).
+                ⚠️ Di atas budget otomatis tersaring keras: total biaya per orang (tiket + transport + makan + inap).
               </p>
 <span class="hidden text-error font-label-sm text-label-sm font-bold" id="budget-error">Format angka tidak valid</span>
 {% if form.budget.errors %}<span class="text-error font-label-sm text-label-sm font-bold">{{ form.budget.errors.0 }}</span>{% endif %}
@@ -390,6 +390,35 @@ path.province.match{stroke:#fff; stroke-width:1.8}
 </div>
 <p class="font-body-sm text-body-sm text-on-surface-variant">
                 Bisa juga diklik langsung lewat peta interaktif di atas.
+              </p>
+</div>
+<!-- Moda Transport -->
+<div class="flex flex-col gap-1">
+<label class="font-label-lg text-label-lg text-on-surface" for="moda">Moda Transport</label>
+<div class="relative">
+<select class="w-full px-space-md py-space-sm bg-surface-white rounded-full font-body-md text-body-md text-on-surface shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-primary pr-10" id="moda" name="moda">{% for k, label in moda_list %}<option value="{{ k }}"{% if k == cur.moda %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Kendaraan untuk estimasi biaya transport PP.
+              </p>
+</div>
+<!-- Durasi Perjalanan -->
+<div class="flex flex-col gap-1">
+<label class="font-label-lg text-label-lg text-on-surface" for="hari">Durasi Perjalanan (hari)</label>
+<input class="w-full px-space-md py-space-sm bg-surface-white rounded-full font-body-md text-body-md text-on-surface shadow-sm focus:outline-none focus:ring-2 focus:ring-primary" id="hari" name="hari" type="number" min="1" max="30" value="{{ cur.hari|default:'1' }}" required>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Hari pertama tanpa inap; tiap hari menambah makan, tiap malam menambah inap.
+              </p>
+</div>
+<!-- Mode Antar-Pulau -->
+<div class="flex flex-col gap-1">
+<span class="font-label-lg text-label-lg text-on-surface">Transport Antar-Pulau</span>
+{% for k, label in mode_antar_list %}
+<label class="font-body-md text-body-md text-on-surface flex items-center gap-2"><input type="radio" name="mode_antar" value="{{ k }}"{% if k == cur.mode_antar %} checked{% endif %}> {{ label }}</label>
+{% endfor %}
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Berlaku bila kota asal dan tujuan beda pulau.
               </p>
 </div>
 </div>

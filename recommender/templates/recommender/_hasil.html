@@ -11,6 +11,9 @@
 <p class="font-body-md text-body-md text-on-surface-variant mt-1">
             Wilayah <strong class="text-on-surface">{{ ringkasan.wilayah }}</strong> • Budget ≤ <strong class="text-on-surface">{{ ringkasan.budget_fmt }}</strong> • Profil <strong class="text-primary">{{ ringkasan.profil }}</strong> • <span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold">{{ ringkasan.n }} kandidat lolos filter</span>
 </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+            Moda <strong class="text-on-surface">{{ ringkasan.moda }}</strong> • <strong class="text-on-surface">{{ ringkasan.hari }} hari</strong> • Antar-pulau: <strong class="text-on-surface">{{ ringkasan.mode_antar }}</strong>
+</p>
 {% if ringkasan.n_simulasi %}<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">{{ ringkasan.n_simulasi }} dari {{ ringkasan.n }} kandidat memakai data simulasi (harga, rating, fasilitas, dan koordinat perkiraan). Gunakan hasil ini untuk eksplorasi, lalu verifikasi detail destinasi sebelum bepergian.</p>{% endif %}
 <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Persentase C1–C6 menunjukkan kedekatan terhadap nilai ideal di antara semua kandidat yang lolos filter. “Setara” berarti kriteria itu tidak membedakan kandidat.</p>
 {% if ringkasan.n == 1 %}<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Hanya satu kandidat lolos filter. Skor TOPSIS 1,0000 dipakai sebagai konvensi tampilan; belum ada perbandingan dengan destinasi lain.</p>{% endif %}
@@ -66,6 +69,7 @@
 <span class="">•</span>
 <span class="">{{ h.jarak_txt }}</span>
 </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">💰 {{ h.rincian_txt }}</p>
 </div>
 </div>
 <div class="flex flex-col items-start md:items-end gap-1 shrink-0">
@@ -107,6 +111,7 @@
 <div>
 <h4 class="font-headline-sm text-headline-sm text-on-surface">{{ h.nama }}</h4>
 <p class="font-body-sm text-body-sm text-on-surface-variant">{{ h.harga_fmt }} • ★ {{ h.rating }} • {{ h.cluster }}{% if h.simulasi %} • Data simulasi{% endif %}</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">💰 {{ h.rincian_txt }}</p>
 </div>
 </div>
 <div class="text-right shrink-0">

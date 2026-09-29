@@ -9,6 +9,8 @@ from recommender.forms import KOTA_ASAL, PreferensiForm
 from recommender.kota_asal import PROVINSI_KOTA
 from recommender.models import Destination
 from recommender.spk import geo, profiles, similarity, topsis
+from recommender.spk.biaya import MODA, estimasi_total
+from recommender.transport import MODE_ANTAR, rencanakan
 
 NAMA_KRITERIA = ["Harga tiket", "Rating", "Jarak", "Fasilitas", "Kategori", "Hobi"]
 TOP_N = 10
@@ -57,7 +59,10 @@ def _seleksi_saat_ini(request, form):
     return {"budget": get("budget", ""), "kota": get("kota_asal", ""),
             "wilayah": get("wilayah", ""), "kutama": get("kategori_utama", ""),
             "ksekunder": get("kategori_sekunder", ""),
-            "hobi": hobi, "profil": get("profil", "") or "seimbang"}
+            "hobi": hobi, "profil": get("profil", "") or "seimbang",
+            "moda": get("moda", "") or "mobil",
+            "hari": get("hari", "") or "1",
+            "mode_antar": get("mode_antar", "") or "termurah"}
 
 
 def _bangun_alasan(gap, span):
@@ -125,7 +130,9 @@ def rekomendasi(request):
                "wilayah_list": wilayah_list,
                "kategori_list": kategori_list,
                "hobi_list": hobi_list,
-               "profil_cards": _kartu_profil(),
+                "profil_cards": _kartu_profil(),
+                "moda_list": [(k, v["label"]) for k, v in MODA.items()],
+                "mode_antar_list": list(MODE_ANTAR),
                "bobot_persen": [round(w * 100) for w in
                                 profiles.ACTIVE_PROFILES["seimbang"]["weights"]],
                "cluster_list": [], "ringkasan": None,
@@ -162,11 +169,17 @@ def rekomendasi(request):
                                 f"{profiles.ACTIVE_PROFILES[cd['profil']]['label']}.")
     olat, olon = KOTA_ASAL[cd["kota_asal"]]
     hobi_user = set(cd["hobi"])
+    moda, hari, mode_antar = cd["moda"], cd["hari"], cd["mode_antar"]
+    try:
+        prov_asal = PROVINSI_KOTA[cd["kota_asal"]]
+    except KeyError:
+        form.add_error("kota_asal", "Kota asal tidak dikenal.")
+        return render(request, "recommender/beranda.html", konteks)
 
-    kandidat = list(Destination.objects.filter(
+    pra = list(Destination.objects.filter(
         provinsi=cd["wilayah"], harga_tiket__lte=cd["budget"],
         latitude__isnull=False, longitude__isnull=False))
-    if not kandidat:
+    if not pra:
         konteks["kandidat_kosong"] = True
         konteks["pesan"] = ("Tidak ada destinasi yang cocok. Coba longgarkan budget "
                             "atau pilih wilayah lain.")
@@ -179,17 +192,42 @@ def rekomendasi(request):
             "pesan_class": konteks["pesan_class"]}
         return redirect("beranda")
 
+    # Biaya total per kandidat, lalu saring budget atas TOTAL (bukan tiket).
+    terpilih = []
+    for d in pra:
+        plan = rencanakan(olat, olon, prov_asal, d.latitude, d.longitude,
+                          d.provinsi, moda, mode_antar)
+        rinc = estimasi_total(d.harga_tiket, 0, moda, hari,
+                              transport=plan["transport"])
+        if rinc["total"] <= cd["budget"]:
+            terpilih.append((d, plan, rinc))
+    kandidat = [d for d, _, _ in terpilih]
+    if not kandidat:
+        konteks["kandidat_kosong"] = True
+        konteks["pesan"] = ("Tidak ada destinasi yang total biayanya muat di budget. "
+                            "Coba naikkan budget, persingkat durasi, atau pilih wilayah lain.")
+        if _is_ajax(request):
+            return JsonResponse({"ok": True, "count": 0,
+                                 "html": render_to_string("recommender/_hasil.html",
+                                                          konteks, request)})
+        request.session["flash_hasil"] = {
+            "kandidat_kosong": True, "pesan": konteks["pesan"],
+            "pesan_class": konteks["pesan_class"]}
+        return redirect("beranda")
+
     matriks = []
-    for d in kandidat:
+    for d, plan, rinc in terpilih:
         matriks.append([
-            float(d.harga_tiket),
+            float(rinc["total"]),
             float(d.rating),
-            geo.haversine(olat, olon, d.latitude, d.longitude),
+            float(plan["jarak_km"]),
             d.facility_score(),
             _skor_c5(d.kategori, cd["kategori_utama"], cd["kategori_sekunder"]),
             similarity.jaccard(hobi_user, d.tag_set()) if hobi_user else 0.0,
         ])
     ranking = topsis.rank(matriks, bobot, profiles.IS_COST)[:TOP_N]
+    plans = [p for _, p, _ in terpilih]
+    rincs = [c for _, _, c in terpilih]
 
     def _pct_gap(g, lebar):
         if lebar <= 1e-12:
@@ -200,25 +238,36 @@ def rekomendasi(request):
     for r in ranking:
         d = kandidat[r["idx"]]
         baris = matriks[r["idx"]]
+        plan = plans[r["idx"]]
+        rinc = rincs[r["idx"]]
+        total = int(rinc["total"])
+        rincian = {"tiket": rinc["tiket"], "transport": rinc["transport"],
+                   "makan": rinc["makan"], "inap": rinc["inap"], "total": total,
+                   "cara": plan["cara"], "sumber_jarak": plan["sumber_jarak"],
+                   "plan": plan["rincian"]}
+        rincian_txt = (f"Tiket {_rupiah(rinc['tiket'])} + transport "
+                       f"{_rupiah(rinc['transport'])} + makan {_rupiah(rinc['makan'])} "
+                       f"+ inap {_rupiah(rinc['inap'])} ({plan['cara']}, {plan['sumber_jarak']}).")
         skor_c5 = baris[4]
         c5_txt = (f"Utama: {d.kategori}" if skor_c5 >= 1.0
                   else f"Kedua: {d.kategori}" if skor_c5 > 0 else "Beda minat")
         fas_nama = [label for f, label in FAS_LABEL if getattr(d, f)]
         vi = r["vi"]
-        hasil.append({"nama": d.nama, "kategori": d.kategori, "harga": d.harga_tiket,
-                      "harga_fmt": _rupiah(d.harga_tiket),
+        hasil.append({"nama": d.nama, "kategori": d.kategori, "harga": total,
+                      "harga_fmt": _rupiah(total),
                       "rating": d.rating, "vi": vi,
                       "vi_pct": round(vi * 100, 2),
                       "jarak_km": round(baris[2], 1),
-                      "jarak_txt": f"± {baris[2]:.0f} km garis lurus dari {cd['kota_asal']}",
+                      "jarak_txt": f"± {baris[2]:.0f} km ({plan['cara']}) dari {cd['kota_asal']}",
+                      "rincian": rincian, "rincian_txt": rincian_txt,
                       "cluster": d.cluster_label or "Belum dikelompokkan",
                       "simulasi": d.sumber_data == "xlsx38",
                       "alasan": (_bangun_alasan(r["gap"], r["span"]) if len(kandidat) > 1
                                  else "Hanya satu destinasi lolos filter; tidak ada pembanding."),
-                      "bars": [
-                          {"nama": "C1 Harga", "pct": _pct_gap(r["gap"][0], r["span"][0]),
-                           "no_effect": r["span"][0] <= 1e-12,
-                           "sub": _rupiah(baris[0])},
+                       "bars": [
+                           {"nama": "C1 Total Biaya", "pct": _pct_gap(r["gap"][0], r["span"][0]),
+                            "no_effect": r["span"][0] <= 1e-12,
+                            "sub": f"Total {_rupiah(total)}"},
                           {"nama": "C2 Rating", "pct": _pct_gap(r["gap"][1], r["span"][1]),
                            "no_effect": r["span"][1] <= 1e-12,
                            "sub": f"★ {baris[1]:g} / 5.0"},
@@ -236,11 +285,14 @@ def rekomendasi(request):
                            "sub": f"Jaccard {round(baris[5] * 100)}%" if hobi_user else "Hobi tidak dipilih"},
                       ]})
         untuk_sesi.append({"nama": d.nama, "provinsi": d.provinsi, "vi": r["vi"],
-                           "latitude": d.latitude, "longitude": d.longitude})
+                           "latitude": d.latitude, "longitude": d.longitude,
+                           "total": total})
     request.session["hasil_terakhir"] = untuk_sesi
     ringkasan = {"wilayah": cd["wilayah"], "budget_fmt": _rupiah(cd["budget"]),
                  "profil": profiles.ACTIVE_PROFILES[cd["profil"]]["label"],
                  "n": len(kandidat),
+                 "moda": MODA[moda]["label"], "hari": hari,
+                 "mode_antar": dict(MODE_ANTAR)[mode_antar],
                  "n_simulasi": sum(d.sumber_data == "xlsx38" for d in kandidat)}
     konteks.update({"hasil": hasil, "bobot_efektif": bobot, "mode_custom": mode_custom,
                     "bobot_persen": [round(w * 100) for w in bobot],

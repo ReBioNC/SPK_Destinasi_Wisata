@@ -17,7 +17,35 @@ FIXTURE = [
 ]
 
 
+def _mock_rencanakan(lat1, lon1, prov1, lat2, lon2, prov2,
+                     moda="mobil", mode="termurah"):
+    """Pengganti deterministik tanpa network: darat bila sepulau."""
+    from recommender.spk import biaya, geo
+    from recommender.spk.biaya import PETA_PULAU
+    gc = geo.haversine(lat1, lon1, lat2, lon2)
+    if PETA_PULAU.get(prov1) == PETA_PULAU.get(prov2):
+        return {"transport": biaya.transport_pp(gc, moda), "cara": "darat",
+                "rincian": "mock darat", "sumber_jarak": "mock",
+                "opsi": None, "jarak_km": gc}
+    return {"transport": biaya.tarif_pesawat_pp(gc), "cara": "pesawat",
+            "rincian": "mock udara", "sumber_jarak": "estimasi-pesawat",
+            "opsi": None, "jarak_km": gc}
+
+
 class RekomendasiViewTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        from unittest.mock import patch
+        cls._patcher = patch("recommender.views.rencanakan",
+                             side_effect=_mock_rencanakan)
+        cls._patcher.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._patcher.stop()
+        super().tearDownClass()
+
     @classmethod
     def setUpTestData(cls):
         flags = ["fas_toilet", "fas_parkir", "fas_warung", "fas_mushola", "fas_penginapan"]
@@ -29,9 +57,10 @@ class RekomendasiViewTest(TestCase):
                                        tag_aktivitas=tag, **kw)
 
     def post_valid(self, **over):
-        data = {"budget": "250000", "kota_asal": "Bandung", "wilayah": "Jawa Barat",
+        data = {"budget": "500000", "kota_asal": "Bandung", "wilayah": "Jawa Barat",
                 "kategori_utama": "alam", "kategori_sekunder": "budaya",
-                "hobi": ["hiking", "fotografi"], "profil": "seimbang"}
+                "hobi": ["hiking", "fotografi"], "profil": "seimbang",
+                "moda": "mobil", "hari": "1", "mode_antar": "termurah"}
         extra = {k: over.pop(k) for k in list(over) if k.startswith("HTTP_")}
         data.update(over)
         return self.client.post("/", data, follow=True, **extra)
@@ -43,7 +72,7 @@ class RekomendasiViewTest(TestCase):
         self.assertEqual(names[0], "Gunung Tangkuban Perahu")
         self.assertEqual(len(names), 10)
         self.assertContains(r, "Data simulasi")
-        self.assertContains(r, "garis lurus")
+        self.assertContains(r, "(darat)")
 
     def test_budget_format_ribuan_diterima(self):
         for b in ["250.000", "Rp 250000", "250,000"]:
@@ -127,13 +156,46 @@ class RekomendasiViewTest(TestCase):
         self.assertEqual(r.context["hasil"][0]["vi"], 1.0)
         self.assertContains(r, "belum ada perbandingan")
 
-    def test_refresh_membersihkan_hasil(self):
-        # Refresh = sesi baru: hasil hanya tampil sekali setelah redirect.
+    def test_refresh_membersihkan_hasil(self):        # Refresh = sesi baru: hasil hanya tampil sekali setelah redirect.
         r = self.post_valid()
         self.assertEqual(len(r.context["hasil"]), 10)
         r2 = self.client.get("/")
         self.assertIsNone(r2.context["hasil"])
         self.assertContains(r2, "Siap menghitung rekomendasi.")
+
+    def _mock_plan(self, transport=50000, cara="darat", jarak_km=36.5):
+        return {"transport": transport, "cara": cara,
+                "rincian": f"Mock {cara}.", "sumber_jarak": "osrm",
+                "opsi": None, "jarak_km": jarak_km}
+
+    def test_c1_total_biaya_dan_rincian(self):
+        from unittest.mock import patch
+        with patch("recommender.views.rencanakan",
+                   return_value=self._mock_plan()) as m:
+            r = self.post_valid()
+            self.assertEqual(r.status_code, 200)
+            h = r.context["hasil"][0]
+            d = r.context["hasil"]
+            self.assertIn("rincian", h)
+            # total = tiket + 50000 + 150000 + 0 dipantulkan ke C1 (harga)
+            for row in d:
+                self.assertEqual(row["harga"], row["rincian"]["total"])
+            self.assertEqual(r.context["ringkasan"]["moda"], "Mobil")
+            self.assertIn("rincian_txt", h)
+            self.assertTrue(m.called)
+
+    def test_budget_menyaring_total(self):
+        from unittest.mock import patch
+        with patch("recommender.views.rencanakan",
+                   return_value=self._mock_plan()):
+            r = self.post_valid(budget="100000")
+            self.assertTrue(r.context["kandidat_kosong"])
+
+    def test_moda_hari_invalid(self):
+        r = self.post_valid(moda="helikopter")
+        self.assertIn("moda", r.context["form"].errors)
+        r = self.post_valid(hari="0")
+        self.assertIn("hari", r.context["form"].errors)
 
     def test_wilayah_dari_peta_terisi_otomatis(self):
         r = self.client.get("/", {"wilayah": "Jawa Barat"})
@@ -154,7 +216,7 @@ class RekomendasiViewTest(TestCase):
 
     def test_help_text_deskripsi_pilihan(self):
         r = self.client.get("/")
-        self.assertContains(r, "otomatis tersaring")
+        self.assertContains(r, "total biaya per orang")
         self.assertContains(r, "menentukan jarak")
 
     def test_profil_terpilih_terlihat_langsung(self):
@@ -246,13 +308,28 @@ class RekomendasiViewTest(TestCase):
         self.assertIn("background:#fff", html.replace(" ", ""))
 
     def test_post_kota_baru_valid(self):
+        # Dari Badung (beda pulau, ongkos pesawat) semua total > budget:
+        # pilihan diterima valid, filter total bekerja.
         r = self.post_valid(kota_asal="Badung")
         self.assertEqual(r.status_code, 200)
         self.assertFalse(r.context["form"].errors)
-        self.assertEqual(len(r.context["hasil"]), 10)
+        self.assertTrue(r.context["kandidat_kosong"])
 
 
 class HalamanTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        from unittest.mock import patch
+        cls._patcher = patch("recommender.views.rencanakan",
+                             side_effect=_mock_rencanakan)
+        cls._patcher.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._patcher.stop()
+        super().tearDownClass()
+
     @classmethod
     def setUpTestData(cls):
         flags = ["fas_toilet", "fas_parkir", "fas_warung", "fas_mushola", "fas_penginapan"]
@@ -268,18 +345,20 @@ class HalamanTest(TestCase):
         self.assertEqual(self.client.get("/tentang/").status_code, 200)
 
     def test_peta_memakai_hasil_session(self):
-        self.client.post("/", {"budget": "250000", "kota_asal": "Bandung", "wilayah": "Jawa Barat",
+        self.client.post("/", {"budget": "500000", "kota_asal": "Bandung", "wilayah": "Jawa Barat",
                                "kategori_utama": "alam", "kategori_sekunder": "budaya",
-                               "hobi": ["hiking", "fotografi"], "profil": "seimbang"})
+                               "hobi": ["hiking", "fotografi"], "profil": "seimbang",
+                               "moda": "mobil", "hari": "1", "mode_antar": "termurah"})
         r = self.client.get("/peta/")
         self.assertContains(r, "Tangkuban Perahu")
 
     def test_peta_hasil_json_valid_array(self):
         import json
         import re
-        self.client.post("/", {"budget": "250000", "kota_asal": "Bandung", "wilayah": "Jawa Barat",
+        self.client.post("/", {"budget": "500000", "kota_asal": "Bandung", "wilayah": "Jawa Barat",
                                "kategori_utama": "alam", "kategori_sekunder": "budaya",
-                               "hobi": ["hiking", "fotografi"], "profil": "seimbang"})
+                               "hobi": ["hiking", "fotografi"], "profil": "seimbang",
+                               "moda": "mobil", "hari": "1", "mode_antar": "termurah"})
         r = self.client.get("/peta/")
         m = re.search(r'<script id="hasil-data" type="application/json">(.*?)</script>',
                       r.content.decode(), re.S)

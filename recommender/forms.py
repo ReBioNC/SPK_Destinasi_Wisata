@@ -6,6 +6,8 @@ import re
 from recommender.kota_asal import KOTA_ASAL
 from recommender.models import Destination
 from recommender.spk import profiles
+from recommender.spk.biaya import MODA
+from recommender.transport import MODE_ANTAR
 
 
 def parse_budget(value):
@@ -20,8 +22,8 @@ def parse_budget(value):
 
 
 class PreferensiForm(forms.Form):
-    budget = forms.CharField(label="Budget maksimal (Rp)", max_length=20,
-        help_text="Contoh: 250000. Destinasi dengan harga tiket di atas budget otomatis tersaring.")
+    budget = forms.CharField(label="Budget maksimal (Rp/orang)", max_length=20,
+        help_text="Contoh: 500000. Batas total biaya per orang (tiket + transport + makan + inap).")
     kota_asal = forms.ChoiceField(label="Kota asal", choices=[],
         help_text="Titik berangkat Anda; menentukan jarak tempuh (C3) ke setiap destinasi.")
     wilayah = forms.ChoiceField(label="Wilayah tujuan (provinsi)", choices=[],
@@ -35,6 +37,14 @@ class PreferensiForm(forms.Form):
         help_text="Dicocokkan dengan aktivitas destinasi (mis. hiking, fotografi). Boleh dikosongkan.")
     profil = forms.ChoiceField(label="Profil prioritas", choices=[], widget=forms.RadioSelect,
         help_text="Menentukan seberapa besar pengaruh tiap kriteria. Penjelasan tiap profil ada di bawah.")
+    moda = forms.ChoiceField(label="Moda transport", initial="mobil",
+        choices=[(k, v["label"]) for k, v in MODA.items()],
+        help_text="Kendaraan untuk estimasi biaya transport PP.")
+    hari = forms.IntegerField(label="Durasi (hari)", min_value=1, max_value=30, initial=1,
+        help_text="Lama perjalanan; menentukan biaya makan dan inap (hari pertama tanpa inap).")
+    mode_antar = forms.ChoiceField(label="Transport antar-pulau", initial="termurah",
+        choices=list(MODE_ANTAR), widget=forms.RadioSelect,
+        help_text="Bila asal dan tujuan beda pulau: pesawat, feri+darat, atau termurah otomatis.")
     sentuh_bobot = forms.CharField(required=False, widget=forms.HiddenInput)
     w1 = forms.FloatField(required=False, min_value=0, max_value=100)
     w2 = forms.FloatField(required=False, min_value=0, max_value=100)
