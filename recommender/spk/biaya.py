@@ -56,6 +56,14 @@ PETA_PULAU = {
     "Papua Selatan": "Papua", "Papua Tengah": "Papua",
 }
 
+# Koordinat pelabuhan feri (OpenStreetMap; PROVISIONAL sampai masuk audit).
+PELABUHAN = {
+    "merak": (-5.937, 105.997),
+    "bakauheni": (-5.872, 105.761),
+    "ketapang": (-8.145, 114.388),
+    "gilimanuk": (-8.165, 114.427),
+}
+
 
 def transport_pp(jarak_km, moda):
     """Biaya transport pulang-pergi darat."""

@@ -18,6 +18,7 @@
 | Feri Merak–Bakauheni Rp80.000 | PROVISIONAL | Tarif resmi ASDP | — | Tinggi setelah diisi tanggal |
 | Feri Ketapang–Gilimanuk Rp60.000 | PROVISIONAL | Tarif resmi ASDP | — | Tinggi setelah diisi tanggal |
 | Koordinat 4 pelabuhan | OpenStreetMap | — | — | Tinggi setelah dicatat |
+| Koridor feri | Merak–Bakauheni: Jawa↔Sumatera; Ketapang–Gilimanuk: Jawa↔Bali | ASDP + peta gugus | 2026-09-29 | Tinggi |
 
 ## Sampel tarif pesawat observasi (diisi manual)
 
