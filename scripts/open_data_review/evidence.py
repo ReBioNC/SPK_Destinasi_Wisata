@@ -122,7 +122,7 @@ def review_candidate(
             values["c2_service_ids"] = c2_ids
     status = "verified" if not reasons else "pending"
     return ReviewResult(candidate.candidate_id, status, tuple(dict.fromkeys(reasons)),
-                        values, tuple(evidence))
+                        values, tuple(e for e in evidence if e.candidate_id == candidate.candidate_id))
 
 
 def deduplicate_candidates(candidates: list[Candidate]) -> tuple[list[Candidate], list[ReviewResult]]:

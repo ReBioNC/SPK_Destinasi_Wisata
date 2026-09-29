@@ -3,6 +3,8 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import TestCase
+from hashlib import sha256
+import csv
 
 import pandas as pd
 
@@ -12,6 +14,8 @@ from scripts.open_data_review.schema import OsmPoint
 from scripts.open_data_review.services import nearby_service_evidence, service_score, _haversine_km
 from scripts.open_data_review.schema import Candidate, SourceEvidence
 from scripts.open_data_review.evidence import review_candidate, deduplicate_candidates
+from scripts.open_data_review.export import write_review_outputs
+from scripts.open_data_review.cli import run_review
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -170,3 +174,46 @@ class EvidenceGateTests(TestCase):
         kept, flags = deduplicate_candidates([a, b, c])
         self.assertEqual(len(kept), 3)
         self.assertEqual([f.candidate_id for f in flags], ["a", "c"])
+
+
+class ReviewExportTests(TestCase):
+    def test_isolated_outputs_are_deterministic_and_do_not_change_inputs(self):
+        with TemporaryDirectory(dir=ROOT) as tmp:
+            base = Path(tmp)
+            source = base / "input.csv"
+            source.write_text("source,untouched\n", encoding="utf-8")
+            before = sha256(source.read_bytes()).hexdigest()
+            candidate = Candidate("x:1", "osm", "Museum A", "Kota A", "Aceh")
+            evidence = [
+                SourceEvidence("x:1", "identity", "Museum A", "https://example.org/a",
+                               "2026-09-29", "open", "item-specific"),
+            ]
+            result = review_candidate(candidate, evidence, {})
+            out = base / "review"
+            manifest = {"inputs": [{"path": str(source), "sha256": before}],
+                        "attribution": "© OpenStreetMap contributors; ODbL 1.0"}
+            write_review_outputs([candidate], [result], out, manifest)
+            expected = (
+                "destinations_candidate_audit.csv", "destinations_verified_open.csv",
+                "destination_evidence.csv", "audit_summary.md", "source_manifest.json",
+            )
+            self.assertTrue(all((out / name).exists() for name in expected))
+            first = {name: (out / name).read_bytes() for name in expected}
+            with (out / "destinations_candidate_audit.csv").open(encoding="utf-8", newline="") as handle:
+                self.assertEqual(list(csv.DictReader(handle))[0]["status"], "pending")
+            with (out / "destinations_verified_open.csv").open(encoding="utf-8", newline="") as handle:
+                self.assertEqual(list(csv.DictReader(handle)), [])
+            self.assertIn("https://example.org/a", (out / "destination_evidence.csv").read_text(encoding="utf-8"))
+            write_review_outputs([candidate], [result], out, manifest)
+            self.assertEqual(first, {name: (out / name).read_bytes() for name in expected})
+            self.assertEqual(sha256(source.read_bytes()).hexdigest(), before)
+
+    def test_cli_refuses_output_that_aliases_input(self):
+        with TemporaryDirectory(dir=ROOT) as tmp:
+            base = Path(tmp)
+            xlsx = base / "old.xlsx"
+            csv_path = base / "destinations_candidate_audit.csv"
+            pd.DataFrame([{"Place_Id": 1, "Place_Name": "A"}]).to_excel(xlsx, index=False)
+            pd.DataFrame([{"Place_Id": 2, "Place_Name": "B"}]).to_csv(csv_path, index=False)
+            with self.assertRaises(ValueError):
+                run_review(xlsx, csv_path, output_dir=base)
