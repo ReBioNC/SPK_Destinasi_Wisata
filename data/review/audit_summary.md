@@ -26,6 +26,8 @@ Skor C2=0 berarti tidak ada layanan dalam empat kelas yang *terpetakan* pada sna
 - missing:identity: 2337
 - missing:location: 4215
 - possible_duplicate: 80
+- unreviewed:c5_category: 1878
+- unreviewed:identity: 1878
 
 ## Cakupan kandidat per provinsi
 

@@ -5,6 +5,9 @@ Schema/license: https://download.geonames.org/export/dump/readme.txt
 """
 
 import math
+import hashlib
+import json
+from datetime import date
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -65,3 +68,19 @@ def load_geonames_zip(path: Path) -> list[Candidate]:
     with ZipFile(path) as archive:
         with archive.open("ID.txt") as member:
             return parse_geonames_rows((line.decode("utf-8") for line in member))
+
+
+def read_geonames_receipt(path: Path) -> dict:
+    """Validate stable retrieval metadata against the exact archive bytes."""
+    path = Path(path)
+    receipt = json.loads(path.with_suffix(".source.json").read_text(encoding="utf-8"))
+    if receipt.get("source_url") != "https://download.geonames.org/export/dump/ID.zip":
+        raise ValueError("Unexpected GeoNames source URL")
+    date.fromisoformat(receipt["retrieved_at"])
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    if digest.hexdigest() != receipt.get("sha256"):
+        raise ValueError("GeoNames archive does not match source receipt")
+    return receipt

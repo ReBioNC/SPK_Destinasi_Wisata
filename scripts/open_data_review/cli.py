@@ -5,14 +5,14 @@ import csv
 import hashlib
 import json
 from collections import defaultdict
-from datetime import datetime
 from pathlib import Path
+from urllib.parse import urlparse
 
-from .evidence import deduplicate_candidates, review_candidate
+from .evidence import deduplicate_candidates, resolve_duplicate_flags, review_candidate
 from .export import OUTPUT_NAMES, write_review_outputs
-from .geonames import load_geonames_zip
+from .geonames import load_geonames_zip, read_geonames_receipt
 from .legacy import load_legacy_candidates
-from .osm import OSM_CATEGORY_MAP, parse_geofabrik_snapshot, parse_osm_snapshot
+from .osm import OSM_CATEGORY_MAP, parse_geofabrik_snapshot, parse_osm_snapshot, snapshot_covers_radius
 from .schema import SourceEvidence
 from .services import SERVICE_CLASSES, nearby_service_evidence
 
@@ -43,6 +43,9 @@ def _read_evidence(path: Path | None) -> list[SourceEvidence]:
         evidence.append(SourceEvidence(
             row["candidate_id"], row["field"], value, row["source_ref"],
             row["accessed_at"], row["reuse_status"], row.get("note", ""),
+            row.get("license_ref", ""), row.get("reviewer", ""),
+            row.get("reviewed_at", ""), row.get("review_decision", "unreviewed"),
+            row.get("valid_on", ""),
         ))
     return evidence
 
@@ -53,17 +56,21 @@ def _auto_osm_evidence(candidate, snapshot_at: str) -> list[SourceEvidence]:
         return []
     source = candidate.source_path
     base = (candidate.candidate_id, source, snapshot_at, "odbl")
-    found = [SourceEvidence(base[0], "identity", candidate.name, base[1], base[2], base[3], "OSM name tag")]
+    license_ref = "https://www.openstreetmap.org/copyright"
+    found = [SourceEvidence(base[0], "identity", candidate.name, base[1], base[2], base[3],
+                            "OSM name tag", license_ref=license_ref)]
     if candidate.province and candidate.geometry_origin == "node":
         found.append(SourceEvidence(base[0], "location", {
             "lat": candidate.lat, "lon": candidate.lon, "city": candidate.city,
             "province": candidate.province,
-        }, base[1], base[2], base[3], "OSM node coordinate + addr:province; manual boundary check advisable"))
+        }, base[1], base[2], base[3], "OSM node coordinate + addr:province; manual boundary check advisable",
+            license_ref=license_ref))
     for tag in ("tourism", "natural", "historic"):
         category = OSM_CATEGORY_MAP.get((tag, candidate.raw.get(tag)))
         if category:
             found.append(SourceEvidence(base[0], "c5_category", category,
-                                        base[1], base[2], base[3], f"source tag={tag}/{candidate.raw[tag]}"))
+                                        base[1], base[2], base[3], f"source tag={tag}/{candidate.raw[tag]}",
+                                        license_ref=license_ref))
             break
     return found
 
@@ -73,12 +80,14 @@ def _auto_geonames_evidence(candidate, accessed_at: str) -> list[SourceEvidence]
         return []
     source = candidate.source_path
     found = [SourceEvidence(candidate.candidate_id, "identity", candidate.name, source,
-                            accessed_at, "cc-by-4.0", "GeoNames item name; tourism status not proven")]
+                            accessed_at, "cc-by-4.0", "GeoNames item name; tourism status not proven",
+                            license_ref="https://download.geonames.org/export/dump/readme.txt")]
     # GeoNames administrative labels can conflict with its own coordinates.
     # Keep them in candidate audit, but require independent location evidence.
     found.append(SourceEvidence(candidate.candidate_id, "c5_category",
                                 candidate.raw["category_mapped"], source, accessed_at,
-                                "cc-by-4.0", f"source tag=geonames/{candidate.raw['feature_class']}.{candidate.raw['feature_code']}"))
+                                "cc-by-4.0", f"source tag=geonames/{candidate.raw['feature_class']}.{candidate.raw['feature_code']}",
+                                license_ref="https://download.geonames.org/export/dump/readme.txt"))
     return found
 
 
@@ -91,20 +100,28 @@ def run_review(
     legacy_xlsx, kaggle_csv = Path(legacy_xlsx), Path(kaggle_csv)
     osm_json = Path(osm_json) if osm_json else None
     geonames_zip = Path(geonames_zip) if geonames_zip else None
+    geonames_receipt = read_geonames_receipt(geonames_zip) if geonames_zip else None
     evidence_csv = Path(evidence_csv) if evidence_csv else None
     output_dir = Path(output_dir) if output_dir else ROOT / "data/review"
-    inputs = [legacy_xlsx, kaggle_csv] + ([osm_json] if osm_json else []) + ([geonames_zip] if geonames_zip else []) + ([evidence_csv] if evidence_csv else [])
+    inputs = ([legacy_xlsx, kaggle_csv] + ([osm_json] if osm_json else [])
+              + ([geonames_zip, geonames_zip.with_suffix(".source.json")] if geonames_zip else [])
+              + ([evidence_csv] if evidence_csv else []))
     if any((output_dir / name).resolve() in {p.resolve() for p in inputs} for name in OUTPUT_NAMES):
         raise ValueError("Review output aliases an input path")
-    if output_dir.resolve() in {(ROOT / "data/raw").resolve(), (ROOT / "data/processed").resolve()}:
-        raise ValueError("Review output cannot be a production data directory")
+    destination = output_dir.resolve()
+    production_dirs = ((ROOT / "data/raw").resolve(), (ROOT / "data/processed").resolve())
+    if destination.name.casefold() != "review" or any(
+        destination == production or destination.is_relative_to(production)
+        for production in production_dirs
+    ):
+        raise ValueError("Review output must be a review directory outside production data")
 
     candidates = load_legacy_candidates(legacy_xlsx, kaggle_csv)
     if geonames_zip:
         candidates.extend(load_geonames_zip(geonames_zip))
-    geonames_accessed_at = (datetime.fromtimestamp(geonames_zip.stat().st_mtime).date().isoformat()
-                            if geonames_zip else "")
-    snapshot_at, source_query, points = "", "", []
+    geonames_accessed_at = geonames_receipt["retrieved_at"] if geonames_receipt else ""
+    snapshot_at, source_query, points, payload = "", "", [], {}
+    osm_hash = _hash(osm_json) if osm_json else ""
     if osm_json:
         with osm_json.open(encoding="utf-8") as handle:
             payload = json.load(handle)
@@ -122,7 +139,7 @@ def run_review(
     if set(per_candidate) - {c.candidate_id for c in candidates}:
         raise ValueError("Evidence refers to an unknown candidate ID")
     _, duplicate_flags = deduplicate_candidates(candidates)
-    duplicate_ids = {flag.candidate_id for flag in duplicate_flags}
+    duplicate_disposition = resolve_duplicate_flags(duplicate_flags, manual_evidence)
     results = []
     for candidate in candidates:
         evidence = (per_candidate[candidate.candidate_id]
@@ -131,13 +148,41 @@ def run_review(
         location = next((e.value for e in evidence if e.field == "location" and isinstance(e.value, dict)), None)
         lat = location.get("lat") if location else candidate.lat
         lon = location.get("lon") if location else candidate.lon
-        c2_ids = (nearby_service_evidence(float(lat), float(lon), points)
-                  if osm_json and lat is not None and lon is not None else {})
+        scan_source = payload.get("_endpoint") or payload.get("_source_url")
+        source_is_recorded = bool(scan_source and urlparse(scan_source).scheme == "https"
+                                  and urlparse(scan_source).netloc)
+        covered = bool(osm_json and source_is_recorded and lat is not None and lon is not None
+                       and snapshot_covers_radius(payload, float(lat), float(lon)))
+        c2_ids = nearby_service_evidence(float(lat), float(lon), points) if covered else {}
+        if covered:
+            evidence.append(SourceEvidence(
+                candidate.candidate_id, "c2_service_scan",
+                {"score": sum(bool(refs) for refs in c2_ids.values()), "ids": c2_ids,
+                 "radius_km": 2.0, "bbox": payload["_bbox"], "snapshot_sha256": osm_hash},
+                scan_source,
+                snapshot_at, "odbl", "computed mapped-service scan; coordinate may still be provisional",
+                license_ref="https://www.openstreetmap.org/copyright",
+            ))
         result = review_candidate(candidate, evidence, c2_ids)
+        if osm_json and not covered:
+            result = type(result)(result.candidate_id, "pending", (*result.reasons, "out_of_coverage:c2"),
+                                  result.values, result.evidence)
         if osm_json and result.values.get("c2_snapshot") and result.values["c2_snapshot"] != snapshot_at:
             result = type(result)(result.candidate_id, "pending", (*result.reasons, "conflict:c2_snapshot"),
                                   result.values, result.evidence)
-        if candidate.candidate_id in duplicate_ids:
+        if covered and result.values.get("c2_snapshot") and not any(
+            e.field == "c2_snapshot" and e.source_ref == scan_source
+            and e.value == snapshot_at and e.review_decision == "approved"
+            for e in evidence
+        ):
+            result = type(result)(result.candidate_id, "pending", (*result.reasons, "conflict:c2_source"),
+                                  result.values, result.evidence)
+        disposition = duplicate_disposition.get(candidate.candidate_id)
+        if disposition == "rejected":
+            result = type(result)(result.candidate_id, "rejected",
+                                  (*result.reasons, "reviewed_duplicate_alias"),
+                                  result.values, result.evidence)
+        elif disposition == "pending":
             result = type(result)(result.candidate_id, "pending", (*result.reasons, "possible_duplicate"),
                                   result.values, result.evidence)
         results.append(result)
@@ -145,6 +190,7 @@ def run_review(
         "inputs": [{"path": str(p.resolve()), "sha256": _hash(p)} for p in inputs],
         "osm_snapshot_at": snapshot_at or None, "osm_query": source_query or None,
         "osm_source_url": payload.get("_source_url") if osm_json else None,
+        "osm_endpoint": payload.get("_endpoint") if osm_json else None,
         "osm_extract_sha256": payload.get("_extract_sha256") if osm_json else None,
         "osm_candidate_count": sum(c.origin == "osm" for c in candidates),
         "geonames_candidate_count": sum(c.origin == "geonames" for c in candidates),

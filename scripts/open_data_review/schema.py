@@ -45,6 +45,11 @@ class SourceEvidence:
     accessed_at: str
     reuse_status: str
     note: str = ""
+    license_ref: str = ""
+    reviewer: str = ""
+    reviewed_at: str = ""
+    review_decision: str = "unreviewed"
+    valid_on: str = ""
 
 
 @dataclass(frozen=True)

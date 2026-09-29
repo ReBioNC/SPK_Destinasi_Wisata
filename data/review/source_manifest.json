@@ -25,9 +25,14 @@
     {
       "path": "C:\\Users\\ASUS\\Documents\\SPK_Destinasi_Wisata\\data\\review\\ID.zip",
       "sha256": "13ef08cb535b85053afdebdc9268caa2408b749f5d6f8721dda64c4b8f0b13a6"
+    },
+    {
+      "path": "C:\\Users\\ASUS\\Documents\\SPK_Destinasi_Wisata\\data\\review\\ID.source.json",
+      "sha256": "f0909eb2d3724c670ea487e439880e0d3e28d04da56d2bcc44665ada0e794e91"
     }
   ],
   "osm_candidate_count": 0,
+  "osm_endpoint": null,
   "osm_extract_sha256": null,
   "osm_query": null,
   "osm_snapshot_at": null,

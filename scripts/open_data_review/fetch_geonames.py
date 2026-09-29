@@ -1,7 +1,9 @@
 """Download the one free GeoNames country archive, capped and without extraction."""
 
 import argparse
+import hashlib
 import json
+from datetime import datetime, timezone
 from io import BytesIO
 from pathlib import Path
 from urllib.request import Request, urlopen
@@ -14,8 +16,8 @@ MAX_BYTES = 30 * 1024 * 1024
 
 def fetch(output: Path) -> dict:
     output = Path(output)
-    if output.exists():
-        raise FileExistsError(output)
+    if output.exists() or output.with_suffix(".source.json").exists():
+        raise FileExistsError("Archive or receipt already exists")
     request = Request(URL, headers={"User-Agent": "TravelFit-academic-review/1.0"})
     with urlopen(request, timeout=60) as response:
         data = response.read(MAX_BYTES + 1)
@@ -27,6 +29,13 @@ def fetch(output: Path) -> dict:
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("xb") as handle:
         handle.write(data)
+    receipt = {"source_url": URL,
+               "retrieved_at": datetime.now(timezone.utc).date().isoformat(),
+               "sha256": hashlib.sha256(data).hexdigest(),
+               "license_ref": "https://download.geonames.org/export/dump/readme.txt"}
+    with output.with_suffix(".source.json").open("x", encoding="utf-8") as handle:
+        json.dump(receipt, handle, ensure_ascii=False, sort_keys=True, indent=2)
+        handle.write("\n")
     return {"url": URL, "bytes": len(data), "path": str(output)}
 
 

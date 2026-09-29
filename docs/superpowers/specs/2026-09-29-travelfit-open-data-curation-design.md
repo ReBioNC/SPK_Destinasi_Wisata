@@ -2,7 +2,7 @@
 
 Tanggal: 29 September 2026
 
-Status: rancangan, belum diimplementasikan
+Status: tahap audit terpisah diimplementasikan; integrasi dataset/model/website belum dilakukan. Hasil aktual dan keterbatasan ada di `data/review/Dokumentasi.md`.
 
 ## Tujuan dan keputusan pengguna
 

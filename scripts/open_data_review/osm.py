@@ -21,8 +21,8 @@ map_to_area->.indonesia;
   nwr["historic"~"^(monument|memorial|castle|ruins|archaeological_site)$"](area.indonesia);
   nwr["public_transport"](area.indonesia);
   nwr["highway"="bus_stop"](area.indonesia);
-  nwr["railway"="station"](area.indonesia);
-  nwr["amenity"~"^(hospital|clinic|doctors|pharmacy|atm|bank)$"](area.indonesia);
+  nwr["railway"~"^(station|halt)$"](area.indonesia);
+  nwr["amenity"~"^(bus_station|ferry_terminal|hospital|clinic|doctors|pharmacy|atm|bank)$"](area.indonesia);
   nwr["tourism"~"^(hotel|guest_house|hostel|motel)$"](area.indonesia);
 );
 out center tags;'''
@@ -41,6 +41,34 @@ OSM_CATEGORY_MAP = {
     ("natural", "waterfall"): "Cagar Alam", ("natural", "cave_entrance"): "Cagar Alam",
     **{("historic", tag): "Budaya" for tag in ATTRACTIONS["historic"]},
 }
+
+
+def snapshot_covers_radius(payload: dict, lat: float, lon: float, radius_km: float = 2.0) -> bool:
+    """Require documented bounded scan covering the *entire* circular C2 search.
+
+    A national area alone does not prove coverage for places near a border, so
+    snapshots without an explicit bbox are not accepted for C2 verification.
+    """
+    query = payload.get("_source_query", "")
+    if not _is_indonesia_query(query):
+        return False
+    matches = re.findall(r"\(area\.indonesia\)\(([-\d.,]+)\)", query)
+    bbox = payload.get("_bbox")
+    if matches and not bbox:
+        raise ValueError("Bounded query must record its bbox")
+    if not matches or not isinstance(bbox, list) or len(bbox) != 4:
+        return False
+    recorded = [float(part) for part in matches[0].split(",")]
+    if len(matches) != 1 and any(match != matches[0] for match in matches):
+        raise ValueError("Snapshot query uses inconsistent bounding boxes")
+    if any(abs(float(a) - b) > 1e-9 for a, b in zip(bbox, recorded)):
+        raise ValueError("Snapshot bbox differs from recorded query")
+    south, west, north, east = recorded
+    if not (-12 <= south < north <= 7 and 94 <= west < east <= 142):
+        return False
+    lat_margin = radius_km / 111.195
+    lon_margin = radius_km / (111.195 * math.cos(math.radians(lat)))
+    return south + lat_margin <= lat <= north - lat_margin and west + lon_margin <= lon <= east - lon_margin
 
 
 def _is_indonesia_query(source_query: str) -> bool:

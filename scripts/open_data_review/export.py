@@ -12,7 +12,7 @@ AUDIT_FIELDS = (
     "candidate_id", "origin", "source_row_id", "source_path", "place_name",
     "city_raw", "province_raw", "category_raw", "price_raw_unverified",
     "rating_raw_unverified", "lat_raw_unverified", "lon_raw_unverified",
-    "possible_filler_name", "geometry_origin", "status", "reasons",
+    "raw_json", "untrusted_fields", "possible_filler_name", "geometry_origin", "status", "reasons",
 )
 VERIFIED_FIELDS = (
     "Place_Id", "Place_Name", "Description", "Category", "City", "Province",
@@ -22,6 +22,7 @@ VERIFIED_FIELDS = (
 )
 EVIDENCE_FIELDS = (
     "candidate_id", "field", "value", "source_ref", "accessed_at", "reuse_status", "note",
+    "license_ref", "reviewer", "reviewed_at", "review_decision", "valid_on",
 )
 OUTPUT_NAMES = (
     "destinations_candidate_audit.csv", "destinations_verified_open.csv",
@@ -83,6 +84,7 @@ def write_review_outputs(
             "rating_raw_unverified": candidate.raw.get("Rating"),
             "lat_raw_unverified": candidate.raw.get("Lat") or candidate.lat,
             "lon_raw_unverified": candidate.raw.get("Long") or candidate.lon,
+            "raw_json": candidate.raw, "untrusted_fields": list(candidate.untrusted_fields),
             "possible_filler_name": candidate.possible_filler_name,
             "geometry_origin": candidate.geometry_origin,
             "status": result.status, "reasons": ";".join(result.reasons),
