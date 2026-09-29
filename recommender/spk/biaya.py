@@ -31,6 +31,31 @@ FERI = {
     "ketapang_gilimanuk": 60000,  # PROVISIONAL
 }
 
+# Gugus pulau untuk deteksi antar-pulau (fakta administratif stabil).
+GUGUS_PULAU = ["Sumatera", "Jawa", "Kalimantan", "Sulawesi",
+               "Bali-Nusa Tenggara", "Maluku", "Papua"]
+PETA_PULAU = {
+    "Aceh": "Sumatera", "Bengkulu": "Sumatera", "Jambi": "Sumatera",
+    "Kepulauan Bangka Belitung": "Sumatera", "Kepulauan Riau": "Sumatera",
+    "Lampung": "Sumatera", "Riau": "Sumatera", "Sumatera Barat": "Sumatera",
+    "Sumatera Selatan": "Sumatera", "Sumatera Utara": "Sumatera",
+    "Banten": "Jawa", "DKI Jakarta": "Jawa",
+    "Daerah Istimewa Yogyakarta": "Jawa", "Jawa Barat": "Jawa",
+    "Jawa Tengah": "Jawa", "Jawa Timur": "Jawa",
+    "Kalimantan Barat": "Kalimantan", "Kalimantan Selatan": "Kalimantan",
+    "Kalimantan Tengah": "Kalimantan", "Kalimantan Timur": "Kalimantan",
+    "Kalimantan Utara": "Kalimantan",
+    "Gorontalo": "Sulawesi", "Sulawesi Barat": "Sulawesi",
+    "Sulawesi Selatan": "Sulawesi", "Sulawesi Tengah": "Sulawesi",
+    "Sulawesi Tenggara": "Sulawesi", "Sulawesi Utara": "Sulawesi",
+    "Bali": "Bali-Nusa Tenggara", "Nusa Tenggara Barat": "Bali-Nusa Tenggara",
+    "Nusa Tenggara Timur": "Bali-Nusa Tenggara",
+    "Maluku": "Maluku", "Maluku Utara": "Maluku",
+    "Papua": "Papua", "Papua Barat": "Papua",
+    "Papua Barat Daya": "Papua", "Papua Pegunungan": "Papua",
+    "Papua Selatan": "Papua", "Papua Tengah": "Papua",
+}
+
 
 def transport_pp(jarak_km, moda):
     """Biaya transport pulang-pergi darat."""

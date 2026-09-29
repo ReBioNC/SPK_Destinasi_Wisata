@@ -38,3 +38,23 @@ class Destination(models.Model):
     def tag_set(self):
         """Himpunan tag aktivitas untuk C6."""
         return set(t for t in self.tag_aktivitas.split("|") if t)
+
+
+class JarakCache(models.Model):
+    """Cache jarak darat (km) agar patuh kebijakan OSRM (1 req/detik)."""
+
+    asal = models.CharField(max_length=100)
+    tujuan = models.CharField(max_length=100)
+    moda = models.CharField(max_length=20, default="mobil")
+    jarak_km = models.FloatField()
+    sumber = models.CharField(max_length=20, default="osrm")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["asal", "tujuan", "moda"],
+                                    name="uniq_jarak_moda"),
+        ]
+
+    def __str__(self):
+        return f"{self.asal} -> {self.tujuan} ({self.moda}): {self.jarak_km} km"
