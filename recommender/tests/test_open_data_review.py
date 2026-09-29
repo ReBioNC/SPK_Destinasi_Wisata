@@ -7,6 +7,7 @@ from unittest import TestCase
 import pandas as pd
 
 from scripts.open_data_review.legacy import load_legacy_candidates
+from scripts.open_data_review.osm import parse_osm_snapshot, INDONESIA_QUERY
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -45,3 +46,29 @@ class LegacyInventoryTests(TestCase):
             self.assertNotEqual(rows[0].candidate_id, rows[1].candidate_id)
             self.assertFalse(rows[0].possible_filler_name)
             self.assertTrue(rows[2].possible_filler_name)
+
+
+class OsmSnapshotTests(TestCase):
+    def test_parse_named_attraction_and_service_with_geometry_provenance(self):
+        payload = {"elements": [
+            {"type": "node", "id": 11, "lat": -6.2, "lon": 106.8,
+             "tags": {"name": "Museum A", "tourism": "museum"}},
+            {"type": "way", "id": 12, "center": {"lat": -6.3, "lon": 106.9},
+             "tags": {"name": "Pantai B", "natural": "beach"}},
+            {"type": "relation", "id": 13, "center": {"lat": -6.4, "lon": 107.0},
+             "tags": {"name": "Hotel C", "tourism": "hotel"}},
+            {"type": "node", "id": 14, "lat": -6.5, "lon": 107.1,
+             "tags": {"tourism": "attraction"}},
+            {"type": "node", "id": 11, "lat": -6.2, "lon": 106.8,
+             "tags": {"name": "Museum A", "tourism": "museum"}},
+        ]}
+        candidates, points = parse_osm_snapshot(payload, "2026-09-29", INDONESIA_QUERY)
+        self.assertEqual([row.name for row in candidates], ["Museum A", "Pantai B"])
+        self.assertEqual(len(points), 4)
+        self.assertEqual(candidates[0].candidate_id, "osm:node/11")
+        self.assertEqual(candidates[1].geometry_origin, "center_unverified")
+        self.assertEqual(points[2].ref, "relation/13")
+
+    def test_missing_indonesia_boundary_query_is_refused(self):
+        with self.assertRaises(ValueError):
+            parse_osm_snapshot({"elements": []}, "2026-09-29", "node[tourism];out;")
