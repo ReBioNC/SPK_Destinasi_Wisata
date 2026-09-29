@@ -63,7 +63,7 @@ function onProvinceHover(el, x, y){
 }
 function onProvinceLeave(){
   preview.classList.remove("show");
-  tooltip.style.display = "none";
+  if (typeof tooltip !== "undefined" && tooltip) tooltip.style.display = "none";
   document.querySelectorAll(".hover-js").forEach(x => x.classList.remove("hover-js"));
 }
 function onProvinceSelect(el){

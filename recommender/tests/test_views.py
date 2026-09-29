@@ -320,6 +320,12 @@ class RekomendasiViewTest(TestCase):
         r = self.client.get("/")
         self.assertContains(r, "menu.className = 'kota-menu'")
 
+    def test_peta_inline_punya_tooltip(self):
+        # Tanpa #tooltip, onProvinceLeave melempar sebelum menghapus
+        # .hover-js -> provinsi yang di-hover merah permanen.
+        r = self.client.get("/")
+        self.assertContains(r, 'id="tooltip"')
+
     def test_kota_dropdown_terlihat_penuh(self):
         # Menu milik sendiri: background/border/shadow eksplisit + di body.
         r = self.client.get("/")

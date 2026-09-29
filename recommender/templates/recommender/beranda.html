@@ -282,6 +282,7 @@ path.province.match{stroke:#fff; stroke-width:1.8}
           <div><dt>Kode</dt><dd id="infoKode">—</dd></div>
         </dl>
       </div>
+<div id="tooltip"></div>
     </div>
     <div class="map-foot">
       <div class="legend" id="legend"></div>
@@ -1113,7 +1114,7 @@ function onProvinceHover(el, x, y){
 }
 function onProvinceLeave(){
   preview.classList.remove("show");
-  tooltip.style.display = "none";
+  if (tooltip) tooltip.style.display = "none";
   document.querySelectorAll(".hover-js").forEach(x => x.classList.remove("hover-js"));
 }
 function onProvinceSelect(el){
@@ -1197,7 +1198,7 @@ searchInput.addEventListener("input", () => {
 document.getElementById("resetBtn").onclick = () => {
   searchInput.value = ""; applyIsland("Semua");
   paths.forEach(p => p.classList.remove("match", "hover-js", "selected"));
-  selected = null; tooltip.style.display = "none";
+  selected = null; if (tooltip) tooltip.style.display = "none";
   preview.classList.remove("show");
   vb = { ...VB_BASE }; applyVB();
   infoKicker.textContent = "Pratinjau provinsi";
