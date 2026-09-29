@@ -8,6 +8,8 @@ import pandas as pd
 
 from scripts.open_data_review.legacy import load_legacy_candidates
 from scripts.open_data_review.osm import parse_osm_snapshot, INDONESIA_QUERY
+from scripts.open_data_review.schema import OsmPoint
+from scripts.open_data_review.services import nearby_service_evidence, service_score, _haversine_km
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -72,3 +74,30 @@ class OsmSnapshotTests(TestCase):
     def test_missing_indonesia_boundary_query_is_refused(self):
         with self.assertRaises(ValueError):
             parse_osm_snapshot({"elements": []}, "2026-09-29", "node[tourism];out;")
+
+
+class ServiceScoreTests(TestCase):
+    def point(self, ident, lon, tags):
+        return OsmPoint("node", ident, 0.0, lon, tags, "node", "2026-09-29")
+
+    def test_zero_multiple_and_all_four_categories(self):
+        self.assertEqual(service_score(nearby_service_evidence(0, 0, [])), 0)
+        points = [
+            self.point(1, 0, {"highway": "bus_stop"}),
+            self.point(2, 0, {"public_transport": "platform"}),
+            self.point(3, 0, {"amenity": "hospital"}),
+            self.point(4, 0, {"amenity": "atm"}),
+            self.point(5, 0, {"tourism": "hotel"}),
+            self.point(5, 0, {"tourism": "hotel"}),
+        ]
+        evidence = nearby_service_evidence(0, 0, points)
+        self.assertEqual(service_score(evidence), 4)
+        self.assertEqual(len(evidence["transport"]), 2)
+        self.assertEqual(evidence["lodging"], ["node/5@2026-09-29"])
+
+    def test_boundary_included_and_beyond_excluded(self):
+        boundary = self.point(6, 0.01, {"amenity": "bank"})
+        radius = _haversine_km(0, 0, 0, boundary.lon)
+        outside = self.point(7, 0.011, {"amenity": "bank"})
+        evidence = nearby_service_evidence(0, 0, [boundary, outside], radius_km=radius)
+        self.assertEqual(evidence["atm_bank"], ["node/6@2026-09-29"])
