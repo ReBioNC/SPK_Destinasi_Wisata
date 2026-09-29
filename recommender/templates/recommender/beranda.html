@@ -566,7 +566,7 @@ path.province.match{stroke:#fff; stroke-width:1.8}
           Kenapa Rekomendasi TravelFit Objektif &amp; Bisa Dipercaya?
         </h2>
 <p class="font-body-lg text-body-lg text-on-surface-variant">
-          Dibangun dengan kerangka sains data CRISP-DM, pengelompokan K-Means, pembobotan AHP, dan pemeringkatan TOPSIS matematis tanpa bias algoritma medsos.
+          Dibangun dengan kerangka CRISP-DM, pengelompokan K-Means, pembobotan AHP, dan pemeringkatan TOPSIS. Sebagian destinasi masih memakai data simulasi dan diberi penanda pada hasil.
         </p>
 </div>
 <!-- CRISP-DM 4-Step Pipeline -->
@@ -825,8 +825,19 @@ path.province.match{stroke:#fff; stroke-width:1.8}
     cards.forEach(c => list.appendChild(c));
     const grid = document.getElementById('hasil-grid');
     if (grid) grid.remove();
-    cards.sort((a, b) => parseFloat(b.dataset[mode] || 0) - parseFloat(a.dataset[mode] || 0));
+    const ascending = mode === 'harga' || mode === 'jarak';
+    cards.sort((a, b) => {
+      const diff = Number(a.dataset[mode]) - Number(b.dataset[mode]);
+      return ascending ? diff : -diff;
+    });
     cards.forEach(c => { c.style.display = ''; list.appendChild(c); });
+    if (mode === 'vi' && cards.length > 3) {
+      const restoredGrid = document.createElement('div');
+      restoredGrid.id = 'hasil-grid';
+      restoredGrid.className = 'grid grid-cols-1 md:grid-cols-2 gap-space-md';
+      cards.slice(3).forEach(c => restoredGrid.appendChild(c));
+      list.appendChild(restoredGrid);
+    }
     const f = document.querySelector('#hasil-filters button');
     if (f) filterHasil('semua', f);
   }

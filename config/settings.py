@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +23,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '6s@b4w-_rj942!_xriskk)fca%y4)#$8ht%-_c277pcbvj0&kv'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'travel-fit-local-development-key-change-before-deploy')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', '1') == '1'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
+if not DEBUG and not os.environ.get('DJANGO_SECRET_KEY'):
+    raise ImproperlyConfigured('Set DJANGO_SECRET_KEY sebelum menjalankan aplikasi tanpa DEBUG.')
+
+ALLOWED_HOSTS = [host.strip() for host in
+                 os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,[::1]').split(',')
+                 if host.strip()]
 
 
 # Application definition

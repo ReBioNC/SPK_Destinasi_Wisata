@@ -8,9 +8,13 @@ def rank(scores, weights, is_cost):
 
     scores: list baris [C1..C6] (float). Mengembalikan list dict
     {"idx", "vi", "d_pos", "d_neg", "gap"} terurut Vi menurun.
-    gap[j] = |v_ij - A+_j|, dipakai untuk explainability.
+    gap[j] = |v_ij - A+_j| dan span[j] = |A-_j - A+_j|.
     """
+    if not scores:
+        return []
     n, m = len(scores), len(scores[0])
+    if len(weights) != m or len(is_cost) != m or any(len(row) != m for row in scores):
+        raise ValueError("Ukuran matriks, bobot, dan jenis kriteria harus sama.")
     den = [math.sqrt(sum(scores[i][j] ** 2 for i in range(n))) for j in range(m)]
     # Kolom tanpa variansi (mis. semua C6 = 0) tidak membedakan alternatif;
     # beri nilai ternormalisasi 0 agar tidak division-by-zero dan tak
@@ -21,6 +25,7 @@ def rank(scores, weights, is_cost):
                   else max(v[i][j] for i in range(n))) for j in range(m)]
     ideal_neg = [(max(v[i][j] for i in range(n)) if is_cost[j]
                   else min(v[i][j] for i in range(n))) for j in range(m)]
+    span = [abs(ideal_pos[j] - ideal_neg[j]) for j in range(m)]
     out = []
     for i in range(n):
         dp = math.sqrt(sum((v[i][j] - ideal_pos[j]) ** 2 for j in range(m)))
@@ -28,5 +33,6 @@ def rank(scores, weights, is_cost):
         # Satu-satunya kandidat: ideal == anti-ideal -> Vi = 1 tanpa crash.
         vi = dn / (dp + dn) if (dp + dn) else 1.0
         out.append({"idx": i, "vi": vi, "d_pos": dp, "d_neg": dn,
-                    "gap": [abs(v[i][j] - ideal_pos[j]) for j in range(m)]})
+                    "gap": [abs(v[i][j] - ideal_pos[j]) for j in range(m)],
+                    "span": span})
     return sorted(out, key=lambda r: r["vi"], reverse=True)

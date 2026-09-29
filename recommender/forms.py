@@ -1,6 +1,7 @@
 """Form preferensi pengguna (Bahasa Indonesia)."""
 
 from django import forms
+import re
 
 from recommender.kota_asal import KOTA_ASAL
 from recommender.models import Destination
@@ -13,12 +14,9 @@ def parse_budget(value):
     Tanda minus di depan ditolak (budget negatif tidak masuk akal).
     """
     teks = str(value).strip()
-    if teks.startswith("-"):
+    if not re.fullmatch(r"(?:Rp\s*)?(?:\d+|\d{1,3}(?:[.,]\d{3})+)", teks, re.IGNORECASE):
         raise forms.ValidationError("Masukkan budget dalam angka, contoh: 250000.")
-    digits = "".join(ch for ch in teks if ch.isdigit())
-    if not digits:
-        raise forms.ValidationError("Masukkan budget dalam angka, contoh: 250000.")
-    return int(digits)
+    return int(re.sub(r"[.,]", "", re.sub(r"^Rp\s*", "", teks, flags=re.IGNORECASE)))
 
 
 class PreferensiForm(forms.Form):
@@ -45,18 +43,20 @@ class PreferensiForm(forms.Form):
     w5 = forms.FloatField(required=False, min_value=0, max_value=100)
     w6 = forms.FloatField(required=False, min_value=0, max_value=100)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, options=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["kota_asal"].choices = [(k, k) for k in KOTA_ASAL]
-        wilayah = sorted(Destination.objects.values_list("provinsi", flat=True).distinct())
+        if options is None:
+            rows = Destination.objects.values_list("provinsi", "kategori", "tag_aktivitas")
+            wilayah = sorted({row[0] for row in rows})
+            kategori = sorted({row[1] for row in rows})
+            tags = sorted({t for row in rows for t in (row[2] or "").split("|") if t})
+        else:
+            wilayah, kategori, tags = options
         self.fields["wilayah"].choices = [(w, w) for w in wilayah]
-        kategori = sorted(Destination.objects.values_list("kategori", flat=True).distinct())
         self.fields["kategori_utama"].choices = [(k, k) for k in kategori]
         self.fields["kategori_sekunder"].choices = [(k, k) for k in kategori]
-        tags = set()
-        for raw in Destination.objects.values_list("tag_aktivitas", flat=True):
-            tags.update(t for t in (raw or "").split("|") if t)
-        self.fields["hobi"].choices = [(t, t) for t in sorted(tags)]
+        self.fields["hobi"].choices = [(t, t) for t in tags]
         self.fields["profil"].choices = [(k, v["label"]) for k, v in profiles.ACTIVE_PROFILES.items()]
 
     def clean_budget(self):

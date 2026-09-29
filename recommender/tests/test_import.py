@@ -21,6 +21,7 @@ class ImportTest(TestCase):
     def test_overlay_jawa_bertanda_sumber(self):
         call_command("import_destinations")
         self.assertEqual(Destination.objects.filter(sumber_data="csv_jawa").count(), 437)
+        self.assertEqual(Destination.objects.get(nama="Monumen Nasional").rating, 4.6)
 
     def test_provinsi_tepat_38_tanpa_alias(self):
         call_command("import_destinations")

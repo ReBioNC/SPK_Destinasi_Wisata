@@ -276,11 +276,29 @@ document.getElementById("toggleDotsBtn").onclick = (e) => {
   var raw = document.getElementById("hasil-data"), box = document.getElementById("daftar-hasil");
   if (raw && box) {
     var hasil = JSON.parse(raw.textContent);
-    box.innerHTML = hasil.length
-      ? "<h3>Hasil rekomendasi terakhir</h3>" + hasil.map(function(x, i){
-          return "<div class='hasil-item'>" + (i + 1) + ". " + x.nama +
-            " <small>(skor " + Number(x.vi).toFixed(4) + ")</small></div>";
-        }).join("")
-      : "<h3>Belum ada rekomendasi</h3><p>Isi form di <a href='/'>Beranda</a>.</p>";
+    box.replaceChildren();
+    var heading = document.createElement("h3");
+    heading.textContent = hasil.length ? "Hasil rekomendasi terakhir" : "Belum ada rekomendasi";
+    box.appendChild(heading);
+    if (hasil.length) {
+      hasil.forEach(function(x, i){
+        var row = document.createElement("div");
+        row.className = "hasil-item";
+        row.appendChild(document.createTextNode((i + 1) + ". " + x.nama + " "));
+        var score = document.createElement("small");
+        score.textContent = "(skor " + Number(x.vi).toFixed(4) + ")";
+        row.appendChild(score);
+        box.appendChild(row);
+      });
+    } else {
+      var prompt = document.createElement("p");
+      prompt.appendChild(document.createTextNode("Isi form di "));
+      var home = document.createElement("a");
+      home.href = "/";
+      home.textContent = "Beranda";
+      prompt.appendChild(home);
+      prompt.appendChild(document.createTextNode("."));
+      box.appendChild(prompt);
+    }
   }
 })();

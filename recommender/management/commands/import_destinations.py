@@ -2,8 +2,8 @@
 
 - Basis: Dataset_Wisata_38_Provinsi.xlsx, sheet Destinasi_TravelFit_Ready.
 - Koordinat: sheet Destinasi_Raw, join (nama, kota) case-insensitive.
-- Overlay: data/processed/destinations_clean.csv + ratings_aggregated.csv,
-  join (nama, kota); menimpa rating, tag, dan 4 flag fasilitas.
+- Overlay: data/processed/destinations_clean.csv,
+  join (nama, kota); menimpa rating destinasi, tag, dan 4 flag fasilitas.
 - Idempoten via update_or_create pada kunci natural (nama, kota).
 
 Catatan: fas_penginapan selalu False karena tidak ada kolom sumber yang
@@ -21,7 +21,6 @@ from recommender.models import Destination
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 XLSX = BASE_DIR / "Dataset_Wisata_38_Provinsi.xlsx"
 CLEAN_CSV = BASE_DIR / "data" / "processed" / "destinations_clean.csv"
-RATINGS_CSV = BASE_DIR / "data" / "processed" / "ratings_aggregated.csv"
 
 # Kanonik mengikuti kolom Province pada XLSX (38 provinsi).
 PROVINSI_ALIAS = {
@@ -57,20 +56,10 @@ class Command(BaseCommand):
                 row[ir["Lat"]], row[ir["Long"]])
 
         clean = pd.read_csv(CLEAN_CSV)
-        rating_by_id = {}
-        try:
-            rag = pd.read_csv(RATINGS_CSV)
-            rating_by_id = dict(zip(rag["place_id"], rag["user_rating_mean"]))
-        except FileNotFoundError:
-            pass
         overlay = {}
         for _, r in clean.iterrows():
-            pid = r.get("place_id")
-            rating = rating_by_id.get(pid) if pd.notna(pid) else None
-            if rating is None or (isinstance(rating, float) and pd.isna(rating)):
-                rating = r["c2_rating"]
             overlay[(norm(r["place_name"]), norm(r["city"]))] = {
-                "rating": float(rating),
+                "rating": float(r["c2_rating"]),
                 "tags": "" if pd.isna(r["activity_tags"]) else str(r["activity_tags"]),
                 "toilet": bool(r["facility_toilet_mentioned"]),
                 "parkir": bool(r["facility_parking_mentioned"]),
@@ -120,6 +109,7 @@ class Command(BaseCommand):
                         **flags,
                         "tag_aktivitas": tags,
                         "sumber_data": sumber,
+                        "cluster_label": "",
                     })
         wb.close()
         basis_total = basis if dry else Destination.objects.count()
@@ -153,6 +143,7 @@ class Command(BaseCommand):
                         "fas_penginapan": False,
                         "tag_aktivitas": ov["tags"],
                         "sumber_data": "csv_jawa",
+                        "cluster_label": "",
                     })
         total = basis_total if dry else Destination.objects.count()
         self.stdout.write(

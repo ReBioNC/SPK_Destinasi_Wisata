@@ -31,9 +31,9 @@ class Destination(models.Model):
         return f"{self.nama} ({self.kota})"
 
     def facility_score(self):
-        """Skor kelengkapan fasilitas C4 (0-1)."""
-        return sum([self.fas_toilet, self.fas_parkir, self.fas_warung,
-                    self.fas_mushola, self.fas_penginapan]) / 5.0
+        """C4 dari empat fasilitas yang tersedia di kedua sumber data."""
+        return sum((self.fas_toilet, self.fas_parkir, self.fas_warung,
+                    self.fas_mushola)) / 4.0
 
     def tag_set(self):
         """Himpunan tag aktivitas untuk C6."""

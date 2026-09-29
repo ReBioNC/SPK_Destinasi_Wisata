@@ -14,7 +14,7 @@ NAMA_KRITERIA = ["Harga tiket", "Rating", "Jarak", "Fasilitas", "Kategori", "Hob
 TOP_N = 10
 
 FAS_LABEL = [("fas_toilet", "Toilet"), ("fas_parkir", "Parkir"), ("fas_warung", "Warung"),
-             ("fas_mushola", "Mushola"), ("fas_penginapan", "Penginapan")]
+             ("fas_mushola", "Mushola")]
 
 
 def _rupiah(nilai):
@@ -23,13 +23,14 @@ def _rupiah(nilai):
 
 
 def _daftar_pilihan():
-    """Opsi select untuk template: wilayah, kategori, hobi (urut abjad)."""
-    wilayah = sorted(Destination.objects.values_list("provinsi", flat=True).distinct())
-    kategori = sorted(Destination.objects.values_list("kategori", flat=True).distinct())
-    tags = set()
-    for raw in Destination.objects.values_list("tag_aktivitas", flat=True):
+    """Opsi form dan template dari satu pembacaan data destinasi."""
+    rows = Destination.objects.values_list("provinsi", "kategori", "tag_aktivitas")
+    wilayah, kategori, tags = set(), set(), set()
+    for prov, kat, raw in rows.iterator():
+        wilayah.add(prov)
+        kategori.add(kat)
         tags.update(t for t in (raw or "").split("|") if t)
-    return wilayah, kategori, sorted(tags)
+    return sorted(wilayah), sorted(kategori), sorted(tags)
 
 
 def _kartu_profil():
@@ -59,11 +60,16 @@ def _seleksi_saat_ini(request, form):
             "hobi": hobi, "profil": get("profil", "") or "seimbang"}
 
 
-def _bangun_alasan(gap):
-    """Kalimat explainability dari gap ke solusi ideal (kecil = baik)."""
-    urut = sorted(range(len(gap)), key=lambda j: gap[j])
+def _bangun_alasan(gap, span):
+    """Bandingkan posisi tiap kriteria terhadap rentang ideal seluruh kandidat."""
+    aktif = [j for j, lebar in enumerate(span) if lebar > 1e-12]
+    if not aktif:
+        return "Semua kandidat bernilai sama pada kriteria yang digunakan."
+    urut = sorted(aktif, key=lambda j: gap[j] / span[j])
     unggul = ", ".join(NAMA_KRITERIA[j] for j in urut[:2])
     tertahan = NAMA_KRITERIA[urut[-1]]
+    if len(urut) == 1:
+        return f"Paling dekat nilai ideal pada {unggul}."
     return f"Unggul pada {unggul}; tertahan oleh {tertahan}."
 
 
@@ -102,21 +108,23 @@ def info_profil():
 
 
 def rekomendasi(request):
-    wilayah_valid = set(Destination.objects.values_list("provinsi", flat=True).distinct())
+    wilayah_list, kategori_list, hobi_list = _daftar_pilihan()
+    options = (wilayah_list, kategori_list, hobi_list)
+    wilayah_valid = set(wilayah_list)
     if request.method == "POST":
-        form = PreferensiForm(request.POST)
+        form = PreferensiForm(request.POST, options=options)
     else:
         param = request.GET.get("wilayah", "")
-        form = PreferensiForm(initial={"wilayah": param} if param in wilayah_valid else None)
+        form = PreferensiForm(initial={"wilayah": param} if param in wilayah_valid else None,
+                             options=options)
     konteks = {"form": form, "hasil": None, "kandidat_kosong": False,
                "bobot_efektif": None, "mode_custom": False, "pesan": "",
                "pesan_class": "warning", "profil_info": info_profil(),
                 "kota_list": [(k, f"{k} ({PROVINSI_KOTA[k]})" if k in PROVINSI_KOTA else k)
                               for k in sorted(KOTA_ASAL)],
-               "wilayah_list": sorted(Destination.objects.values_list("provinsi", flat=True).distinct()),
-               "kategori_list": sorted(Destination.objects.values_list("kategori", flat=True).distinct()),
-               "hobi_list": sorted({t for raw in Destination.objects.values_list("tag_aktivitas", flat=True)
-                                    for t in (raw or "").split("|") if t}),
+               "wilayah_list": wilayah_list,
+               "kategori_list": kategori_list,
+               "hobi_list": hobi_list,
                "profil_cards": _kartu_profil(),
                "bobot_persen": [round(w * 100) for w in
                                 profiles.ACTIVE_PROFILES["seimbang"]["weights"]],
@@ -179,18 +187,14 @@ def rekomendasi(request):
             geo.haversine(olat, olon, d.latitude, d.longitude),
             d.facility_score(),
             _skor_c5(d.kategori, cd["kategori_utama"], cd["kategori_sekunder"]),
-            similarity.jaccard(hobi_user, d.tag_set()),
+            similarity.jaccard(hobi_user, d.tag_set()) if hobi_user else 0.0,
         ])
     ranking = topsis.rank(matriks, bobot, profiles.IS_COST)[:TOP_N]
 
-    # Normalisasi gap ke solusi ideal per kriteria (0-100, besar = dekat ideal).
-    kolom_gap = list(zip(*[r["gap"] for r in ranking]))
-
-    def _pct_gap(g, kolom):
-        mn, mx = min(kolom), max(kolom)
-        if mx <= mn:
-            return 100
-        return round(100 * (1 - (g - mn) / (mx - mn)))
+    def _pct_gap(g, lebar):
+        if lebar <= 1e-12:
+            return 0
+        return max(0, min(100, round(100 * (1 - g / lebar))))
 
     hasil, untuk_sesi = [], []
     for r in ranking:
@@ -206,40 +210,42 @@ def rekomendasi(request):
                       "rating": d.rating, "vi": vi,
                       "vi_pct": round(vi * 100, 2),
                       "jarak_km": round(baris[2], 1),
-                      "jarak_txt": f"± {baris[2]:.0f} km dari {cd['kota_asal']}",
-                      "cluster": d.cluster_label or "-",
-                      "alasan": _bangun_alasan(r["gap"]),
+                      "jarak_txt": f"± {baris[2]:.0f} km garis lurus dari {cd['kota_asal']}",
+                      "cluster": d.cluster_label or "Belum dikelompokkan",
+                      "simulasi": d.sumber_data == "xlsx38",
+                      "alasan": (_bangun_alasan(r["gap"], r["span"]) if len(kandidat) > 1
+                                 else "Hanya satu destinasi lolos filter; tidak ada pembanding."),
                       "bars": [
-                          {"nama": "C1 Harga", "pct": _pct_gap(r["gap"][0], kolom_gap[0]),
+                          {"nama": "C1 Harga", "pct": _pct_gap(r["gap"][0], r["span"][0]),
+                           "no_effect": r["span"][0] <= 1e-12,
                            "sub": _rupiah(baris[0])},
-                          {"nama": "C2 Rating", "pct": _pct_gap(r["gap"][1], kolom_gap[1]),
+                          {"nama": "C2 Rating", "pct": _pct_gap(r["gap"][1], r["span"][1]),
+                           "no_effect": r["span"][1] <= 1e-12,
                            "sub": f"★ {baris[1]:g} / 5.0"},
-                          {"nama": "C3 Jarak", "pct": _pct_gap(r["gap"][2], kolom_gap[2]),
+                          {"nama": "C3 Jarak", "pct": _pct_gap(r["gap"][2], r["span"][2]),
+                           "no_effect": r["span"][2] <= 1e-12,
                            "sub": f"± {baris[2]:.0f} km"},
-                          {"nama": "C4 Fasilitas", "pct": _pct_gap(r["gap"][3], kolom_gap[3]),
+                          {"nama": "C4 Fasilitas", "pct": _pct_gap(r["gap"][3], r["span"][3]),
+                           "no_effect": r["span"][3] <= 1e-12,
                            "sub": ", ".join(fas_nama) or "-"},
-                          {"nama": "C5 Kategori", "pct": _pct_gap(r["gap"][4], kolom_gap[4]),
+                          {"nama": "C5 Kategori", "pct": _pct_gap(r["gap"][4], r["span"][4]),
+                           "no_effect": r["span"][4] <= 1e-12,
                            "sub": c5_txt},
-                          {"nama": "C6 Hobi", "pct": _pct_gap(r["gap"][5], kolom_gap[5]),
-                           "sub": f"Jaccard {round(baris[5] * 100)}%"},
+                          {"nama": "C6 Hobi", "pct": _pct_gap(r["gap"][5], r["span"][5]),
+                           "no_effect": r["span"][5] <= 1e-12,
+                           "sub": f"Jaccard {round(baris[5] * 100)}%" if hobi_user else "Hobi tidak dipilih"},
                       ]})
         untuk_sesi.append({"nama": d.nama, "provinsi": d.provinsi, "vi": r["vi"],
                            "latitude": d.latitude, "longitude": d.longitude})
     request.session["hasil_terakhir"] = untuk_sesi
+    ringkasan = {"wilayah": cd["wilayah"], "budget_fmt": _rupiah(cd["budget"]),
+                 "profil": profiles.ACTIVE_PROFILES[cd["profil"]]["label"],
+                 "n": len(kandidat),
+                 "n_simulasi": sum(d.sumber_data == "xlsx38" for d in kandidat)}
     konteks.update({"hasil": hasil, "bobot_efektif": bobot, "mode_custom": mode_custom,
                     "bobot_persen": [round(w * 100) for w in bobot],
                     "cluster_list": sorted({h["cluster"] for h in hasil}),
-                    "ringkasan": {"wilayah": cd["wilayah"],
-                                  "budget_fmt": _rupiah(cd["budget"]),
-                                  "profil": profiles.ACTIVE_PROFILES[cd["profil"]]["label"],
-                                  "n": len(kandidat)}})
-    konteks.update({"hasil": hasil, "bobot_efektif": bobot, "mode_custom": mode_custom,
-                    "bobot_persen": [round(w * 100) for w in bobot],
-                    "cluster_list": sorted({h["cluster"] for h in hasil}),
-                    "ringkasan": {"wilayah": cd["wilayah"],
-                                  "budget_fmt": _rupiah(cd["budget"]),
-                                  "profil": profiles.ACTIVE_PROFILES[cd["profil"]]["label"],
-                                  "n": len(kandidat)}})
+                    "ringkasan": ringkasan})
     if _is_ajax(request):
         return JsonResponse({"ok": True, "count": len(hasil),
                              "html": render_to_string("recommender/_hasil.html",
@@ -250,10 +256,7 @@ def rekomendasi(request):
         "pesan": konteks["pesan"], "pesan_class": konteks["pesan_class"],
         "bobot_persen": [round(w * 100) for w in bobot],
         "cluster_list": sorted({h["cluster"] for h in hasil}),
-        "ringkasan": {"wilayah": cd["wilayah"],
-                      "budget_fmt": _rupiah(cd["budget"]),
-                      "profil": profiles.ACTIVE_PROFILES[cd["profil"]]["label"],
-                      "n": len(kandidat)}}
+        "ringkasan": ringkasan}
     return redirect("beranda")
 
 
