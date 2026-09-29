@@ -2,8 +2,6 @@
 
 Aplikasi web Sistem Pendukung Keputusan (SPK) untuk mengeksplorasi destinasi wisata di Indonesia melalui enam kriteria: harga tiket, rating, jarak garis lurus, indikasi fasilitas, kesesuaian kategori, dan kesesuaian hobi. Pengembangan mengikuti **CRISP-DM** (*Cross-Industry Standard Process for Data Mining*); **K-Means** membentuk label segmen, **AHP** menentukan bobot profil, dan **TOPSIS** meranking kandidat. Nilai peringkat dapat ditelusuri secara matematis, sementara ketepatan rekomendasi di dunia nyata masih harus diuji dengan data terverifikasi dan pengguna.
 
-> **Status data prototipe:** 1.900 dari 2.337 destinasi adalah data simulasi. Generator mengacak harga, rating, dan koordinat di sekitar titik kota; angka ini belum boleh diperlakukan sebagai fakta lapangan. Sebanyak 437 baris dari dataset Jawa merupakan data sumber, tetapi informasi fasilitas dan aktivitasnya juga merupakan ekstraksi heuristik deskripsi. Website menandai hasil simulasi agar pengguna dapat membedakannya.
-
 User memasukkan budget maksimal, kota asal, provinsi tujuan, kategori wisata yang diminati (alam, bahari, belanja, budaya, hiburan, religi), dan hobi terkait wisata (hiking, fotografi, kuliner lokal, dsb). Sistem kemudian memproses kandidat yang lolos filter dan menampilkan peringkat beserta skor relatif dan alasannya.
 
 ## Variabel Penentu Keputusan
