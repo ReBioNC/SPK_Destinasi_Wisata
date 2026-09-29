@@ -103,6 +103,18 @@ class OsmSnapshotTests(TestCase):
         with self.assertRaises(ValueError):
             snapshot_covers_radius(payload, -8.67, 115.21)
 
+    def test_bounded_query_missing_services_is_not_complete_c2_scan(self):
+        bbox = [-8.75, 115.15, -8.6, 115.27]
+        query = ('[out:json];rel["boundary"="administrative"]["admin_level"="2"]'
+                 '["ISO3166-1"="ID"];map_to_area->.indonesia;'
+                 'nwr["tourism"="museum"](area.indonesia)(-8.75,115.15,-8.6,115.27);'
+                 'out center tags;')
+        self.assertFalse(snapshot_covers_radius({"_bbox": bbox, "_source_query": query},
+                                               -8.67, 115.21))
+        limited = build_bounded_query(tuple(bbox)).replace("out center tags;", "out center tags 1;")
+        self.assertFalse(snapshot_covers_radius({"_bbox": bbox, "_source_query": limited},
+                                               -8.67, 115.21))
+
 
 class ServiceScoreTests(TestCase):
     def point(self, ident, lon, tags):
@@ -210,6 +222,16 @@ class EvidenceGateTests(TestCase):
         result = review_candidate(candidate, self.complete_evidence(), self.c2)
         self.assertIn("uncertain:entrance_location", result.reasons)
 
+    def test_unreviewed_entrance_note_cannot_approve_selected_location(self):
+        candidate = Candidate(self.candidate.candidate_id, "geonames", "Pantai A",
+                              "Kota A", "Aceh", lat=5.0, lon=95.0,
+                              geometry_origin="gazetteer_point_unverified")
+        evidence = self.complete_evidence()
+        evidence.append(replace(evidence[1], note="entrance_checked",
+                                review_decision="unreviewed", reviewer=""))
+        result = review_candidate(candidate, evidence, self.c2)
+        self.assertIn("uncertain:entrance_location", result.reasons)
+
     def test_unreviewed_claim_cannot_verify(self):
         evidence = self.complete_evidence()
         evidence[2] = replace(evidence[2], reviewer="", review_decision="unreviewed")
@@ -253,6 +275,19 @@ class EvidenceGateTests(TestCase):
         dispositions = resolve_duplicate_flags(flags, decisions)
         self.assertEqual(dispositions["a"], "resolved")
         self.assertEqual(dispositions["b"], "rejected")
+
+    def test_conflicting_duplicate_decisions_hold_both_candidates(self):
+        a = Candidate("a", "osm", "Museum A", province="Aceh")
+        b = Candidate("b", "osm", "Museum A", province="Aceh")
+        _, flags = deduplicate_candidates([a, b])
+        decisions = [
+            replace(self.ev("duplicate_resolution", {"decision": "distinct",
+                "peer_ids": ["b"]}), candidate_id="a"),
+            replace(self.ev("duplicate_resolution", {"decision": "alias",
+                "canonical_id": "a", "peer_ids": ["a"]}), candidate_id="b"),
+        ]
+        dispositions = resolve_duplicate_flags(flags, decisions)
+        self.assertEqual(dispositions, {"a": "pending", "b": "pending"})
 
 
 class ReviewExportTests(TestCase):
@@ -408,6 +443,24 @@ class ReviewExportTests(TestCase):
             self.assertEqual(json.loads(scans[0]["value"])["score"], 0)
             with evidence_csv.open(encoding="utf-8", newline="") as handle:
                 items = list(csv.DictReader(handle))
+            approved_location = next(item for item in items if item["field"] == "location")
+            approved_location["value"] = json.dumps({"lat": 4.0, "lon": 95.0,
+                                                     "city": "Kota A", "province": "Aceh"})
+            unreviewed_location = dict(approved_location)
+            unreviewed_location["value"] = json.dumps({"lat": 5.0, "lon": 95.0,
+                                                       "city": "Kota A", "province": "Aceh"})
+            unreviewed_location["review_decision"] = "unreviewed"
+            unreviewed_location["reviewer"] = ""
+            items.insert(0, unreviewed_location)
+            with evidence_csv.open("w", encoding="utf-8", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=list(items[0]))
+                writer.writeheader()
+                writer.writerows(items)
+            counts = run_review(xlsx, kaggle, osm_json=osm, evidence_csv=evidence_csv, output_dir=out)
+            self.assertEqual(counts["verified"], 0)
+            items.pop(0)
+            approved_location["value"] = json.dumps({"lat": 5.0, "lon": 95.0,
+                                                     "city": "Kota A", "province": "Aceh"})
             for item in items:
                 if item["field"] == "c2_snapshot":
                     item["source_ref"] = "https://example.org/unrelated-scan"

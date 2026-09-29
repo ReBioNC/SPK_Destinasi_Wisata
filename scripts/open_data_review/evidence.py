@@ -149,9 +149,8 @@ def review_candidate(
             if (_haversine_km(candidate.lat, candidate.lon, location["lat"], location["lon"]) > 2
                     and not (independently_corrected and "coordinate_corrected" in location_record.note)):
                 reasons.append("conflict:location")
-        if candidate.geometry_origin in {"center_unverified", "gazetteer_point_unverified"} and not any(
-            "entrance_checked" in e.note for e in grouped.get("location", [])
-        ):
+        if (candidate.geometry_origin in {"center_unverified", "gazetteer_point_unverified"}
+                and "entrance_checked" not in location_record.note):
             reasons.append("uncertain:entrance_location")
     if set(c2_ids) != set(SERVICE_CLASSES):
         reasons.append("missing:c2_service_scan")
@@ -215,6 +214,7 @@ def resolve_duplicate_flags(
                                     if reason.startswith("possible_duplicate:")}
                 for flag in flags}
     decisions = {}
+    conflicted = set()
     for item in evidence:
         if (item.field != "duplicate_resolution" or item.candidate_id not in peer_map
                 or not isinstance(item.value, dict)
@@ -223,20 +223,33 @@ def resolve_duplicate_flags(
             continue
         if set(item.value.get("peer_ids", [])) != peer_map[item.candidate_id]:
             continue
-        decisions[item.candidate_id] = item.value
+        if item.candidate_id in decisions and decisions[item.candidate_id] != item.value:
+            conflicted.add(item.candidate_id)
+        else:
+            decisions[item.candidate_id] = item.value
+    for ident in conflicted:
+        decisions.pop(ident, None)
     aliases = {ident: value.get("canonical_id") for ident, value in decisions.items()
                if value.get("decision") == "alias"
                and value.get("canonical_id") in peer_map[ident]}
+    canonical_ready = {
+        ident for ident, peers in peer_map.items()
+        if decisions.get(ident, {}).get("decision") == "canonical"
+        and all(aliases.get(peer) == ident for peer in peers)
+    }
     dispositions = {}
     for ident, peers in peer_map.items():
         decision = decisions.get(ident, {})
-        if ident in aliases:
+        if (decision.get("decision") == "distinct" and all(
+            decisions.get(peer, {}).get("decision") == "distinct" for peer in peers
+        )):
+            dispositions[ident] = "resolved"
+        elif ident in canonical_ready:
+            dispositions[ident] = "resolved"
+        elif (ident in aliases and aliases[ident] in canonical_ready
+              and all(peer == aliases[ident] or aliases.get(peer) == aliases[ident]
+                      for peer in peers)):
             dispositions[ident] = "rejected"
-        elif decision.get("decision") == "distinct":
-            dispositions[ident] = "resolved"
-        elif (decision.get("decision") == "canonical"
-              and all(aliases.get(peer) == ident for peer in peers)):
-            dispositions[ident] = "resolved"
         else:
             dispositions[ident] = "pending"
     return dispositions

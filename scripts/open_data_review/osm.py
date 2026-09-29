@@ -12,6 +12,13 @@ from .schema import Candidate, OsmPoint
 
 # Use a smaller regional bbox *inside* the country area when making bounded
 # requests; the boundary, not the bbox, excludes East Timor and sea neighbours.
+SERVICE_QUERY_LINES = (
+    'nwr["public_transport"](area.indonesia);',
+    'nwr["highway"="bus_stop"](area.indonesia);',
+    'nwr["railway"~"^(station|halt)$"](area.indonesia);',
+    'nwr["amenity"~"^(bus_station|ferry_terminal|hospital|clinic|doctors|pharmacy|atm|bank)$"](area.indonesia);',
+    'nwr["tourism"~"^(hotel|guest_house|hostel|motel)$"](area.indonesia);',
+)
 INDONESIA_QUERY = '''[out:json][timeout:180];
 rel["boundary"="administrative"]["admin_level"="2"]["ISO3166-1"="ID"];
 map_to_area->.indonesia;
@@ -19,11 +26,7 @@ map_to_area->.indonesia;
   nwr["tourism"~"^(attraction|museum|viewpoint|artwork|theme_park|zoo|aquarium|gallery)$"](area.indonesia);
   nwr["natural"~"^(beach|waterfall|cave_entrance|volcano)$"](area.indonesia);
   nwr["historic"~"^(monument|memorial|castle|ruins|archaeological_site)$"](area.indonesia);
-  nwr["public_transport"](area.indonesia);
-  nwr["highway"="bus_stop"](area.indonesia);
-  nwr["railway"~"^(station|halt)$"](area.indonesia);
-  nwr["amenity"~"^(bus_station|ferry_terminal|hospital|clinic|doctors|pharmacy|atm|bank)$"](area.indonesia);
-  nwr["tourism"~"^(hotel|guest_house|hostel|motel)$"](area.indonesia);
+''' + "\n".join("  " + line for line in SERVICE_QUERY_LINES) + '''
 );
 out center tags;'''
 
@@ -52,6 +55,11 @@ def snapshot_covers_radius(payload: dict, lat: float, lon: float, radius_km: flo
     query = payload.get("_source_query", "")
     if not _is_indonesia_query(query):
         return False
+    normalized_query = re.sub(r"\(area\.indonesia\)\([^)]+\);",
+                              "(area.indonesia);", query)
+    if not all(re.search(r"^\s*" + re.escape(line) + r"\s*$", normalized_query, re.M)
+               for line in SERVICE_QUERY_LINES):
+        return False
     matches = re.findall(r"\(area\.indonesia\)\(([-\d.,]+)\)", query)
     bbox = payload.get("_bbox")
     if matches and not bbox:
@@ -63,6 +71,12 @@ def snapshot_covers_radius(payload: dict, lat: float, lon: float, radius_km: flo
         raise ValueError("Snapshot query uses inconsistent bounding boxes")
     if any(abs(float(a) - b) > 1e-9 for a, b in zip(bbox, recorded)):
         raise ValueError("Snapshot bbox differs from recorded query")
+    bounds = "(" + ",".join(f"{float(number):g}" for number in bbox) + ")"
+    expected = INDONESIA_QUERY.replace("[timeout:180]", "[timeout:60]").replace(
+        "(area.indonesia);", f"(area.indonesia){bounds};"
+    )
+    if query.strip() != expected.strip():
+        return False  # A limit, omitted selector, or altered query could undercount C2.
     south, west, north, east = recorded
     if not (-12 <= south < north <= 7 and 94 <= west < east <= 142):
         return False

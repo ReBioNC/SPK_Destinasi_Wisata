@@ -145,9 +145,12 @@ def run_review(
         evidence = (per_candidate[candidate.candidate_id]
                     + _auto_osm_evidence(candidate, snapshot_at)
                     + _auto_geonames_evidence(candidate, geonames_accessed_at))
-        location = next((e.value for e in evidence if e.field == "location" and isinstance(e.value, dict)), None)
-        lat = location.get("lat") if location else candidate.lat
-        lon = location.get("lon") if location else candidate.lon
+        # Select location through the same approval/consistency gate used below.
+        # A provisional candidate point or an earlier unreviewed CSV row cannot
+        # silently determine the C2 radius for a later approved location.
+        location = review_candidate(candidate, evidence, {}).values.get("location")
+        lat = location.get("lat") if location else None
+        lon = location.get("lon") if location else None
         scan_source = payload.get("_endpoint") or payload.get("_source_url")
         source_is_recorded = bool(scan_source and urlparse(scan_source).scheme == "https"
                                   and urlparse(scan_source).netloc)
