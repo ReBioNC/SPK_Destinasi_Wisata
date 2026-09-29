@@ -1,0 +1,76 @@
+{
+  "method": "K-Means, k-means++ initialization, 10 starts, seed 42",
+  "training_source": "csv_jawa",
+  "training_rows": 437,
+  "assigned_simulation_rows": 1900,
+  "ticket_price_cap_p99": 276400.0,
+  "capped_training_rows": 5,
+  "minimum_cluster_size": 22,
+  "features": [
+    "ticket_price_z",
+    "rating_z",
+    "category_alam",
+    "category_bahari",
+    "category_belanja",
+    "category_budaya",
+    "category_hiburan",
+    "category_religi"
+  ],
+  "excluded_feature": "C4 dikecualikan dari clustering: fasilitas terindikasi pada 82/437 data Jawa; kosong belum tentu tidak tersedia.",
+  "selected_k": 2,
+  "silhouette": 0.56452,
+  "inertia": 863.40678,
+  "candidates": [
+    {
+      "k": 2,
+      "silhouette": 0.56452,
+      "inertia": 863.40678,
+      "smallest_cluster": 25
+    },
+    {
+      "k": 3,
+      "silhouette": 0.28528,
+      "inertia": 608.23916,
+      "smallest_cluster": 24
+    },
+    {
+      "k": 4,
+      "silhouette": 0.24822,
+      "inertia": 508.17629,
+      "smallest_cluster": 24
+    },
+    {
+      "k": 5,
+      "silhouette": 0.3432,
+      "inertia": 439.52562,
+      "smallest_cluster": 24
+    },
+    {
+      "k": 6,
+      "silhouette": 0.37726,
+      "inertia": 371.72074,
+      "smallest_cluster": 24
+    }
+  ],
+  "clusters": [
+    {
+      "label": "Segmen 1 · harga rendah",
+      "observed_rows": 412,
+      "all_rows": 2237,
+      "mean_price": 12131.07,
+      "mean_rating": 4.444,
+      "dominant_category": "hiburan",
+      "mean_facility_score": 0.053
+    },
+    {
+      "label": "Segmen 2 · harga tinggi · hiburan",
+      "observed_rows": 25,
+      "all_rows": 100,
+      "mean_price": 231000.0,
+      "mean_rating": 4.424,
+      "dominant_category": "hiburan",
+      "mean_facility_score": 0.03
+    }
+  ],
+  "limitation": "Fasilitas pada data Jawa diekstrak dari deskripsi; harga, rating, dan koordinat data simulasi tidak terverifikasi."
+}

@@ -11,6 +11,9 @@
 <p class="font-body-md text-body-md text-on-surface-variant mt-1">
             Wilayah <strong class="text-on-surface">{{ ringkasan.wilayah }}</strong> • Budget ≤ <strong class="text-on-surface">{{ ringkasan.budget_fmt }}</strong> • Profil <strong class="text-primary">{{ ringkasan.profil }}</strong> • <span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold">{{ ringkasan.n }} kandidat lolos filter</span>
 </p>
+{% if ringkasan.n_simulasi %}<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">{{ ringkasan.n_simulasi }} dari {{ ringkasan.n }} kandidat memakai data simulasi (harga, rating, fasilitas, dan koordinat perkiraan). Gunakan hasil ini untuk eksplorasi, lalu verifikasi detail destinasi sebelum bepergian.</p>{% endif %}
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Persentase C1–C6 menunjukkan kedekatan terhadap nilai ideal di antara semua kandidat yang lolos filter. “Setara” berarti kriteria itu tidak membedakan kandidat.</p>
+{% if ringkasan.n == 1 %}<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Hanya satu kandidat lolos filter. Skor TOPSIS 1,0000 dipakai sebagai konvensi tampilan; belum ada perbandingan dengan destinasi lain.</p>{% endif %}
 </div>
 <div class="flex items-center gap-space-sm">
 <a class="px-space-md py-space-sm rounded-full bg-surface-container text-on-surface font-label-md text-label-md shadow-sm hover:bg-surface-container-high transition-colors flex items-center gap-1" href="#peta">
@@ -27,7 +30,7 @@
 <div class="flex flex-wrap items-center gap-space-xs" id="hasil-filters">
 <button class="px-space-md py-space-xs rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm" data-f="semua" onclick="filterHasil('semua', this)">Semua ({{ hasil|length }})</button>
 {% for c in cluster_list %}
-<button class="px-space-md py-space-xs rounded-full bg-surface-white text-on-surface border-2 border-on-surface/5 font-label-md text-label-md shadow-sm hover:bg-surface-container-low" data-f="{{ c }}" onclick="filterHasil('{{ c }}', this)">{{ c }}</button>
+<button class="px-space-md py-space-xs rounded-full bg-surface-white text-on-surface border-2 border-on-surface/5 font-label-md text-label-md shadow-sm hover:bg-surface-container-low" data-f="{{ c }}" onclick="filterHasil(this.dataset.f, this)">{{ c }}</button>
 {% endfor %}
 </div>
 <div class="flex items-center gap-space-xs">
@@ -53,6 +56,7 @@
 <h3 class="{% if forloop.counter == 1 %}font-headline-md text-headline-md{% else %}font-headline-sm text-headline-sm{% endif %} text-on-surface font-extrabold">{{ h.nama }}</h3>
 <span class="px-space-sm py-0.5 rounded-full bg-accent-sky text-on-surface font-label-sm text-label-sm font-bold">{{ h.kategori }}</span>
 <span class="px-space-sm py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-bold">Cluster: {{ h.cluster }}</span>
+{% if h.simulasi %}<span class="px-space-sm py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-bold">Data simulasi</span>{% endif %}
 <span class="px-space-sm py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold">Lolos Budget</span>
 </div>
 <div class="flex flex-wrap items-center gap-space-md text-on-surface-variant font-body-sm text-body-sm">
@@ -85,7 +89,7 @@
 <div class="flex flex-col gap-1 p-2 bg-surface-white rounded-lg">
 <div class="flex justify-between font-label-sm text-label-sm">
 <span class="">{{ b.nama }}</span>
-<span class="font-bold {% if b.pct < 80 %}text-secondary-container{% else %}text-primary{% endif %}">{{ b.pct }}%</span>
+<span class="font-bold {% if b.pct < 80 %}text-secondary-container{% else %}text-primary{% endif %}">{% if b.no_effect %}Setara{% else %}{{ b.pct }}%{% endif %}</span>
 </div>
 <div class="w-full h-1.5 rounded-full bg-surface-container"><div class="h-full {% if b.pct < 80 %}bg-secondary-container{% else %}bg-primary{% endif %} rounded-full" style="width: {{ b.pct }}%;"></div></div>
 <span class="font-label-sm text-[10px] text-on-surface-variant truncate">{{ b.sub }}</span>
@@ -102,7 +106,7 @@
 <span class="w-9 h-9 rounded-full bg-surface-container text-primary font-bold flex items-center justify-center shrink-0">{{ forloop.counter }}</span>
 <div>
 <h4 class="font-headline-sm text-headline-sm text-on-surface">{{ h.nama }}</h4>
-<p class="font-body-sm text-body-sm text-on-surface-variant">{{ h.harga_fmt }} • ★ {{ h.rating }} • {{ h.cluster }}</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">{{ h.harga_fmt }} • ★ {{ h.rating }} • {{ h.cluster }}{% if h.simulasi %} • Data simulasi{% endif %}</p>
 </div>
 </div>
 <div class="text-right shrink-0">
@@ -115,7 +119,7 @@
 <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
 {% for b in h.bars %}
 <div class="flex flex-col gap-1 p-2 bg-surface-white rounded-lg">
-<div class="flex justify-between font-label-sm text-label-sm"><span>{{ b.nama }}</span><span class="font-bold">{{ b.pct }}%</span></div>
+<div class="flex justify-between font-label-sm text-label-sm"><span>{{ b.nama }}</span><span class="font-bold">{% if b.no_effect %}Setara{% else %}{{ b.pct }}%{% endif %}</span></div>
 <div class="w-full h-1.5 rounded-full bg-surface-container"><div class="h-full bg-primary rounded-full" style="width: {{ b.pct }}%;"></div></div>
 <span class="font-label-sm text-[10px] text-on-surface-variant truncate">{{ b.sub }}</span>
 </div>

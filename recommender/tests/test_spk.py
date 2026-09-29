@@ -87,3 +87,17 @@ class TopsisTest(SimpleTestCase):
         res = topsis.rank([A10[1]], W_SEIMBANG, IS_COST)
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0]["vi"], 1.0)
+
+    def test_rentang_kriteria_tetap_dari_semua_kandidat(self):
+        from recommender.spk import topsis
+        res = topsis.rank([[1, 5], [2, 4], [10, 3]], [0.5, 0.5], [True, False])
+        self.assertEqual(len(res), 3)
+        self.assertTrue(all(len(row["span"]) == 2 for row in res))
+        self.assertTrue(all(row["span"] == res[0]["span"] for row in res))
+
+    def test_saw_menerima_harga_gratis_dan_kolom_nol(self):
+        from recommender.spk import validation
+        ranking = validation.saw_rank([[0, 0], [100, 0]], [0.5, 0.5], [True, False])
+        self.assertEqual(ranking[0][0], 0)
+        self.assertTrue(all(0 <= score <= 1 for _, score in ranking))
+        self.assertEqual(validation.spearman([0], [0]), 1.0)

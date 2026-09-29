@@ -11,6 +11,7 @@ sebagai pembanding validasi.</p>
 <p>Enam kriteria: harga tiket (C1, cost), rating pengunjung (C2), jarak tempuh (C3, cost),
 kelengkapan fasilitas (C4), kesesuaian kategori (C5), dan kesesuaian hobi via Jaccard Similarity (C6).
 Budget dan wilayah adalah filter keras; kategori dan hobi tetap menjadi kriteria pembeda.</p>
+<p><strong>Batasan data:</strong> 1.900 destinasi lintas 38 provinsi merupakan data simulasi dengan harga, rating, dan koordinat perkiraan. Sebanyak 437 destinasi Jawa berasal dari dataset sumber; indikator fasilitas dan tag aktivitasnya diekstrak dari deskripsi dan perlu verifikasi. C3 adalah jarak garis lurus Haversine, bukan waktu tempuh. Label K-Means dilatih pada baris Jawa dan diterapkan sebagai penjelasan segmen, bukan penentu peringkat.</p>
 <h2 class="mt-4">File Bukti Perhitungan</h2>
 <ul>
   <li><strong>Perhitungan_SPK_TravelFit.xlsx</strong> - 9 sheet formula AHP-TOPSIS yang dapat ditelusuri</li>

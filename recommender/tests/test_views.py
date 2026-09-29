@@ -42,6 +42,8 @@ class RekomendasiViewTest(TestCase):
         names = [h["nama"] for h in r.context["hasil"]]
         self.assertEqual(names[0], "Gunung Tangkuban Perahu")
         self.assertEqual(len(names), 10)
+        self.assertContains(r, "Data simulasi")
+        self.assertContains(r, "garis lurus")
 
     def test_budget_format_ribuan_diterima(self):
         for b in ["250.000", "Rp 250000", "250,000"]:
@@ -58,6 +60,12 @@ class RekomendasiViewTest(TestCase):
         self.assertContains(r, "Masukkan budget dalam angka")
         self.assertIsNone(r.context["hasil"])
 
+    def test_budget_teks_campuran_ditolak(self):
+        for budget in ["abc250000", "12,34", "Rp -250000"]:
+            with self.subTest(budget=budget):
+                r = self.post_valid(budget=budget)
+                self.assertContains(r, "Masukkan budget dalam angka")
+
     def test_kandidat_kosong_ramah(self):
         r = self.post_valid(budget="1000")
         self.assertContains(r, "longgarkan")
@@ -66,6 +74,20 @@ class RekomendasiViewTest(TestCase):
         r = self.post_valid(hobi=[])
         self.assertEqual(r.status_code, 200)
         self.assertEqual(len(r.context["hasil"]), 10)
+        self.assertTrue(all(h["bars"][5]["no_effect"] for h in r.context["hasil"]))
+        self.assertTrue(all(h["bars"][5]["sub"] == "Hobi tidak dipilih" for h in r.context["hasil"]))
+
+    def test_c4_memakai_empat_fasilitas_yang_tersedia(self):
+        destination = Destination.objects.get(nama="Kawah Putih Ciwidey")
+        self.assertEqual(destination.facility_score(), 1.0)
+        destination.fas_toilet = False
+        self.assertEqual(destination.facility_score(), 0.75)
+
+    def test_penjelasan_kriteria_tetap_tidak_menyebut_unggul(self):
+        from recommender.views import _bangun_alasan
+        self.assertEqual(_bangun_alasan([0, 0], [0, 0]),
+                         "Semua kandidat bernilai sama pada kriteria yang digunakan.")
+        self.assertNotIn("Rating", _bangun_alasan([0.2, 0], [1, 0]))
 
     def test_slider_mengubah_urutan(self):
         r = self.post_valid(**{"w1": "100", "w2": "0", "w3": "0", "w4": "0", "w5": "0", "w6": "0",
@@ -103,6 +125,7 @@ class RekomendasiViewTest(TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertEqual(len(r.context["hasil"]), 1)
         self.assertEqual(r.context["hasil"][0]["vi"], 1.0)
+        self.assertContains(r, "belum ada perbandingan")
 
     def test_refresh_membersihkan_hasil(self):
         # Refresh = sesi baru: hasil hanya tampil sekali setelah redirect.
