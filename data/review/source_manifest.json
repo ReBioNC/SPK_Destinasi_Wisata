@@ -1,0 +1,36 @@
+{
+  "attribution": [
+    "GeoNames; CC BY 4.0 (https://www.geonames.org/export/)"
+  ],
+  "c2_classes": [
+    "transport",
+    "healthcare",
+    "atm_bank",
+    "lodging"
+  ],
+  "c2_radius_km": 2.0,
+  "geonames_accessed_at": "2026-09-29",
+  "geonames_candidate_count": 1878,
+  "geonames_license": "CC BY 4.0; https://download.geonames.org/export/dump/readme.txt",
+  "geonames_source_url": "https://download.geonames.org/export/dump/ID.zip",
+  "inputs": [
+    {
+      "path": "C:\\Users\\ASUS\\Documents\\SPK_Destinasi_Wisata\\Dataset_Wisata_38_Provinsi.xlsx",
+      "sha256": "267eac7894204b95364e61d92d45d33f5e8f5c501bb444d917fefea3e8abba04"
+    },
+    {
+      "path": "C:\\Users\\ASUS\\Documents\\SPK_Destinasi_Wisata\\data\\raw\\tourism_with_id.csv",
+      "sha256": "f7be2257d5f7007cd93c4ebe11f4f0182bf0782d87a0380e3a93f744a8348b7c"
+    },
+    {
+      "path": "C:\\Users\\ASUS\\Documents\\SPK_Destinasi_Wisata\\data\\review\\ID.zip",
+      "sha256": "13ef08cb535b85053afdebdc9268caa2408b749f5d6f8721dda64c4b8f0b13a6"
+    }
+  ],
+  "osm_candidate_count": 0,
+  "osm_extract_sha256": null,
+  "osm_query": null,
+  "osm_snapshot_at": null,
+  "osm_source_url": null,
+  "warning": "Legacy synthetic and Kaggle values are inventory only, not verified measurements."
+}

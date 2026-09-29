@@ -32,6 +32,15 @@ ATTRACTIONS = {
     "natural": {"beach", "waterfall", "cave_entrance", "volcano"},
     "historic": {"monument", "memorial", "castle", "ruins", "archaeological_site"},
 }
+OSM_CATEGORY_MAP = {
+    ("tourism", "museum"): "Budaya", ("tourism", "gallery"): "Budaya",
+    ("tourism", "artwork"): "Budaya", ("tourism", "viewpoint"): "Cagar Alam",
+    ("tourism", "theme_park"): "Taman Hiburan", ("tourism", "zoo"): "Taman Hiburan",
+    ("tourism", "aquarium"): "Taman Hiburan",
+    ("natural", "beach"): "Pantai", ("natural", "volcano"): "Gunung",
+    ("natural", "waterfall"): "Cagar Alam", ("natural", "cave_entrance"): "Cagar Alam",
+    **{("historic", tag): "Budaya" for tag in ATTRACTIONS["historic"]},
+}
 
 
 def _is_indonesia_query(source_query: str) -> bool:
@@ -51,6 +60,20 @@ def parse_osm_snapshot(payload: dict, snapshot_at: str, source_query: str) -> tu
     """
     if not _is_indonesia_query(source_query):
         raise ValueError("Snapshot needs a recorded Indonesia admin-2 boundary query")
+    return _parse_elements(payload, snapshot_at)
+
+
+def parse_geofabrik_snapshot(payload: dict) -> tuple[list[Candidate], list[OsmPoint]]:
+    """Parse a known regional extract; item-level province is *not* inferred."""
+    source_url = payload.get("_source_url", "")
+    if (payload.get("_source_kind") != "geofabrik_maluku"
+            or not source_url.startswith("https://download.geofabrik.de/asia/indonesia/maluku-")
+            or not source_url.endswith(".osm.pbf")):
+        raise ValueError("Unknown Geofabrik extract provenance")
+    return _parse_elements(payload, payload.get("_snapshot_at", ""))
+
+
+def _parse_elements(payload: dict, snapshot_at: str) -> tuple[list[Candidate], list[OsmPoint]]:
     if not snapshot_at or not isinstance(payload.get("elements"), list):
         raise ValueError("Snapshot date and Overpass elements are required")
     candidates, points, seen = [], [], set()

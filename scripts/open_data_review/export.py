@@ -62,18 +62,23 @@ def write_review_outputs(
         raise ValueError("One review result is required for each candidate")
     output_dir.mkdir(parents=True, exist_ok=True)
     audit, verified, evidence_rows = [], [], []
-    status_counts, reason_counts, province_counts, category_counts = Counter(), Counter(), Counter(), Counter()
+    status_counts, reason_counts, province_counts, category_counts, origin_counts = (
+        Counter(), Counter(), Counter(), Counter(), Counter()
+    )
     for candidate in sorted(candidates, key=lambda row: row.candidate_id):
         result = result_map[candidate.candidate_id]
         status_counts[result.status] += 1
+        origin_counts[candidate.origin] += 1
         reason_counts.update(result.reasons)
         province_counts[candidate.province or "(unknown)"] += 1
-        category_counts[str(candidate.raw.get("Category") or candidate.raw.get("tourism") or candidate.raw.get("natural") or "(unknown)")] += 1
+        category = (candidate.raw.get("Category") or candidate.raw.get("category_mapped")
+                    or candidate.raw.get("tourism") or candidate.raw.get("natural") or "(unknown)")
+        category_counts[str(category)] += 1
         audit.append({
             "candidate_id": candidate.candidate_id, "origin": candidate.origin,
             "source_row_id": candidate.source_row_id, "source_path": candidate.source_path,
             "place_name": candidate.name, "city_raw": candidate.city, "province_raw": candidate.province,
-            "category_raw": candidate.raw.get("Category") or candidate.raw.get("tourism") or candidate.raw.get("natural"),
+            "category_raw": category,
             "price_raw_unverified": candidate.raw.get("Price"),
             "rating_raw_unverified": candidate.raw.get("Rating"),
             "lat_raw_unverified": candidate.raw.get("Lat") or candidate.lat,
@@ -109,8 +114,10 @@ def write_review_outputs(
         "Rating di hasil siap pakai sengaja kosong karena C2 baru adalah layanan sekitar terpetakan.",
         "Skor C2=0 berarti tidak ada layanan dalam empat kelas yang *terpetakan* pada snapshot dan radius 2 km, "
         "bukan tidak ada layanan di dunia nyata.", "",
-        "## Alasan tertahan", "",
+        "## Asal kandidat", "",
     ]
+    lines += [f"- {key}: {count}" for key, count in sorted(origin_counts.items())]
+    lines += ["", "## Alasan tertahan", ""]
     lines += [f"- {key}: {count}" for key, count in sorted(reason_counts.items())] or ["- Tidak ada."]
     lines += ["", "## Cakupan kandidat per provinsi", ""]
     lines += [f"- {key}: {count}" for key, count in sorted(province_counts.items())]
@@ -119,6 +126,12 @@ def write_review_outputs(
     lines += ["", "## Batasan", "",
               "OSM tidak lengkap secara merata. Harga, fasilitas onsite, aktivitas, dan lokasi masuk "
               "membutuhkan bukti item-spesifik dengan hak pakai jelas. Kandidat tanpa bukti tetap pending.", ""]
+    if not manifest.get("osm_snapshot_at"):
+        lines += ["Tidak ada snapshot layanan OSM pada run ini: C2 **belum dihitung** untuk kandidat mana pun; "
+                  "jangan membaca nilai kosong sebagai skor 0.", ""]
+    if manifest.get("geonames_candidate_count"):
+        lines += ["GeoNames mengidentifikasi landmark, bukan otomatis objek wisata yang terbuka, memiliki tiket, "
+                  "atau memenuhi fasilitas. Nama provinsi dan titik koordinatnya perlu konfirmasi independen.", ""]
     (output_dir / OUTPUT_NAMES[3]).write_text("\n".join(lines), encoding="utf-8")
     (output_dir / OUTPUT_NAMES[4]).write_text(
         json.dumps(manifest, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8"

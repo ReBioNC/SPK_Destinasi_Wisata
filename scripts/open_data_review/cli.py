@@ -5,12 +5,14 @@ import csv
 import hashlib
 import json
 from collections import defaultdict
+from datetime import datetime
 from pathlib import Path
 
 from .evidence import deduplicate_candidates, review_candidate
 from .export import OUTPUT_NAMES, write_review_outputs
+from .geonames import load_geonames_zip
 from .legacy import load_legacy_candidates
-from .osm import parse_osm_snapshot
+from .osm import OSM_CATEGORY_MAP, parse_geofabrik_snapshot, parse_osm_snapshot
 from .schema import SourceEvidence
 from .services import SERVICE_CLASSES, nearby_service_evidence
 
@@ -58,36 +60,60 @@ def _auto_osm_evidence(candidate, snapshot_at: str) -> list[SourceEvidence]:
             "province": candidate.province,
         }, base[1], base[2], base[3], "OSM node coordinate + addr:province; manual boundary check advisable"))
     for tag in ("tourism", "natural", "historic"):
-        if tag in candidate.raw:
-            found.append(SourceEvidence(base[0], "c5_category", candidate.raw[tag],
+        category = OSM_CATEGORY_MAP.get((tag, candidate.raw.get(tag)))
+        if category:
+            found.append(SourceEvidence(base[0], "c5_category", category,
                                         base[1], base[2], base[3], f"source tag={tag}/{candidate.raw[tag]}"))
             break
     return found
 
 
+def _auto_geonames_evidence(candidate, accessed_at: str) -> list[SourceEvidence]:
+    if candidate.origin != "geonames":
+        return []
+    source = candidate.source_path
+    found = [SourceEvidence(candidate.candidate_id, "identity", candidate.name, source,
+                            accessed_at, "cc-by-4.0", "GeoNames item name; tourism status not proven")]
+    # GeoNames administrative labels can conflict with its own coordinates.
+    # Keep them in candidate audit, but require independent location evidence.
+    found.append(SourceEvidence(candidate.candidate_id, "c5_category",
+                                candidate.raw["category_mapped"], source, accessed_at,
+                                "cc-by-4.0", f"source tag=geonames/{candidate.raw['feature_class']}.{candidate.raw['feature_code']}"))
+    return found
+
+
 def run_review(
     legacy_xlsx: Path, kaggle_csv: Path, *, osm_json: Path | None = None,
-    evidence_csv: Path | None = None, output_dir: Path | None = None,
+    geonames_zip: Path | None = None, evidence_csv: Path | None = None,
+    output_dir: Path | None = None,
 ) -> dict[str, int]:
     """Run one reproducible review and return its actual status counts."""
     legacy_xlsx, kaggle_csv = Path(legacy_xlsx), Path(kaggle_csv)
     osm_json = Path(osm_json) if osm_json else None
+    geonames_zip = Path(geonames_zip) if geonames_zip else None
     evidence_csv = Path(evidence_csv) if evidence_csv else None
     output_dir = Path(output_dir) if output_dir else ROOT / "data/review"
-    inputs = [legacy_xlsx, kaggle_csv] + ([osm_json] if osm_json else []) + ([evidence_csv] if evidence_csv else [])
+    inputs = [legacy_xlsx, kaggle_csv] + ([osm_json] if osm_json else []) + ([geonames_zip] if geonames_zip else []) + ([evidence_csv] if evidence_csv else [])
     if any((output_dir / name).resolve() in {p.resolve() for p in inputs} for name in OUTPUT_NAMES):
         raise ValueError("Review output aliases an input path")
     if output_dir.resolve() in {(ROOT / "data/raw").resolve(), (ROOT / "data/processed").resolve()}:
         raise ValueError("Review output cannot be a production data directory")
 
     candidates = load_legacy_candidates(legacy_xlsx, kaggle_csv)
+    if geonames_zip:
+        candidates.extend(load_geonames_zip(geonames_zip))
+    geonames_accessed_at = (datetime.fromtimestamp(geonames_zip.stat().st_mtime).date().isoformat()
+                            if geonames_zip else "")
     snapshot_at, source_query, points = "", "", []
     if osm_json:
         with osm_json.open(encoding="utf-8") as handle:
             payload = json.load(handle)
         snapshot_at = payload.get("_snapshot_at", "")
         source_query = payload.get("_source_query", "")
-        osm_candidates, points = parse_osm_snapshot(payload, snapshot_at, source_query)
+        if payload.get("_source_kind") == "geofabrik_maluku":
+            osm_candidates, points = parse_geofabrik_snapshot(payload)
+        else:
+            osm_candidates, points = parse_osm_snapshot(payload, snapshot_at, source_query)
         candidates.extend(osm_candidates)
     manual_evidence = _read_evidence(evidence_csv)
     per_candidate = defaultdict(list)
@@ -99,12 +125,18 @@ def run_review(
     duplicate_ids = {flag.candidate_id for flag in duplicate_flags}
     results = []
     for candidate in candidates:
-        evidence = per_candidate[candidate.candidate_id] + _auto_osm_evidence(candidate, snapshot_at)
+        evidence = (per_candidate[candidate.candidate_id]
+                    + _auto_osm_evidence(candidate, snapshot_at)
+                    + _auto_geonames_evidence(candidate, geonames_accessed_at))
         location = next((e.value for e in evidence if e.field == "location" and isinstance(e.value, dict)), None)
         lat = location.get("lat") if location else candidate.lat
         lon = location.get("lon") if location else candidate.lon
-        c2_ids = nearby_service_evidence(float(lat), float(lon), points) if points and lat is not None and lon is not None else {}
+        c2_ids = (nearby_service_evidence(float(lat), float(lon), points)
+                  if osm_json and lat is not None and lon is not None else {})
         result = review_candidate(candidate, evidence, c2_ids)
+        if osm_json and result.values.get("c2_snapshot") and result.values["c2_snapshot"] != snapshot_at:
+            result = type(result)(result.candidate_id, "pending", (*result.reasons, "conflict:c2_snapshot"),
+                                  result.values, result.evidence)
         if candidate.candidate_id in duplicate_ids:
             result = type(result)(result.candidate_id, "pending", (*result.reasons, "possible_duplicate"),
                                   result.values, result.evidence)
@@ -112,9 +144,17 @@ def run_review(
     manifest = {
         "inputs": [{"path": str(p.resolve()), "sha256": _hash(p)} for p in inputs],
         "osm_snapshot_at": snapshot_at or None, "osm_query": source_query or None,
+        "osm_source_url": payload.get("_source_url") if osm_json else None,
+        "osm_extract_sha256": payload.get("_extract_sha256") if osm_json else None,
         "osm_candidate_count": sum(c.origin == "osm" for c in candidates),
+        "geonames_candidate_count": sum(c.origin == "geonames" for c in candidates),
+        "geonames_license": "CC BY 4.0; https://download.geonames.org/export/dump/readme.txt" if geonames_zip else None,
+        "geonames_source_url": "https://download.geonames.org/export/dump/ID.zip" if geonames_zip else None,
+        "geonames_accessed_at": geonames_accessed_at or None,
         "c2_radius_km": 2.0, "c2_classes": list(SERVICE_CLASSES),
-        "attribution": "© OpenStreetMap contributors; ODbL 1.0 (https://www.openstreetmap.org/copyright)",
+        "attribution": (["© OpenStreetMap contributors; ODbL 1.0 (https://www.openstreetmap.org/copyright)"]
+                        if osm_json else []) + (["GeoNames; CC BY 4.0 (https://www.geonames.org/export/)"]
+                                           if geonames_zip else []),
         "warning": "Legacy synthetic and Kaggle values are inventory only, not verified measurements.",
     }
     write_review_outputs(candidates, results, output_dir, manifest)
@@ -128,11 +168,13 @@ def main() -> None:
     parser.add_argument("--legacy-xlsx", type=Path, default=ROOT / "Dataset_Wisata_38_Provinsi.xlsx")
     parser.add_argument("--kaggle-csv", type=Path, default=ROOT / "data/raw/tourism_with_id.csv")
     parser.add_argument("--osm-json", type=Path, help="saved Overpass JSON with _source_query and _snapshot_at")
+    parser.add_argument("--geonames-zip", type=Path, help="official GeoNames ID.zip country extract")
     parser.add_argument("--evidence-csv", type=Path, help="manually verified field evidence")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "data/review")
     args = parser.parse_args()
     print(json.dumps(run_review(args.legacy_xlsx, args.kaggle_csv, osm_json=args.osm_json,
-                                evidence_csv=args.evidence_csv, output_dir=args.output_dir), sort_keys=True))
+                                geonames_zip=args.geonames_zip, evidence_csv=args.evidence_csv,
+                                output_dir=args.output_dir), sort_keys=True))
 
 
 if __name__ == "__main__":

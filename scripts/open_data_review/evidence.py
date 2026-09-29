@@ -16,7 +16,7 @@ REQUIRED_FIELDS = (
     "c4_toilet", "c4_parking", "c4_food", "c4_prayer",
     "c5_category", "c6_activity",
 )
-ACCEPTED_REUSE = {"open", "odbl", "cc0", "cc-by", "public-domain"}
+ACCEPTED_REUSE = {"open", "odbl", "cc0", "cc-by", "cc-by-4.0", "public-domain"}
 
 
 def _norm(value: str) -> str:
@@ -106,7 +106,7 @@ def review_candidate(
         if candidate.lat is not None and candidate.lon is not None:
             if _haversine_km(candidate.lat, candidate.lon, location["lat"], location["lon"]) > 2:
                 reasons.append("conflict:location")
-        if candidate.geometry_origin == "center_unverified" and not any(
+        if candidate.geometry_origin in {"center_unverified", "gazetteer_point_unverified"} and not any(
             "entrance_checked" in e.note for e in grouped.get("location", [])
         ):
             reasons.append("uncertain:entrance_location")
@@ -126,13 +126,33 @@ def review_candidate(
 
 
 def deduplicate_candidates(candidates: list[Candidate]) -> tuple[list[Candidate], list[ReviewResult]]:
-    """Flag potential same-name/same-province pairs without deleting either row."""
+    """Flag same-name pairs by matching province or provisional nearby coordinates.
+
+    Legacy coordinates are used only to raise a review flag, never as proof.
+    """
     groups = defaultdict(list)
     for candidate in candidates:
-        if candidate.name.strip() and candidate.province.strip():
-            groups[(_norm(candidate.name), _norm(candidate.province))].append(candidate)
-    flagged = [
-        ReviewResult(candidate.candidate_id, "pending", ("possible_duplicate",))
-        for group in groups.values() if len(group) > 1 for candidate in group
-    ]
+        if candidate.name.strip():
+            groups[_norm(candidate.name)].append(candidate)
+
+    def coords(candidate):
+        try:
+            lat = candidate.lat if candidate.lat is not None else float(candidate.raw["Lat"])
+            lon = candidate.lon if candidate.lon is not None else float(candidate.raw["Long"])
+            return (lat, lon) if math.isfinite(lat) and math.isfinite(lon) else None
+        except (KeyError, TypeError, ValueError):
+            return None
+
+    flagged_ids = set()
+    for group in groups.values():
+        for index, left in enumerate(group):
+            for right in group[index + 1:]:
+                same_province = (left.province and right.province
+                                 and _norm(left.province) == _norm(right.province))
+                a, b = coords(left), coords(right)
+                nearby = bool(a and b and _haversine_km(*a, *b) <= 2)
+                if same_province or nearby:
+                    flagged_ids.update((left.candidate_id, right.candidate_id))
+    flagged = [ReviewResult(c.candidate_id, "pending", ("possible_duplicate",))
+               for c in candidates if c.candidate_id in flagged_ids]
     return candidates, flagged
