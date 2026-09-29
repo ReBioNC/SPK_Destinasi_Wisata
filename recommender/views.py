@@ -6,11 +6,12 @@ from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 
 from recommender.forms import KOTA_ASAL, PreferensiForm
+from recommender.jarak import jarak_table
 from recommender.kota_asal import PROVINSI_KOTA
 from recommender.models import Destination
 from recommender.spk import geo, profiles, similarity, topsis
-from recommender.spk.biaya import MODA, estimasi_total
-from recommender.transport import MODE_ANTAR, rencanakan
+from recommender.spk.biaya import MODA, PELABUHAN, estimasi_total
+from recommender.transport import MODE_ANTAR, koridor_ports, rencanakan
 
 NAMA_KRITERIA = ["Harga tiket", "Rating", "Jarak", "Fasilitas", "Kategori", "Hobi"]
 TOP_N = 10
@@ -192,9 +193,34 @@ def rekomendasi(request):
             "pesan_class": konteks["pesan_class"]}
         return redirect("beranda")
 
+    # Saring kasar tanpa network: estimasi darat-bawah (haversine) selalu
+    # <= total sebenarnya (jarak jalan >= lurus; pesawat/feri >= darat-bawah),
+    # sehingga yang gugur di sini pasti gugur juga — aman, tanpa OSRM.
+    from recommender.spk.biaya import INAP_PER_MALAM, MAKAN_PER_HARI
+    tarif_km = MODA[moda]["tarif_per_km"]
+    parkir = MODA[moda]["parkir"]
+    makan = hari * MAKAN_PER_HARI
+    inap = max(hari - 1, 0) * INAP_PER_MALAM
+    lolos_kasar = []
+    for d in pra:
+        gc = geo.haversine(olat, olon, d.latitude, d.longitude)
+        kasar = d.harga_tiket + (2 * gc * tarif_km + parkir) + makan + inap
+        if kasar <= cd["budget"]:
+            lolos_kasar.append(d)
+    # Pra-hangatkan cache jarak sekaligus (Table API): 1-2 request untuk
+    # semua kandidat, bukan ratusan request ber-throttle.
+    if lolos_kasar:
+        jarak_table(olat, olon, [(d.latitude, d.longitude) for d in lolos_kasar],
+                    moda)
+        koridor = koridor_ports(prov_asal, cd["wilayah"])
+        if koridor is not None and mode_antar in ("termurah", "darat_feri"):
+            _, pa, pt = koridor
+            jarak_table(olat, olon, [PELABUHAN[pa]], moda)
+            jarak_table(*PELABUHAN[pt],
+                        [(d.latitude, d.longitude) for d in lolos_kasar], moda)
     # Biaya total per kandidat, lalu saring budget atas TOTAL (bukan tiket).
     terpilih = []
-    for d in pra:
+    for d in lolos_kasar:
         plan = rencanakan(olat, olon, prov_asal, d.latitude, d.longitude,
                           d.provinsi, moda, mode_antar)
         rinc = estimasi_total(d.harga_tiket, 0, moda, hari,

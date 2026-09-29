@@ -15,6 +15,9 @@ from recommender.spk import geo
 
 OSRM_URL = ("https://router.project-osrm.org/route/v1/driving/"
             "{lon1},{lat1};{lon2},{lat2}?overview=false")
+OSRM_TABLE_URL = ("https://router.project-osrm.org/table/v1/driving/"
+                  "{coords}?sources=0&annotations=distance")
+TABLE_CHUNK = 100  # batas aman jumlah titik per request Table API.
 USER_AGENT = "TravelFit-SPK/1.0 (penelitian akademik; kontak via repo)"
 TIMEOUT_DETIK = 15
 FAKTOR_JALAN = 1.3  # Haversine lurus -> pendekatan jarak jalan.
@@ -62,3 +65,38 @@ def jarak_darat(lat1, lon1, lat2, lon2, moda="mobil"):
         asal=asal, tujuan=tujuan, moda=moda,
         defaults={"jarak_km": km, "sumber": sumber})
     return km, sumber
+
+
+def jarak_table(lat0, lon0, titik_list, moda="mobil"):
+    """Batch jarak dari satu titik ke banyak titik via OSRM Table API.
+
+    Mengembalikan list [(km, sumber)] sejajar titik_list; titik yang gagal
+    dilewati (pemanggil jatuh ke jarak_darat per titik). Satu chunk =
+    satu request network.
+    """
+    hasil = []
+    for i in range(0, len(titik_list), TABLE_CHUNK):
+        chunk = titik_list[i:i + TABLE_CHUNK]
+        coords = ";".join([f"{lon0},{lat0}"] +
+                          [f"{lon},{lat}" for lat, lon in chunk])
+        try:
+            _throttle()
+            data = json.loads(_ambil_osrm(
+                OSRM_TABLE_URL.format(coords=coords)).decode("utf-8"))
+            baris = (data.get("distances") or [[]])[0]
+            if data.get("code") != "Ok" or len(baris) < len(chunk) + 1:
+                raise ValueError(f"OSRM table: {data.get('code')}")
+        except (URLError, ValueError, KeyError, OSError) as exc:
+            print(f"OSRM table gagal ({exc}); titik dilewati.")
+            hasil.extend([None] * len(chunk))
+            continue
+        for (lat, lon), meter in zip(chunk, baris[1:]):
+            if meter is None:
+                hasil.append(None)
+                continue
+            km = float(meter) / 1000.0
+            JarakCache.objects.update_or_create(
+                asal=_kunci(lat0, lon0), tujuan=_kunci(lat, lon), moda=moda,
+                defaults={"jarak_km": km, "sumber": "osrm"})
+            hasil.append((km, "osrm"))
+    return hasil

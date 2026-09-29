@@ -42,3 +42,12 @@ class TransportAntarPulauTest(TestCase):
     def test_provinsi_tak_dikenal_ditolak(self):
         with self.assertRaises(ValueError):
             transport.rencanakan(0, 0, "Atlantis", 0, 0, "Jawa Barat", "mobil", "termurah")
+
+    def test_koridor_ports(self):
+        kunci, pa, pt = transport.koridor_ports("Jawa Barat", "Lampung")
+        self.assertEqual((kunci, pa, pt), ("merak_bakauheni", "merak", "bakauheni"))
+        kunci, pa, pt = transport.koridor_ports("Lampung", "Jawa Barat")
+        self.assertEqual((kunci, pa, pt), ("merak_bakauheni", "bakauheni", "merak"))
+        self.assertIsNone(transport.koridor_ports("Jawa Barat", "Sulawesi Selatan"))
+        kunci, _, _ = transport.koridor_ports("Jawa Barat", "Bali")
+        self.assertEqual(kunci, "ketapang_gilimanuk")

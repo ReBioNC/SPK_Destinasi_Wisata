@@ -191,11 +191,32 @@ class RekomendasiViewTest(TestCase):
             r = self.post_valid(budget="100000")
             self.assertTrue(r.context["kandidat_kosong"])
 
+    def test_saring_kasar_tanpa_network(self):
+        # Budget 6000: pra ada (tiket 5000) tapi kasar >> budget → rencanakan
+        # tak pernah dipanggil (hemat ratusan request OSRM).
+        from unittest.mock import patch
+        with patch("recommender.views.rencanakan",
+                   return_value=self._mock_plan()) as m:
+            r = self.post_valid(budget="6000")
+            self.assertTrue(r.context["kandidat_kosong"])
+            self.assertEqual(m.call_count, 0)
+
     def test_moda_hari_invalid(self):
         r = self.post_valid(moda="helikopter")
         self.assertIn("moda", r.context["form"].errors)
         r = self.post_valid(hari="0")
         self.assertIn("hari", r.context["form"].errors)
+
+    def test_prahangat_cache_sekali_batch(self):
+        # 10 kandidat = 1 request Table API, bukan 10 request ber-throttle.
+        from unittest.mock import patch
+        with patch("recommender.views.jarak_table", return_value=[]) as t:
+            with patch("recommender.views.rencanakan",
+                       return_value=self._mock_plan()):
+                r = self.post_valid()
+                self.assertEqual(len(r.context["hasil"]), 10)
+        self.assertEqual(t.call_count, 1)
+        self.assertEqual(len(t.call_args[0][2]), 10)
 
     def test_wilayah_dari_peta_terisi_otomatis(self):
         r = self.client.get("/", {"wilayah": "Jawa Barat"})

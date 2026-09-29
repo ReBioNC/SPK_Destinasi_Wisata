@@ -30,6 +30,17 @@ def _koridor(g1, prov1, g2, prov2):
     return None
 
 
+def koridor_ports(prov_asal, prov_tujuan):
+    """Publik untuk pra-pemanasan cache: koridor antar dua provinsi.
+
+    ValueError bila provinsi tak dikenal (konsisten dengan rencanakan)."""
+    try:
+        g1, g2 = PETA_PULAU[prov_asal], PETA_PULAU[prov_tujuan]
+    except KeyError as exc:
+        raise ValueError(f"Provinsi tak dikenal: {exc}.")
+    return _koridor(g1, prov_asal, g2, prov_tujuan)
+
+
 def rencanakan(lat1, lon1, prov1, lat2, lon2, prov2, moda="mobil", mode="termurah"):
     """Dict {transport, cara, rincian, sumber_jarak, opsi}.
 
