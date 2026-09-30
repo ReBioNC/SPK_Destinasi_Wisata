@@ -13,11 +13,41 @@ from recommender.spk import geo, profiles, similarity, topsis
 from recommender.spk.biaya import MODA, PELABUHAN, estimasi_total
 from recommender.transport import MODE_ANTAR, koridor_ports, rencanakan
 
-NAMA_KRITERIA = ["Harga tiket", "Rating", "Jarak", "Fasilitas", "Kategori", "Hobi"]
+NAMA_KRITERIA = ["Estimasi biaya total", "Rating", "Jarak", "Fasilitas", "Kategori", "Hobi"]
 TOP_N = 10
 
 FAS_LABEL = [("fas_toilet", "Toilet"), ("fas_parkir", "Parkir"), ("fas_warung", "Warung"),
-             ("fas_mushola", "Mushola")]
+             ("fas_mushola", "Tempat ibadah"), ("fas_accessibility", "Aksesibilitas"),
+             ("fas_information_center", "Pusat informasi")]
+
+
+def _dataset_state():
+    groups = list(Destination.objects.values("sumber_data", "pipeline_fingerprint").annotate(n=Count("id")))
+    counts = {}
+    for group in groups:
+        counts[group["sumber_data"]] = counts.get(group["sumber_data"], 0) + group["n"]
+    fingerprint = "|".join(sorted({group["pipeline_fingerprint"] for group in groups})) or "unversioned"
+    return {"data_count": sum(counts.values()), "source_counts": counts,
+            "dataset_fingerprint": fingerprint,
+            "province_count": Destination.objects.values("provinsi").distinct().count()}
+
+
+def _sync_session(request, state):
+    if request.session.get("dataset_fingerprint") != state["dataset_fingerprint"]:
+        request.session.pop("flash_hasil", None)
+        request.session.pop("hasil_terakhir", None)
+    request.session["dataset_fingerprint"] = state["dataset_fingerprint"]
+
+
+def _quality_notes(destination):
+    notes = []
+    if destination.rating_imputed:
+        notes.append(destination.data_quality.get("rating_model_note") or "Rating diimputasi median; bukan rating teramati.")
+    if destination.data_quality.get("coordinate_review_required"):
+        notes.append(destination.data_quality.get("coordinate_review_note") or "Koordinat perlu review.")
+    if destination.data_quality.get("facility_review_note"):
+        notes.append(destination.data_quality["facility_review_note"])
+    return notes
 
 
 def _rupiah(nilai):
@@ -114,6 +144,8 @@ def info_profil():
 
 
 def rekomendasi(request):
+    state = _dataset_state()
+    _sync_session(request, state)
     wilayah_list, kategori_list, hobi_list = _daftar_pilihan()
     options = (wilayah_list, kategori_list, hobi_list)
     wilayah_valid = set(wilayah_list)
@@ -137,7 +169,7 @@ def rekomendasi(request):
                "bobot_persen": [round(w * 100) for w in
                                 profiles.ACTIVE_PROFILES["seimbang"]["weights"]],
                "cluster_list": [], "ringkasan": None,
-               "cur": _seleksi_saat_ini(request, form)}
+               "cur": _seleksi_saat_ini(request, form), **state}
     if request.method == "GET" and request.GET.get("wilayah", "") in wilayah_valid:
         konteks["pesan"] = (f"Wilayah tujuan terisi dari peta: {request.GET['wilayah']} — "
                             "lengkapi preferensi lain lalu klik Cari Rekomendasi.")
@@ -245,7 +277,7 @@ def rekomendasi(request):
     for d, plan, rinc in terpilih:
         matriks.append([
             float(rinc["total"]),
-            float(d.rating),
+            d.calculation_rating(),
             float(plan["jarak_km"]),
             d.facility_score(),
             _skor_c5(d.kategori, cd["kategori_utama"], cd["kategori_sekunder"]),
@@ -280,6 +312,11 @@ def rekomendasi(request):
         fas_nama = [label for f, label in FAS_LABEL if getattr(d, f)]
         vi = r["vi"]
         hasil.append({"nama": d.nama, "kategori": d.kategori, "harga": total,
+                      "source_id": d.source_id, "rating_model": d.calculation_rating(),
+                      "rating_imputed": d.rating_imputed, "provenance": d.provenance,
+                      "quality_notes": _quality_notes(d), "facility_score": d.facility_score(),
+                      "source_label": ("Kaggle" if d.sumber_data == "kaggle_java" else
+                                       "Kurasi Jawa" if d.sumber_data == "curated_java" else "Sumber lama/belum dimigrasi"),
                       "harga_fmt": _rupiah(total),
                       "rating": d.rating, "vi": vi,
                       "vi_pct": round(vi * 100, 2),
@@ -287,7 +324,7 @@ def rekomendasi(request):
                       "jarak_txt": f"± {baris[2]:.0f} km ({plan['cara']}) dari {cd['kota_asal']}",
                       "rincian": rincian, "rincian_txt": rincian_txt,
                       "cluster": d.cluster_label or "Belum dikelompokkan",
-                      "simulasi": d.sumber_data == "xlsx38",
+                      "simulasi": False,
                       "alasan": (_bangun_alasan(r["gap"], r["span"]) if len(kandidat) > 1
                                  else "Hanya satu destinasi lolos filter; tidak ada pembanding."),
                        "bars": [
@@ -311,6 +348,7 @@ def rekomendasi(request):
                            "sub": f"Jaccard {round(baris[5] * 100)}%" if hobi_user else "Hobi tidak dipilih"},
                       ]})
         untuk_sesi.append({"nama": d.nama, "provinsi": d.provinsi, "vi": r["vi"],
+                           "source_id": d.source_id, "quality_notes": _quality_notes(d),
                            "latitude": d.latitude, "longitude": d.longitude,
                            "total": total})
     request.session["hasil_terakhir"] = untuk_sesi
@@ -319,7 +357,7 @@ def rekomendasi(request):
                  "n": len(kandidat),
                  "moda": MODA[moda]["label"], "hari": hari,
                  "mode_antar": dict(MODE_ANTAR)[mode_antar],
-                 "n_simulasi": sum(d.sumber_data == "xlsx38" for d in kandidat)}
+                 "n_simulasi": 0}
     konteks.update({"hasil": hasil, "bobot_efektif": bobot, "mode_custom": mode_custom,
                     "bobot_persen": [round(w * 100) for w in bobot],
                     "cluster_list": sorted({h["cluster"] for h in hasil}),
@@ -345,14 +383,16 @@ def _is_ajax(request):
 
 def peta(request):
     """Peta interaktif + daftar hasil terakhir (fallback: agregat provinsi)."""
+    state = _dataset_state()
+    _sync_session(request, state)
     hasil = request.session.get("hasil_terakhir") or []
     agregat = (Destination.objects.values("provinsi")
                .annotate(jumlah=Count("id")).order_by("provinsi"))
     return render(request, "recommender/peta.html",
                   {"hasil_json": hasil, "agregat": list(agregat),
-                   "ada_hasil": bool(hasil)})
+                   "ada_hasil": bool(hasil), **state})
 
 
 def tentang(request):
     """Metodologi singkat + tautan file bukti."""
-    return render(request, "recommender/tentang.html")
+    return render(request, "recommender/tentang.html", _dataset_state())

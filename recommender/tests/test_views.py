@@ -71,7 +71,7 @@ class RekomendasiViewTest(TestCase):
         names = [h["nama"] for h in r.context["hasil"]]
         self.assertEqual(names[0], "Gunung Tangkuban Perahu")
         self.assertEqual(len(names), 10)
-        self.assertContains(r, "Data simulasi")
+        self.assertTrue(all(not h['simulasi'] for h in r.context['hasil']))
         self.assertContains(r, "(darat)")
 
     def test_budget_format_ribuan_diterima(self):
