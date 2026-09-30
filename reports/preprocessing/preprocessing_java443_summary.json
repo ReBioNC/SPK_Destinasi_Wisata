@@ -6,10 +6,6 @@
   },
   "rows_lost": 0,
   "missing_destination_ids": [],
-  "data_quality_review_ids": [
-    9,
-    438
-  ],
   "missing_rating_ids": [
     438
   ],
@@ -20,15 +16,21 @@
     "method": "median_observed_valid_ratings",
     "value": 4.5,
     "observed_rows": 442,
+    "imputed_ids": [
+      438
+    ],
     "calculation_column": "c2_rating_for_model",
     "source_rating_unchanged": true
   },
   "coordinate_review_ids": [
     9
   ],
+  "data_quality_review_ids": [
+    9,
+    438
+  ],
   "model_features_complete_rows": 443,
   "kmeans_training_ready": true,
-  "missing_value_policy": "Pertahankan 443 destinasi. Rating Tahura memakai median hanya pada kolom perhitungan; rating sumber tetap kosong. Nilai kosong lain tidak otomatis diimputasi.",
   "rating_rows_valid": 9597,
   "cities": [
     "Bandung",
@@ -50,19 +52,41 @@
     "religi"
   ],
   "destinations_with_facility_evidence": 69,
-  "facility_evidence_definition": "Penyebutan deskripsi yang diterima; bukan fasilitas terverifikasi di lapangan",
   "destinations_with_facility_keyword_matches": 84,
   "destinations_with_facility_context_review": 16,
   "destinations_without_facility_description": 0,
   "destinations_with_activity_tags": 370,
-  "scaler_mean": {
-    "c1_ticket_price": 24390.519187358917,
-    "c2_rating": 4.442889390519188,
-    "c4_facility_score": 0.02972159518434913
+  "facility_evidence_definition": "Penyebutan deskripsi yang diterima; bukan fasilitas terverifikasi di lapangan.",
+  "feature_parameters": {
+    "feature_columns": [
+      "c1_ticket_price_z",
+      "c2_rating_z",
+      "category_alam",
+      "category_bahari",
+      "category_belanja",
+      "category_budaya",
+      "category_hiburan",
+      "category_religi"
+    ],
+    "categories": [
+      "alam",
+      "bahari",
+      "belanja",
+      "budaya",
+      "hiburan",
+      "religi"
+    ],
+    "ticket_price_cap_p99": 275799.9999999998,
+    "mean": [
+      22187.358916478555,
+      4.442889390519188
+    ],
+    "scale": [
+      47129.62168054756,
+      0.2076695455182245
+    ],
+    "excluded": "C4 hanya SPK; indikator deskripsi bukan fasilitas lapangan terverifikasi."
   },
-  "scaler_scale": {
-    "c1_ticket_price": 65957.59189185794,
-    "c2_rating": 0.2076695455182245,
-    "c4_facility_score": 0.07632779324554256
-  }
+  "pipeline_fingerprint": "c3b2f4ead1b955ed41c4be8df4ee201a374a915a5eb10823f8f58c65ace25eac",
+  "missing_value_policy": "Pertahankan 443 destinasi; imputasi hanya rating model Tahura. Time_Minutes boleh kosong."
 }
