@@ -1,0 +1,53 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Seplawan&format=jsonv2&limit=3&countrycodes=id&bounded=1&viewbox=109.85%2C-7.60%2C110.20%2C-7.90",
+  "query": "Seplawan",
+  "accessed_at_utc": "2026-09-30T10:18:59.488654+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "2c212c556aee22ecdbb86e9c6dc6baa978de2a1122de7b0b02ec18fc97795d62",
+  "results": [
+    {
+      "place_id": 32054001,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 9605207535,
+      "lat": "-7.7725927",
+      "lon": "110.1123089",
+      "category": "tourism",
+      "type": "viewpoint",
+      "place_rank": 30,
+      "importance": 5.000152590214416e-05,
+      "addresstype": "tourism",
+      "name": "Gunung Seplawan",
+      "display_name": "Gunung Seplawan, Jl. Sermo - Girimulyo, Sungapan Dua, Jatimulyo, Girimulyo, Kulonprogo, Daerah Istimewa Yogyakarta, Indonesia",
+      "boundingbox": [
+        "-7.7726427",
+        "-7.7725427",
+        "110.1122589",
+        "110.1123589"
+      ]
+    },
+    {
+      "place_id": 32098213,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 3375853628,
+      "lat": "-7.7727565",
+      "lon": "110.1101132",
+      "category": "natural",
+      "type": "cave_entrance",
+      "place_rank": 30,
+      "importance": 5.000152590214416e-05,
+      "addresstype": "natural",
+      "name": "Gua Seplawan",
+      "display_name": "Gua Seplawan, Jl. Sermo - Girimulyo, Sungapan Dua, Donorejo, Kaligesing, Purworejo, Jawa Tengah, Indonesia",
+      "boundingbox": [
+        "-7.7728065",
+        "-7.7727065",
+        "110.1100632",
+        "110.1101632"
+      ]
+    }
+  ]
+}

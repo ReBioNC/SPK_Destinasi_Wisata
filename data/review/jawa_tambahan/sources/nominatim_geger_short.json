@@ -1,0 +1,10 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Geger+Menjangan&format=jsonv2&limit=3&countrycodes=id&bounded=1&viewbox=109.85%2C-7.60%2C110.20%2C-7.90",
+  "query": "Geger Menjangan",
+  "accessed_at_utc": "2026-09-30T10:19:02.114820+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "results": []
+}

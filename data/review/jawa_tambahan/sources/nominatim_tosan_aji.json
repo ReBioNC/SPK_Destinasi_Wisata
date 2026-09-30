@@ -1,0 +1,32 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Museum+Tosan+Aji%2C+Purworejo%2C+Indonesia&format=jsonv2&limit=3&countrycodes=id",
+  "query": "Museum Tosan Aji, Purworejo, Indonesia",
+  "accessed_at_utc": "2026-09-30T10:17:12.305926+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "9e2f084bc31027104b772b14bc89aa252e438df60d7cd70d1797b53b4bcf7020",
+  "results": [
+    {
+      "place_id": 32041394,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 1124582142,
+      "lat": "-7.7110119",
+      "lon": "110.0097575",
+      "category": "amenity",
+      "type": "museum",
+      "place_rank": 30,
+      "importance": 0.07194870560319186,
+      "addresstype": "amenity",
+      "name": "Museum Tosan Aji",
+      "display_name": "Museum Tosan Aji, 10, Jalan Mayjen Sutoyo, Ngupasan, Purworejo, Jawa Tengah, 54151, Indonesia",
+      "boundingbox": [
+        "-7.7111822",
+        "-7.7108057",
+        "110.0095578",
+        "110.0099619"
+      ]
+    }
+  ]
+}

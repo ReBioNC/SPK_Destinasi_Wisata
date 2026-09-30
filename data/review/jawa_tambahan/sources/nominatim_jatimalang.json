@@ -1,0 +1,32 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Pantai+Jatimalang%2C+Purworejo%2C+Indonesia&format=jsonv2&limit=3&countrycodes=id",
+  "query": "Pantai Jatimalang, Purworejo, Indonesia",
+  "accessed_at_utc": "2026-09-30T10:17:15.811892+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "ccd1c8bb8b839bc15cb160fe2ac2b0b8359aa670174216882dc83a44b8cdbb3a",
+  "results": [
+    {
+      "place_id": 32196164,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 10062766524,
+      "lat": "-7.8792731",
+      "lon": "109.9832511",
+      "category": "natural",
+      "type": "beach",
+      "place_rank": 22,
+      "importance": 0.10670666742961774,
+      "addresstype": "beach",
+      "name": "Pantai Dewaruci Jatimalang",
+      "display_name": "Pantai Dewaruci Jatimalang, Jatimalang, Purwodadi, Purworejo, Jawa Tengah, Indonesia",
+      "boundingbox": [
+        "-7.8793231",
+        "-7.8792231",
+        "109.9832011",
+        "109.9833011"
+      ]
+    }
+  ]
+}
