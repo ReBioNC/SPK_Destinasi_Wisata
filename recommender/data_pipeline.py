@@ -321,10 +321,10 @@ def export_pipeline(result: PipelineResult, project_root: Path) -> dict[str, Pat
         path.parent.mkdir(parents=True, exist_ok=True)
     result.destinations.to_csv(paths["destinations"], index=False, encoding="utf-8-sig", lineterminator="\n")
     result.features.to_csv(paths["features"], index=False, encoding="utf-8-sig", lineterminator="\n")
-    paths["summary"].write_text(json.dumps(result.summary, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
+    paths["summary"].write_text(json.dumps(result.summary, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8", newline="\n")
     manifest = {**result.manifest, "output_hashes": {
         OUTPUT_PATHS[name]: _hash(paths[name]) for name in ("destinations", "features", "summary")}}
-    paths["manifest"].write_text(json.dumps(manifest, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
+    paths["manifest"].write_text(json.dumps(manifest, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8", newline="\n")
     return paths
 
 

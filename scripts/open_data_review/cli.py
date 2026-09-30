@@ -214,7 +214,7 @@ def run_review(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--legacy-xlsx", type=Path, default=ROOT / "Dataset_Wisata_38_Provinsi.xlsx")
+    parser.add_argument("--legacy-xlsx", type=Path, default=ROOT / "archive/legacy/Dataset_Wisata_38_Provinsi.xlsx")
     parser.add_argument("--kaggle-csv", type=Path, default=ROOT / "data/raw/tourism_with_id.csv")
     parser.add_argument("--osm-json", type=Path, help="saved Overpass JSON with _source_query and _snapshot_at")
     parser.add_argument("--geonames-zip", type=Path, help="official GeoNames ID.zip country extract")

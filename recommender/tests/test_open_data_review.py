@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[2]
 class LegacyInventoryTests(TestCase):
     def test_actual_sources_are_inventoried_without_implicit_verification(self):
         rows = load_legacy_candidates(
-            ROOT / "Dataset_Wisata_38_Provinsi.xlsx",
+            ROOT / "archive/legacy/Dataset_Wisata_38_Provinsi.xlsx",
             ROOT / "data/raw/tourism_with_id.csv",
         )
         self.assertEqual(len(rows), 2337)
