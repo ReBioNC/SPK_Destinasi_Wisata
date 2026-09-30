@@ -170,6 +170,9 @@ def rekomendasi(request):
                                 profiles.ACTIVE_PROFILES["seimbang"]["weights"]],
                "cluster_list": [], "ringkasan": None,
                "cur": _seleksi_saat_ini(request, form), **state}
+    form.fields['kota_asal'].choices = konteks['kota_list']
+    konteks['slider_fields'] = [{'name': f'w{i+1}', 'label': label, 'value': value}
+                              for i, (label, value) in enumerate(zip(NAMA_KRITERIA, konteks['bobot_persen']))]
     if request.method == "GET" and request.GET.get("wilayah", "") in wilayah_valid:
         konteks["pesan"] = (f"Wilayah tujuan terisi dari peta: {request.GET['wilayah']} — "
                             "lengkapi preferensi lain lalu klik Cari Rekomendasi.")
@@ -179,9 +182,12 @@ def rekomendasi(request):
         flash = request.session.pop("flash_hasil", None)
         if flash:
             konteks.update(flash)
+            for slider, value in zip(konteks['slider_fields'], konteks['bobot_persen']):
+                slider['value'] = value
     if request.method != "POST" or not form.is_valid():
         if request.method == "POST" and _is_ajax(request):
-            return JsonResponse({"ok": False,
+            return JsonResponse({"ok": False, "errors": dict(form.errors),
+                                 "labels": {name: form.fields[name].label for name in form.errors},
                                  "pesan": "Preferensi belum lengkap atau tidak valid."},
                                 status=400)
         return render(request, "recommender/beranda.html", konteks)

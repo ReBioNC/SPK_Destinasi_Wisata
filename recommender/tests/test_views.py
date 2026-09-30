@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from recommender.models import Destination
+from recommender.kota_asal import KOTA_ASAL
 
 # (nama, harga, rating, lat, lon, kategori, tags, n_fasilitas_True)
 FIXTURE = [
@@ -244,7 +245,9 @@ class RekomendasiViewTest(TestCase):
 
     def test_profil_terpilih_terlihat_langsung(self):
         r = self.client.get("/")
-        self.assertContains(r, ".profil-info:has(input:checked)")
+        self.assertContains(r, 'value="seimbang" checked')
+        self.assertContains(r, 'for="profile-seimbang"')
+        self.assertContains(r, 'recommender/travelfit.css')
 
     def test_profil_satu_sumber_status_terpilih(self):
         # Status terpilih hanya dari :has (sinkron DOM); tidak ada ring server
@@ -271,9 +274,10 @@ class RekomendasiViewTest(TestCase):
         self.assertEqual(r.status_code, 400)
         self.assertFalse(r.json()["ok"])
 
-    def test_budget_format_ribuan_hook(self):
-        r = self.client.get("/")
-        self.assertContains(r, "formatBudgetRibuan")
+    def test_budget_invalid_tetap_bisa_diperbaiki(self):
+        r = self.post_valid(budget="minus-seratus")
+        self.assertContains(r, 'type="text" name="budget" value="minus-seratus"')
+        self.assertTrue(r.context['form'].errors['budget'])
 
     def test_kota_asal_ratusan_kota_berkoordinat(self):
         from recommender.kota_asal import KOTA_ASAL
@@ -306,7 +310,7 @@ class RekomendasiViewTest(TestCase):
     def test_kota_searchable_di_form(self):
         r = self.client.get("/")
         self.assertContains(r, "kota_asal_input")
-        self.assertContains(r, "kota-menu")
+        self.assertContains(r, 'id="id_kota_asal"')
         self.assertContains(r, "Badung (Bali)")
 
     def test_kota_tanpa_lib_pihak_ketiga(self):
@@ -316,25 +320,21 @@ class RekomendasiViewTest(TestCase):
         self.assertNotIn("TomSelect", html)
         self.assertNotIn("tom-select", html)
 
-    def test_kota_menu_punya_class_terstyle(self):
-        # Menu dibuat via JS harus membawa class yang ditarget CSS (.kota-menu),
-        # kalau tidak ia ter-render polos di ujung body, di luar viewport.
+    def test_kota_select_native_memuat_semua_pilihan(self):
         r = self.client.get("/")
-        self.assertContains(r, "menu.className = 'kota-menu'")
+        self.assertContains(r, '<select name="kota_asal"')
+        self.assertEqual(len(r.context['form'].fields['kota_asal'].choices), len(KOTA_ASAL))
 
-    def test_peta_inline_punya_tooltip(self):
-        # Tanpa #tooltip, onProvinceLeave melempar sebelum menghapus
-        # .hover-js -> provinsi yang di-hover merah permanen.
+    def test_peta_bisa_dibuka_dari_beranda(self):
         r = self.client.get("/")
-        self.assertContains(r, 'id="tooltip"')
+        self.assertContains(r, 'href="/peta/"')
+        self.assertEqual(self.client.get('/peta/').status_code, 200)
 
-    def test_kota_dropdown_terlihat_penuh(self):
-        # Menu milik sendiri: background/border/shadow eksplisit + di body.
-        r = self.client.get("/")
-        html = r.content.decode()
-        self.assertIn(".kota-menu", html)
-        self.assertNotIn("dropdownParent", html)  # sisa Tom Select harus hilang
-        self.assertIn("background:#fff", html.replace(" ", ""))
+    def test_kota_terpilih_tetap_ada_saat_validasi_gagal(self):
+        r = self.post_valid(kota_asal="Badung", budget="gratis")
+        self.assertContains(r, 'value="Badung" selected')
+        self.assertContains(r, 'label for="id_kota_asal"')
+        self.assertNotContains(r, 'dropdownParent')
 
     def test_post_kota_baru_valid(self):
         # Dari Badung (beda pulau, ongkos pesawat) semua total > budget:

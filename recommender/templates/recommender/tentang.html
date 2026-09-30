@@ -1,21 +1,18 @@
-{% extends "recommender/base.html" %}
-{% block title %}Tentang{% endblock %}
-{% block content %}
-<h1 class="mb-3">Tentang TravelFit</h1>
-<p>TravelFit adalah Sistem Pendukung Keputusan rekomendasi destinasi wisata multi-kriteria.
-Pengembangan mengikuti kerangka <strong>CRISP-DM</strong>: data destinasi dikelompokkan dengan
-<strong>K-Means Clustering</strong> sebagai label segmen, kriteria dibobot dengan
-<strong>AHP</strong> per profil preferensi (uji konsistensi CR &lt; 0,1), dan alternatif diranking dengan
-<strong>TOPSIS</strong> berdasarkan kedekatan ke solusi ideal. Metode <strong>SAW</strong> dipakai hanya
-sebagai pembanding validasi.</p>
-<p>Enam kriteria: harga tiket (C1, cost), rating pengunjung (C2), jarak tempuh (C3, cost),
-kelengkapan fasilitas (C4), kesesuaian kategori (C5), dan kesesuaian hobi via Jaccard Similarity (C6).
-Budget dan wilayah adalah filter keras; kategori dan hobi tetap menjadi kriteria pembeda.</p>
-<p><strong>Batasan data:</strong> 1.900 destinasi lintas 38 provinsi merupakan data simulasi dengan harga, rating, dan koordinat perkiraan. Sebanyak 437 destinasi Jawa berasal dari dataset sumber; indikator fasilitas dan tag aktivitasnya diekstrak dari deskripsi dan perlu verifikasi. C3 adalah jarak garis lurus Haversine, bukan waktu tempuh. Label K-Means dilatih pada baris Jawa dan diterapkan sebagai penjelasan segmen, bukan penentu peringkat.</p>
-<h2 class="mt-4">File Bukti Perhitungan</h2>
-<ul>
-  <li><strong>Perhitungan_SPK_TravelFit.xlsx</strong> - 9 sheet formula AHP-TOPSIS yang dapat ditelusuri</li>
-  <li><strong>Dataset_Wisata_38_Provinsi.xlsx</strong> - dataset 1.900 destinasi 38 provinsi</li>
-  <li><strong>README.md</strong> - dokumentasi rumus utama dan alur algoritma</li>
-</ul>
-{% endblock %}
+{% extends 'recommender/base.html' %}{% block title %}Metode & data — TravelFit{% endblock %}{% block content %}
+<section class="page-intro"><p class="eyebrow">Di balik rekomendasimu</p><h1>Metode yang jelas.<br><em>Data yang bisa ditelusuri.</em></h1><p class="lead">CRISP-DM sebagai alur proyek, K-Means untuk segmen destinasi, dan AHP–TOPSIS untuk rekomendasi pribadi.</p></section>
+<div class="method-strip"><strong>{{ data_count }} destinasi aktif</strong><span>{{ source_counts.kaggle_java }} Kaggle + {{ source_counts.curated_java }} kurasi</span><span>{{ province_count }} provinsi tujuan</span></div>
+<section class="method-grid">
+<article class="panel"><p class="eyebrow">01 / Tujuan</p><h2>Business Understanding</h2><p>Membantu wisatawan memilih tujuan di Jawa sesuai budget dan preferensi, bukan menentukan destinasi terbaik untuk semua orang.</p><p>Output: kandidat berperingkat, alasan C1–C6, estimasi biaya, dan catatan kualitas data.</p></article>
+<article class="panel"><p class="eyebrow">02 / Sumber</p><h2>Data Understanding</h2><p>437 destinasi Indonesia Tourism Destination (Kaggle), ditambah 6 destinasi Jawa dengan tarif peraturan daerah dan lokasi OpenStreetMap. Kaggle bukan sertifikasi pemerintah.</p><p>Lima rating tambahan diamati dari Google Maps, merupakan agregat ulasan pihak ketiga. Rating sumber Tahura belum pasti; koordinat Marina berkonflik dengan label Jakarta.</p></article>
+<article class="panel"><p class="eyebrow">03 / Persiapan</p><h2>Data Preparation</h2><p>Format angka, teks, kategori dan wilayah diseragamkan. Semua 443 ID tetap utuh, tanpa dropna destinasi. Waktu kunjungan tambahan boleh kosong.</p><p>Median Tahura hanya di kolom model, bukan rating asli. C4 memakai penyebutan 6 kelompok fasilitas dengan koreksi konteks; tag aktivitas masih heuristik. Manifest menyimpan versi dan hash.</p></article>
+<article class="panel"><p class="eyebrow">04 / Perhitungan</p><h2>Modeling</h2><p>K-Means dilatih pada seluruh 443: harga tiket p99 + Z-score, rating model + Z-score, serta one-hot kategori. C4 tidak menjadi fitur clustering karena informasi deskripsi jarang.</p><p>AHP menentukan bobot 6 kriteria; profil pengembang konsisten (CR &lt; 0,1), <strong>belum hasil survei</strong>. TOPSIS: total biaya dan jarak sebagai cost; rating, C4, kategori dan hobi sebagai benefit.</p></article>
+<article class="panel"><p class="eyebrow">05 / Pengujian</p><h2>Evaluation</h2><p>Bandingkan k 2–6 melalui inertia, silhouette dan ukuran cluster. Silhouette menilai pemisahan kelompok, <strong>bukan akurasi</strong> rekomendasi. Cluster tidak menjadi filter keras.</p><p>Uji retensi ID, idempotensi impor, rollback, benefit/cost, nol, ties, satu kandidat, dan sensitivitas. Survei kegunaan belum dilaksanakan; hasilnya tidak dibuat-buat.</p></article>
+<article class="panel"><p class="eyebrow">06 / Penggunaan</p><h2>Deployment</h2><p>Django membaca database dari pipeline yang sama dengan notebook. Training offline; perubahan sumber memerlukan preprocessing → impor → training ulang.</p><p>Peta fokus Jawa; kota asal luar Jawa diperbolehkan. Jarak OSRM memiliki fallback Haversine. Transport, makan dan inap adalah estimasi dengan parameter terbuka, bukan penawaran pemesanan.</p></article></section>
+<section class="panel source-panel"><h2>Sumber & batasan penting</h2><ul>
+<li><a href="https://www.kaggle.com/datasets/aprabowo/indonesia-tourism-destination">Indonesia Tourism Destination — Kaggle</a>: harga dan rating snapshot, bukan jaminan kondisi terkini.</li>
+<li><a href="https://jdih.bantenprov.go.id/storage/places/peraturan/2024pd0036001_1706502771.pdf">Perda Banten 1/2024</a>; <a href="https://peraturan.bpk.go.id/Download/403089/2025pd3602001.pdf">Perda Lebak 1/2025</a>; <a href="https://peraturan.bpk.go.id/Download/414805/3306pd2026001.pdf">Perda Purworejo 1/2026</a>; <a href="https://bakeu.ngawikab.go.id/home/public/files/ppd/PERDA%20NO%2010%20TAHUN%202023.pdf">Perda Ngawi 10/2023</a>: tarif dasar sesuai golongan dan kondisi pada bukti.</li>
+<li>Artha Tirta Rp8.000 hari biasa; Rp10.000 hari besar/libur. Museum Trinil memakai tarif domestik dewasa.</li>
+<li>Lokasi tambahan: © OpenStreetMap contributors, <a href="https://www.openstreetmap.org/copyright">ODbL 1.0</a>. Titik representatif tidak selalu loket masuk.</li>
+<li>Rating Google Maps bukan data resmi pemerintah atau data OSM berlisensi terbuka. Bukti URL/tanggal/kecocokan tersimpan di dokumentasi repo.</li>
+<li>Tahura: imputasi median ditandai. Marina: koordinat sumber dipertahankan; jarak/biayanya perlu review.</li>
+<li>C1 clustering adalah tiket; C1 runtime total estimasi perjalanan. Keduanya berbeda peran.</li></ul><a class="button primary" href="{% url 'beranda' %}#form">Coba rekomendasi</a></section>{% endblock %}
