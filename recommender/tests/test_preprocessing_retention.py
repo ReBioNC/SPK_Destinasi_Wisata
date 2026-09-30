@@ -7,6 +7,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
+from recommender.data_pipeline import build_pipeline, normalize_destinations, add_model_rating
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -23,10 +24,8 @@ def run_cells(start, stop, scope):
 class PreprocessingRetentionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.scope = run_cells(2, 8, {
-            'json': json, 're': re, 'pd': pd, 'np': np,
-            'PROJECT_ROOT': ROOT, 'RAW_DIR': ROOT / 'data/raw',
-        })
+        result = build_pipeline(ROOT)
+        cls.scope = {'destinations': result.destinations, 'kmeans_ready': result.features}
 
     def test_all_443_source_ids_survive_preprocessing(self):
         actual = self.scope['destinations']
@@ -63,7 +62,7 @@ class PreprocessingRetentionTests(unittest.TestCase):
 
     def test_all_443_numeric_feature_rows_are_finite_after_authorized_imputation(self):
         features = self.scope['kmeans_ready']
-        values = features[['c1_ticket_price_z', 'c2_rating_z', 'c4_facility_score_z']].to_numpy()
+        values = features.drop(columns='place_id').to_numpy()
         self.assertTrue(np.isfinite(values).all())
         self.assertEqual(len(values), 443)
 
@@ -87,22 +86,15 @@ class PreprocessingRetentionTests(unittest.TestCase):
         raw['Place_Id'] = [438, 1, 2, 3]
         raw.loc[0, 'Place_Name'] = 'Taman Hutan Raya Banten'
         raw['Rating'] = [np.nan, 4.1, 4.2, 4.9]
-        scope = run_cells(3, 8, {
-            're': re, 'pd': pd, 'np': np, 'destinations': raw,
-            'ratings': pd.read_csv(ROOT / 'data/raw/tourism_rating.csv'),
-        })
-        row = scope['destinations'].set_index('place_id').loc[438]
+        actual, _ = add_model_rating(normalize_destinations(raw))
+        row = actual.set_index('place_id').loc[438]
         self.assertEqual(row.get('c2_rating_for_model'), 4.2)
 
     def test_invalid_measurement_is_flagged_instead_of_dropping_destination(self):
         raw = pd.read_csv(ROOT / 'data/raw/tourism_with_id.csv').head(2)
         raw.loc[0, 'Rating'] = 9
         raw.loc[1, 'Price'] = -1
-        scope = run_cells(3, 4, {
-            're': re, 'pd': pd, 'np': np, 'destinations': raw,
-            'ratings': pd.read_csv(ROOT / 'data/raw/tourism_rating.csv'),
-        })
-        actual = scope['destinations']
+        actual = normalize_destinations(raw)
         self.assertEqual(set(actual.place_id), {1, 2})
         if len(actual) == 2:
             self.assertTrue(actual.data_quality_issues.str.contains('rating_out_of_range').any())

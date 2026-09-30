@@ -6,18 +6,14 @@ import re
 import unittest
 
 import pandas as pd
+from recommender.data_pipeline import add_facilities
 
 
 ROOT = Path(__file__).resolve().parents[2]
 
 
 def extract_facilities(frame):
-    notebook = json.loads((ROOT / "notebooks/01_preprocessing_travelfit.ipynb").read_text(encoding="utf-8"))
-    source = next("".join(cell["source"]) for cell in notebook["cells"]
-                  if cell["cell_type"] == "code" and "FACILITY_KEYWORDS =" in "".join(cell["source"]))
-    scope = {"pd": pd, "re": re, "destinations": frame.copy()}
-    exec(compile(source, "notebook_facilities", "exec"), scope)
-    return scope["destinations"]
+    return add_facilities(frame)
 
 
 class FacilityPreprocessingTests(unittest.TestCase):
