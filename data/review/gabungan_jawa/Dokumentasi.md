@@ -41,6 +41,20 @@ URL utama tarif:
 
 ## Pemeriksaan
 
+### Integrasi preprocessing 443 (30 September 2026)
+
+Notebook `01_preprocessing_travelfit.ipynb` kini menggabungkan CSV review ini
+dengan 437 baris Kaggle menjadi **443 destinasi**, tanpa mengubah CSV review
+asli. Lima rating yang berstatus `matched_name_location` pada bukti Google
+Maps dimasukkan hanya ke output preprocessing baru; rating Tahura tetap kosong
+karena identitas listing belum dipastikan. `Time_Minutes` tambahan tetap kosong.
+
+Hasil disimpan di `data/processed/destinations_clean_java443.csv` dan
+`data/processed/destinations_kmeans_features_java443.csv`. Ini belum integrasi
+database website atau training K-Means. Lihat [laporan retensi](../../../reports/preprocessing/retention_java443.md)
+untuk jumlah/ID dan batasan kelengkapan fitur. Pernyataan draft/kosong di atas
+tetap menjelaskan **CSV review asal**, bukan output baru.
+
 `validate_gabungan.py` memeriksa header, kesamaan persis keenam baris terhadap kedua file asal, ID/nama unik, konsistensi koordinat, nilai kosong serta ID yang tidak berbenturan dengan Kaggle. Pemeriksaan sumber lebih lanjut tetap tersedia melalui validator masing-masing folder asal.
 
 ```powershell

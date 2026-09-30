@@ -1,0 +1,54 @@
+{
+  "destination_rows": 443,
+  "source_rows": {
+    "kaggle": 437,
+    "additional_java": 6
+  },
+  "rows_lost": 0,
+  "missing_destination_ids": [],
+  "data_quality_review_ids": [
+    438
+  ],
+  "missing_rating_ids": [
+    438
+  ],
+  "model_features_complete_rows": 442,
+  "kmeans_training_ready": false,
+  "missing_value_policy": "Pertahankan semua destinasi; tanpa imputasi rating. Tunda training jika fitur belum lengkap.",
+  "rating_rows_valid": 9597,
+  "cities": [
+    "Bandung",
+    "Jakarta",
+    "Lebak",
+    "Ngawi",
+    "Pandeglang",
+    "Purworejo",
+    "Semarang",
+    "Surabaya",
+    "Yogyakarta"
+  ],
+  "categories": [
+    "alam",
+    "bahari",
+    "belanja",
+    "budaya",
+    "hiburan",
+    "religi"
+  ],
+  "destinations_with_facility_evidence": 69,
+  "facility_evidence_definition": "Penyebutan deskripsi yang diterima; bukan fasilitas terverifikasi di lapangan",
+  "destinations_with_facility_keyword_matches": 84,
+  "destinations_with_facility_context_review": 16,
+  "destinations_without_facility_description": 0,
+  "destinations_with_activity_tags": 370,
+  "scaler_mean": {
+    "c1_ticket_price": 24390.519187358917,
+    "c2_rating": 4.442760180995475,
+    "c4_facility_score": 0.02972159518434913
+  },
+  "scaler_scale": {
+    "c1_ticket_price": 65957.59189185794,
+    "c2_rating": 0.20788654547616228,
+    "c4_facility_score": 0.07632779324554256
+  }
+}
