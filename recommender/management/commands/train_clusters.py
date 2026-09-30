@@ -1,12 +1,63 @@
 """Offline K-Means on every Java443 destination, using shared preprocessing."""
 import json
+import os
+import tempfile
 from collections import Counter
 from pathlib import Path
 import numpy as np
 from django.core.management.base import BaseCommand, CommandError
-from django.db import transaction
+from django.db import transaction, DatabaseError
 from recommender.data_pipeline import validate_artifacts
 from recommender.models import Destination
+
+def _save_labels_and_report(destinations, labels, names, report, path):
+    """Stage file writes first; undo report publication if the DB transaction fails.
+
+    This handles ordinary I/O/commit errors, not power-loss atomicity across the
+    database and filesystem. A failed restoration retains its explicit backup.
+    """
+    staged = backup = None
+    published = keep_backup = False
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        descriptor, filename = tempfile.mkstemp(prefix='.kmeans-stage-', dir=path.parent)
+        os.close(descriptor)
+        staged = Path(filename)
+        staged.write_text(json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False)+'\n',
+                          encoding='utf-8', newline='\n')
+        if path.exists():
+            descriptor, filename = tempfile.mkstemp(prefix='.kmeans-backup-', dir=path.parent)
+            os.close(descriptor)
+            backup = Path(filename)
+            backup.write_bytes(path.read_bytes())
+        with transaction.atomic():
+            for destination, label in zip(destinations, labels):
+                destination.cluster_label = names[int(label)]
+            Destination.objects.bulk_update(destinations, ['cluster_label'], batch_size=500)
+            os.replace(staged, path)
+            staged = None
+            published = True
+    except (OSError, DatabaseError, ValueError) as error:
+        if published:
+            try:
+                if backup is not None:
+                    os.replace(backup, path)
+                    backup = None
+                else:
+                    path.unlink(missing_ok=True)
+            except OSError as recovery_error:
+                keep_backup = True
+                raise CommandError(f'Transaksi gagal; pemulihan laporan gagal. Backup: {backup}. '
+                                   f'Periksa laporan {path} sebelum memakai model: {recovery_error}') from error
+        raise CommandError(f'Label/laporan tidak tersimpan; transaksi dibatalkan: {error}') from error
+    finally:
+        for temporary in (staged, None if keep_backup else backup):
+            if temporary is not None:
+                try:
+                    temporary.unlink(missing_ok=True)
+                except OSError:
+                    pass  # A leftover staging file is never an active report.
+
 
 def _fit_kmeans(data, k, seed=42, starts=10, max_iter=100):
     rng = np.random.default_rng(seed)
@@ -132,12 +183,7 @@ class Command(BaseCommand):
             "limitation": "Rating Tahura diimputasi, C4/tag heuristik, koordinat Marina perlu review. Silhouette bukan akurasi rekomendasi; segmen tidak menyaring TOPSIS.",
         }
         if not options["dry_run"]:
-            with transaction.atomic():
-                for destination, label in zip(destinations, labels):
-                    destination.cluster_label = names[int(label)]
-                Destination.objects.bulk_update(destinations, ["cluster_label"], batch_size=500)
             path = root / "reports/clustering/kmeans_evaluation.json"
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False)+"\n", encoding="utf-8")
+            _save_labels_and_report(destinations, labels, names, report, path)
         self.stdout.write(f"training=443 assigned=443 k={k} silhouette={score:.4f} inertia={inertia:.2f}"
                           + (" (dry-run)" if options["dry_run"] else " — label dan laporan tersimpan"))

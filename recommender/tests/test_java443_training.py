@@ -2,6 +2,9 @@ import io
 import json
 from pathlib import Path
 import tempfile
+from unittest.mock import patch
+from contextlib import contextmanager
+from django.db import transaction, DatabaseError
 from django.core.management import call_command, CommandError
 from django.test import TestCase
 from recommender.data_pipeline import build_pipeline, build_features, export_pipeline
@@ -68,3 +71,43 @@ class Java443TrainingTests(TestCase):
         frame, _ = build_features(changed)
         import pandas as pd
         pd.testing.assert_frame_equal(frame, self.result.features)
+
+    def test_report_publication_failure_rolls_back_labels_and_preserves_report(self):
+        path=self.root/'reports/clustering/kmeans_evaluation.json'
+        path.parent.mkdir(parents=True,exist_ok=True)
+        path.write_bytes(b'previous report')
+        Destination.objects.update(cluster_label='previous label')
+        with patch('os.replace',side_effect=PermissionError('locked report')):
+            with self.assertRaises(CommandError):
+                call_command('train_clusters',project_root=str(self.root),stdout=io.StringIO())
+        self.assertEqual(Destination.objects.filter(cluster_label='previous label').count(),443)
+        self.assertEqual(path.read_bytes(),b'previous report')
+
+    def test_staging_write_failure_does_not_change_labels_or_report(self):
+        path=self.root/'reports/clustering/kmeans_evaluation.json'
+        path.parent.mkdir(parents=True,exist_ok=True)
+        path.write_bytes(b'previous report')
+        Destination.objects.update(cluster_label='previous label')
+        with patch.object(Path,'write_text',side_effect=PermissionError('disk denied')):
+            with self.assertRaises((OSError,CommandError)):
+                call_command('train_clusters',project_root=str(self.root),stdout=io.StringIO())
+        self.assertEqual(Destination.objects.filter(cluster_label='previous label').count(),443)
+        self.assertEqual(path.read_bytes(),b'previous report')
+
+    def test_transaction_exit_failure_restores_previous_report_and_labels(self):
+        path=self.root/'reports/clustering/kmeans_evaluation.json'
+        path.parent.mkdir(parents=True,exist_ok=True)
+        path.write_bytes(b'previous report')
+        Destination.objects.update(cluster_label='previous label')
+        real_atomic=transaction.atomic
+        @contextmanager
+        def failing_exit(*args,**kwargs):
+            with real_atomic(*args,**kwargs):
+                yield
+                if not args and not kwargs:
+                    raise DatabaseError('commit failed')
+        with patch('recommender.management.commands.train_clusters.transaction.atomic',side_effect=failing_exit):
+            with self.assertRaises(CommandError):
+                call_command('train_clusters',project_root=str(self.root),stdout=io.StringIO())
+        self.assertEqual(Destination.objects.filter(cluster_label='previous label').count(),443)
+        self.assertEqual(path.read_bytes(),b'previous report')

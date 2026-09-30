@@ -116,7 +116,7 @@ def _seleksi_saat_ini(request, form):
         hobi = list(request.POST.getlist("hobi"))
         get = lambda k, d="": request.POST.get(k, d)
     else:
-        hobi = []
+        hobi = list(form.initial.get('hobi', []))
         get = lambda k, d="": form.initial.get(k, d)
     return {"budget": get("budget", ""), "kota": get("kota_asal", ""),
             "wilayah": get("wilayah", ""), "kutama": get("kategori_utama", ""),
@@ -184,8 +184,10 @@ def rekomendasi(request):
         form = PreferensiForm(request.POST, options=options)
     else:
         param = request.GET.get("wilayah", "")
-        form = PreferensiForm(initial={"wilayah": param} if param in wilayah_valid else None,
-                             options=options)
+        initial = dict(request.session.get('preference_input') or {})
+        if param in wilayah_valid:
+            initial['wilayah'] = param
+        form = PreferensiForm(initial=initial, options=options)
     konteks = {"form": form, "hasil": None, "kandidat_kosong": False,
                "bobot_efektif": None, "mode_custom": False, "pesan": "",
                "pesan_class": "warning", "profil_info": info_profil(),
@@ -202,8 +204,13 @@ def rekomendasi(request):
                "cluster_list": [], "ringkasan": None,
                "cur": _seleksi_saat_ini(request, form), **state, **_map_context(request)}
     form.fields['kota_asal'].choices = konteks['kota_list']
-    konteks['slider_fields'] = [{'name': f'w{i+1}', 'label': label, 'value': value}
-                              for i, (label, value) in enumerate(zip(NAMA_KRITERIA, konteks['bobot_persen']))]
+    selected_profile = profiles.ACTIVE_PROFILES.get(konteks['cur']['profil'], profiles.ACTIVE_PROFILES['seimbang'])
+    defaults = [round(w * 100) for w in selected_profile['weights']]
+    konteks['custom_selected'] = form['sentuh_bobot'].value() == '1'
+    konteks['slider_fields'] = [
+        {'name': f'w{i+1}', 'label': label,
+         'value': form[f'w{i+1}'].value() if form[f'w{i+1}'].value() not in (None, '') else defaults[i]}
+        for i, label in enumerate(NAMA_KRITERIA)]
     if request.method == "GET" and request.GET.get("wilayah", "") in wilayah_valid:
         konteks["pesan"] = (f"Wilayah tujuan terisi dari peta: {request.GET['wilayah']} — "
                             "lengkapi preferensi lain lalu klik Cari Rekomendasi.")
@@ -213,8 +220,6 @@ def rekomendasi(request):
         flash = request.session.pop("flash_hasil", None)
         if flash:
             konteks.update(flash)
-            for slider, value in zip(konteks['slider_fields'], konteks['bobot_persen']):
-                slider['value'] = value
     if request.method != "POST" or not form.is_valid():
         if request.method == "POST" and _is_ajax(request):
             return JsonResponse({"ok": False, "errors": dict(form.errors),
@@ -224,6 +229,11 @@ def rekomendasi(request):
         return render(request, "recommender/beranda.html", konteks)
 
     cd = form.cleaned_data
+    # Retain only declared preference fields, never CSRF or arbitrary POST keys.
+    request.session['preference_input'] = {
+        name: request.POST.getlist(name) if name == 'hobi' else request.POST.get(name, '')
+        for name in form.fields}
+    request.session.pop('flash_hasil', None)
     bobot = list(profiles.ACTIVE_PROFILES[cd["profil"]]["weights"])
     mode_custom = False
     # Slider selalu terkirim browser; hanya jadi sinyal bila user
@@ -253,10 +263,9 @@ def rekomendasi(request):
         konteks["kandidat_kosong"] = True
         konteks["pesan"] = ("Tidak ada destinasi yang cocok. Coba longgarkan budget "
                             "atau pilih wilayah lain.")
+        request.session['hasil_terakhir'] = []
         if _is_ajax(request):
-            return JsonResponse({"ok": True, "count": 0,
-                                 "html": render_to_string("recommender/_hasil.html",
-                                                          konteks, request)})
+            return _ajax_results(request, konteks, 0)
         request.session["flash_hasil"] = {
             "kandidat_kosong": True, "pesan": konteks["pesan"],
             "pesan_class": konteks["pesan_class"]}
@@ -301,10 +310,9 @@ def rekomendasi(request):
         konteks["kandidat_kosong"] = True
         konteks["pesan"] = ("Tidak ada destinasi yang total biayanya muat di budget. "
                             "Coba naikkan budget, persingkat durasi, atau pilih wilayah lain.")
+        request.session['hasil_terakhir'] = []
         if _is_ajax(request):
-            return JsonResponse({"ok": True, "count": 0,
-                                 "html": render_to_string("recommender/_hasil.html",
-                                                          konteks, request)})
+            return _ajax_results(request, konteks, 0)
         request.session["flash_hasil"] = {
             "kandidat_kosong": True, "pesan": konteks["pesan"],
             "pesan_class": konteks["pesan_class"]}
@@ -400,9 +408,7 @@ def rekomendasi(request):
                     "cluster_list": sorted({h["cluster"] for h in hasil}),
                     "ringkasan": ringkasan})
     if _is_ajax(request):
-        return JsonResponse({"ok": True, "count": len(hasil),
-                             "html": render_to_string("recommender/_hasil.html",
-                                                      konteks, request)})
+        return _ajax_results(request, konteks, len(hasil))
     # POST-Redirect-GET: hasil tampil sekali, refresh berikutnya bersih.
     request.session["flash_hasil"] = {
         "hasil": hasil, "mode_custom": mode_custom,
@@ -411,6 +417,14 @@ def rekomendasi(request):
         "cluster_list": sorted({h["cluster"] for h in hasil}),
         "ringkasan": ringkasan}
     return redirect("beranda")
+
+
+def _ajax_results(request, context, count):
+    """Cards and the inline map's latest-results list share one response snapshot."""
+    map_context = {'hasil_json': request.session.get('hasil_terakhir') or []}
+    return JsonResponse({'ok': True, 'count': count,
+                         'html': render_to_string('recommender/_hasil.html', context, request),
+                         'map_html': render_to_string('recommender/_map_results.html', map_context, request)})
 
 
 def _is_ajax(request):
