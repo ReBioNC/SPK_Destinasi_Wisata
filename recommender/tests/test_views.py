@@ -106,11 +106,13 @@ class RekomendasiViewTest(TestCase):
         self.assertTrue(all(h["bars"][5]["no_effect"] for h in r.context["hasil"]))
         self.assertTrue(all(h["bars"][5]["sub"] == "Hobi tidak dipilih" for h in r.context["hasil"]))
 
-    def test_c4_memakai_empat_fasilitas_yang_tersedia(self):
+    def test_c4_memakai_enam_kelompok_deskripsi(self):
         destination = Destination.objects.get(nama="Kawah Putih Ciwidey")
+        destination.fas_accessibility = True
+        destination.fas_information_center = True
         self.assertEqual(destination.facility_score(), 1.0)
         destination.fas_toilet = False
-        self.assertEqual(destination.facility_score(), 0.75)
+        self.assertAlmostEqual(destination.facility_score(), 5/6)
 
     def test_penjelasan_kriteria_tetap_tidak_menyebut_unggul(self):
         from recommender.views import _bangun_alasan

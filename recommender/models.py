@@ -1,4 +1,5 @@
 from django.db import models
+import math
 
 
 class Destination(models.Model):
@@ -10,13 +11,22 @@ class Destination(models.Model):
     kategori = models.CharField(max_length=50, db_index=True)
     sub_kategori = models.CharField(max_length=100, blank=True, default="")
     harga_tiket = models.IntegerField(db_index=True)
-    rating = models.FloatField()
+    source_id = models.PositiveIntegerField(unique=True, null=True, blank=True)
+    rating = models.FloatField(null=True, blank=True)
+    rating_model = models.FloatField(null=True, blank=True)
+    rating_imputed = models.BooleanField(default=False)
+    description = models.TextField(blank=True, default="")
+    provenance = models.JSONField(default=dict, blank=True)
+    data_quality = models.JSONField(default=dict, blank=True)
+    pipeline_fingerprint = models.CharField(max_length=64, blank=True, default="")
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     fas_toilet = models.BooleanField(default=False)
     fas_parkir = models.BooleanField(default=False)
     fas_warung = models.BooleanField(default=False)
     fas_mushola = models.BooleanField(default=False)
+    fas_accessibility = models.BooleanField(default=False)
+    fas_information_center = models.BooleanField(default=False)
     fas_penginapan = models.BooleanField(default=False)
     tag_aktivitas = models.TextField(blank=True, default="")
     cluster_label = models.CharField(max_length=100, blank=True, default="")
@@ -31,9 +41,16 @@ class Destination(models.Model):
         return f"{self.nama} ({self.kota})"
 
     def facility_score(self):
-        """C4 dari empat fasilitas yang tersedia di kedua sumber data."""
+        """C4: enam kelompok penyebutan yang diterima; bukan audit lapangan."""
         return sum((self.fas_toilet, self.fas_parkir, self.fas_warung,
-                    self.fas_mushola)) / 4.0
+                    self.fas_mushola, self.fas_accessibility,
+                    self.fas_information_center)) / 6.0
+
+    def calculation_rating(self):
+        value = self.rating_model if self.rating_model is not None else self.rating
+        if value is None or not math.isfinite(value) or not 1 <= value <= 5:
+            raise ValueError("Rating perhitungan tidak valid; impor ulang dataset aktif.")
+        return float(value)
 
     def tag_set(self):
         """Himpunan tag aktivitas untuk C6."""
