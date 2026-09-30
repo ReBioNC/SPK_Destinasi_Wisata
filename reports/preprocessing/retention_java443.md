@@ -42,7 +42,7 @@ Website/database belum dialihkan pada task ini.
 
 | ID | Destinasi | Rating pada master baru | Status |
 | --- | --- | --- | --- |
-| 438 | Taman Hutan Raya Banten | kosong | Identitas listing Google Maps belum dipastikan |
+| 438 | Taman Hutan Raya Banten | rating sumber kosong; nilai perhitungan 4,5 | Imputasi median yang disetujui pengguna; identitas listing Google Maps belum dipastikan |
 | 439 | Museum Multatuli | 4,6 | Nama/lokasi cocok pada bukti pengamatan |
 | 440 | Goa Seplawan | 4,6 | Nama/lokasi cocok pada bukti pengamatan |
 | 441 | Pantai Jatimalang | 4,5 | Nama/lokasi cocok pada bukti pengamatan |
@@ -59,12 +59,25 @@ bukan klaim data berlisensi terbuka. CSV review asli tidak diubah.
 deskripsi dan koreksi konteks, bukan fasilitas yang dikarang. Nilai C4 0 tidak
 berarti pasti tidak memiliki fasilitas.
 
-**Jumlah baris tetap 443 tidak sama dengan semua fitur siap training.** Saat
-ini 442 baris memiliki fitur numerik/kategori lengkap dan satu baris memiliki
-rating tertunda. Tidak ada imputasi, tidak ada penghapusan, dan belum dilakukan
-pelatihan ulang. Ringkasan menandai `kmeans_training_ready: false` sampai
-rating Tahura atau kebijakan penanganan nilai kosong diselesaikan. Jangan
-menggunakan `dropna()` untuk mengecilkan dataset menjadi 442.
+### Pembaruan setelah persetujuan imputasi
+
+Pengguna kemudian menyetujui imputasi median untuk Tahura. `rating` dan
+`c2_rating` tetap kosong, tetapi `c2_rating_for_model` bernilai **4,5**,
+dihitung dari 442 rating valid. `rating_imputed=True` dan catatan perhitungan
+membedakan nilai tersebut dari rating yang teramati. Kolom model ini dipakai
+untuk standardisasi C2; bukan perubahan rating sumber. Tidak ada imputasi
+otomatis untuk destinasi lain.
+
+Seluruh **443 baris** sekarang memiliki fitur numerik/kategori lengkap,
+sehingga ringkasan menandai `kmeans_training_ready: true`. Ini menyatakan
+kelengkapan matriks fitur, bukan bahwa training atau integrasi aplikasi telah
+selesai. Tidak ada destinasi yang dihapus dan belum dilakukan pelatihan ulang.
+
+Pelabuhan Marina (ID 9) tetap dimasukkan sesuai keputusan pengguna, dengan
+koordinat sumber `1.07888, 103.931398`. Konflik dengan label Jakarta dicatat
+pada `coordinate_review_required`, `coordinate_review_note`, dan
+`data_quality_issues`. Koordinat tidak diganti dengan tebakan. Kelengkapan
+fitur K-Means tidak membuktikan kualitas lokasi untuk perhitungan jarak.
 
 ## Menjalankan di Colab
 
@@ -75,7 +88,7 @@ Struktur proyek yang sama dipakai di lokal dan Drive. Output berada di
 
 ## Verifikasi
 
-Lima tes retensi menjalankan sel notebook nyata untuk memeriksa jumlah/ID,
+Lima tes retensi awal menjalankan sel notebook nyata untuk memeriksa jumlah/ID,
 matriks fitur, rating Tahura yang tetap kosong, lima rating yang boleh
 dipindahkan, dan nilai tidak valid yang ditandai tanpa membuang destinasi.
 Kelima tes gagal pada implementasi sebelumnya dan lolos setelah perbaikan.
@@ -86,3 +99,15 @@ agar dataset lengkap tetap dipertahankan tanpa merusak importer tersebut.
 Setelah pemisahan output, seluruh **126 tes Django lolos** (32,559 detik).
 Eksekusi ulang notebook dari awal sampai akhir berhasil; kedua CSV baru
 memiliki 443 ID unik yang sama. Laporan DOCX tidak diubah.
+
+Lima tes tambahan dibuat gagal sebelum implementasi imputasi: nilai median
+hanya pada kolom model, matriks numerik tanpa nilai kosong, rating teramati
+tidak ditimpa, Marina dipertahankan dengan penanda review, serta median
+dihitung dari data (fixture median 4,2, bukan angka 4,5 yang di-hardcode).
+Catatan hasil 126 tes di atas adalah hasil sebelum lima tes tambahan ini.
+
+Verifikasi setelah pembaruan imputasi: **131 tes Django lolos** (33,679 detik).
+Notebook dijalankan ulang; 443 ID tetap lengkap, seluruh nilai numerik pada
+matriks fitur finite, standardisasi C2 memakai nilai perhitungan yang benar,
+dan seluruh field sumber tetap sama. Satu-satunya rating yang diimputasi adalah
+ID 438; satu penanda review koordinat yang ditambahkan adalah ID 9.

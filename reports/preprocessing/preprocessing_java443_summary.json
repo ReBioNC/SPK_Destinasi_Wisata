@@ -7,14 +7,28 @@
   "rows_lost": 0,
   "missing_destination_ids": [],
   "data_quality_review_ids": [
+    9,
     438
   ],
   "missing_rating_ids": [
     438
   ],
-  "model_features_complete_rows": 442,
-  "kmeans_training_ready": false,
-  "missing_value_policy": "Pertahankan semua destinasi; tanpa imputasi rating. Tunda training jika fitur belum lengkap.",
+  "imputed_rating_ids": [
+    438
+  ],
+  "rating_imputation": {
+    "method": "median_observed_valid_ratings",
+    "value": 4.5,
+    "observed_rows": 442,
+    "calculation_column": "c2_rating_for_model",
+    "source_rating_unchanged": true
+  },
+  "coordinate_review_ids": [
+    9
+  ],
+  "model_features_complete_rows": 443,
+  "kmeans_training_ready": true,
+  "missing_value_policy": "Pertahankan 443 destinasi. Rating Tahura memakai median hanya pada kolom perhitungan; rating sumber tetap kosong. Nilai kosong lain tidak otomatis diimputasi.",
   "rating_rows_valid": 9597,
   "cities": [
     "Bandung",
@@ -43,12 +57,12 @@
   "destinations_with_activity_tags": 370,
   "scaler_mean": {
     "c1_ticket_price": 24390.519187358917,
-    "c2_rating": 4.442760180995475,
+    "c2_rating": 4.442889390519188,
     "c4_facility_score": 0.02972159518434913
   },
   "scaler_scale": {
     "c1_ticket_price": 65957.59189185794,
-    "c2_rating": 0.20788654547616228,
+    "c2_rating": 0.2076695455182245,
     "c4_facility_score": 0.07632779324554256
   }
 }

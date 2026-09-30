@@ -46,8 +46,10 @@ URL utama tarif:
 Notebook `01_preprocessing_travelfit.ipynb` kini menggabungkan CSV review ini
 dengan 437 baris Kaggle menjadi **443 destinasi**, tanpa mengubah CSV review
 asli. Lima rating yang berstatus `matched_name_location` pada bukti Google
-Maps dimasukkan hanya ke output preprocessing baru; rating Tahura tetap kosong
-karena identitas listing belum dipastikan. `Time_Minutes` tambahan tetap kosong.
+Maps dimasukkan hanya ke output preprocessing baru; rating sumber Tahura tetap
+kosong karena identitas listing belum dipastikan. Pengguna menyetujui **median
+4,5 hanya pada kolom `c2_rating_for_model`**, dengan penanda imputasi; ini bukan
+rating Google Maps Tahura. `Time_Minutes` tambahan tetap kosong.
 
 Hasil disimpan di `data/processed/destinations_clean_java443.csv` dan
 `data/processed/destinations_kmeans_features_java443.csv`. Ini belum integrasi
