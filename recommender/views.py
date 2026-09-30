@@ -1,5 +1,6 @@
 """View rekomendasi: form preferensi + ranking TOPSIS."""
 
+import math
 from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
@@ -19,6 +20,36 @@ TOP_N = 10
 FAS_LABEL = [("fas_toilet", "Toilet"), ("fas_parkir", "Parkir"), ("fas_warung", "Warung"),
              ("fas_mushola", "Tempat ibadah"), ("fas_accessibility", "Aksesibilitas"),
              ("fas_information_center", "Pusat informasi")]
+
+JAVA_PROVINCES = ('Banten', 'DKI Jakarta', 'Jawa Barat', 'Jawa Tengah',
+                  'Daerah Istimewa Yogyakarta', 'Jawa Timur')
+
+
+def _map_context(request):
+    """Retain every destination; the legacy SVG has schematic, not GIS, precision.
+
+    Affine display coordinates are anchored to Monas within the existing Jakarta
+    outline. They do NOT overwrite geographic coordinates or validate boundaries.
+    """
+    counts = dict(Destination.objects.values_list('provinsi').annotate(n=Count('id')))
+    destinations = []
+    for d in Destination.objects.order_by('source_id', 'id'):
+        valid = (d.latitude is not None and d.longitude is not None
+                 and math.isfinite(d.latitude) and math.isfinite(d.longitude))
+        x = 260 + (d.longitude - 106.827153) * 21.3 if valid else None
+        y = 309 + (-d.latitude - 6.175392) * 24.3 if valid else None
+        outside = not valid or not (220 <= x <= 462 and 287 <= y <= 384)
+        destinations.append({'source_id': d.source_id or d.id, 'nama': d.nama,
+                             'provinsi': d.provinsi, 'kategori': d.kategori,
+                             'latitude': d.latitude, 'longitude': d.longitude,
+                             'x': round(x, 3) if valid else None, 'y': round(y, 3) if valid else None,
+                             'outside_frame': outside, 'quality_notes': _quality_notes(d),
+                             'cluster': d.cluster_label or 'Belum dikelompokkan',
+                             'source_label': 'Kurasi Jawa' if d.sumber_data == 'curated_java' else 'Kaggle',
+                             'curated': d.sumber_data == 'curated_java'})
+    return {'map_provinces': [{'nama': p, 'count': counts.get(p, 0)} for p in JAVA_PROVINCES],
+            'map_destinations': destinations,
+            'hasil_json': request.session.get('hasil_terakhir') or []}
 
 
 def _dataset_state():
@@ -169,7 +200,7 @@ def rekomendasi(request):
                "bobot_persen": [round(w * 100) for w in
                                 profiles.ACTIVE_PROFILES["seimbang"]["weights"]],
                "cluster_list": [], "ringkasan": None,
-               "cur": _seleksi_saat_ini(request, form), **state}
+               "cur": _seleksi_saat_ini(request, form), **state, **_map_context(request)}
     form.fields['kota_asal'].choices = konteks['kota_list']
     konteks['slider_fields'] = [{'name': f'w{i+1}', 'label': label, 'value': value}
                               for i, (label, value) in enumerate(zip(NAMA_KRITERIA, konteks['bobot_persen']))]
@@ -391,12 +422,7 @@ def peta(request):
     """Peta interaktif + daftar hasil terakhir (fallback: agregat provinsi)."""
     state = _dataset_state()
     _sync_session(request, state)
-    hasil = request.session.get("hasil_terakhir") or []
-    agregat = (Destination.objects.values("provinsi")
-               .annotate(jumlah=Count("id")).order_by("provinsi"))
-    return render(request, "recommender/peta.html",
-                  {"hasil_json": hasil, "agregat": list(agregat),
-                   "ada_hasil": bool(hasil), **state})
+    return render(request, "recommender/peta.html", {**state, **_map_context(request)})
 
 
 def tentang(request):

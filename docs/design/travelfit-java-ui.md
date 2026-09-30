@@ -53,3 +53,20 @@ wall of text. Light theme only; dark mode is not promised.
 - Reduced-motion behavior is explicitly implemented in CSS and scroll handling;
   browser API does not expose media emulation, so OS motion preference was not
   changed and simulated motion settings are not claimed as a manual test.
+
+## Task 7 map verification
+
+Inherited SVG paths: six Java provinces only, copied from the previous map.
+The old asset lacks geographic projection parameters. Display uses a documented
+affine approximation anchored at Monas; this is not a GIS-certified overlay.
+Source lat/lon and SPK distances are unaffected. Frame 220/287/242/97 never fits
+outlier Marina. Dataset retains 443 rows, 442 dots; lists contain all 443.
+Unit test ray casting places Monas inside inherited Jakarta outline; this does
+not audit the other coordinates or fix misleading Kaggle province labels.
+
+Browser: keyboard Enter on all six province links prefilled each correct region;
+back navigation works. Zoom/pan/reset bounded at 1–4×; mobile375 drag changed
+viewBox within Java and reset returned exactly original. No horizontal overflow.
+Search Marina retained both Marina entries, ID9 explicitly outside-frame/review.
+Successful browser error log empty. SVG DOM geometry methods unavailable through
+the read-only browser wrapper; polygon containment tested in Python instead.

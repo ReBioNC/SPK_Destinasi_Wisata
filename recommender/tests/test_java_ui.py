@@ -18,7 +18,9 @@ class JavaUITests(TestCase):
         self.assertContains(response,'443')
         self.assertContains(response,'travelfit.css')
         self.assertNotContains(response,'cdn.tailwindcss.com')
-        self.assertNotContains(response,'2337')
+        # Coordinates may legitimately contain the digit sequence 2337.
+        self.assertNotContains(response,'2337 destinasi')
+        self.assertEqual(sum(response.context['source_counts'].values()),443)
         self.assertContains(response,'id="form-status"')
 
     def test_invalid_form_errors_and_ajax_summary(self):
