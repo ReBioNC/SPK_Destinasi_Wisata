@@ -2,7 +2,7 @@
 
 Tanggal: 30 September 2026. Branch kerja: `new`.
 
-Status: rancangan tertulis untuk review pengguna sebelum rencana implementasi.
+Status: rancangan tertulis disetujui pengguna pada 30 September 2026; rencana implementasi sedang disusun.
 Dokumen ini belum menyatakan integrasi telah selesai.
 
 ## 1. Tujuan dan batasan
@@ -286,5 +286,6 @@ push, deployment publik, atau modifikasi DOCX tanpa permintaan tambahan.
 
 Review internal: tidak ada bagian placeholder; jumlah data, pemisahan rating,
 definisi C4, fitur clustering, lingkup map, biaya estimasi, retensi Marina,
-dan kebijakan cleanup konsisten. Persetujuan pengguna atas **dokumen ini**
-masih diperlukan sebelum menyusun rencana implementasi tertulis.
+dan kebijakan cleanup konsisten. Pengguna menyetujui **dokumen ini** dengan
+pesan “Setuju”. Persetujuan tersebut mengizinkan penyusunan rencana
+implementasi tertulis; belum menyatakan implementasi telah selesai.
