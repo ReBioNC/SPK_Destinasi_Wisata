@@ -5,10 +5,10 @@ from recommender.models import Destination
 
 
 class ImportTest(TestCase):
-    def test_impor_basis_1900_dan_idempoten(self):
+    def test_impor_jawa443_dan_idempoten(self):
         call_command("import_destinations")
         total = Destination.objects.count()
-        self.assertGreaterEqual(total, 1900)
+        self.assertEqual(total, 443)
         call_command("import_destinations")  # rerun
         self.assertEqual(Destination.objects.count(), total)
 
@@ -18,13 +18,14 @@ class ImportTest(TestCase):
         monas = Destination.objects.get(nama="Monumen Nasional")
         self.assertAlmostEqual(monas.latitude, -6.1753924, places=4)
 
-    def test_overlay_jawa_bertanda_sumber(self):
+    def test_dua_sumber_jawa_bertanda(self):
         call_command("import_destinations")
-        self.assertEqual(Destination.objects.filter(sumber_data="csv_jawa").count(), 437)
+        self.assertEqual(Destination.objects.filter(sumber_data="kaggle_java").count(), 437)
+        self.assertEqual(Destination.objects.filter(sumber_data="curated_java").count(), 6)
         self.assertEqual(Destination.objects.get(nama="Monumen Nasional").rating, 4.6)
 
-    def test_provinsi_tepat_38_tanpa_alias(self):
+    def test_provinsi_tepat_enam_tanpa_alias(self):
         call_command("import_destinations")
         prov = set(Destination.objects.values_list("provinsi", flat=True).distinct())
-        self.assertEqual(len(prov), 38)
+        self.assertEqual(len(prov), 6)
         self.assertNotIn("DI Yogyakarta", prov)

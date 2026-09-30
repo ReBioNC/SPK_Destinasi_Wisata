@@ -60,6 +60,20 @@ W_SEIMBANG = [0.269294111685416, 0.17848214587345024, 0.15674301543866762,
 
 
 class TopsisTest(SimpleTestCase):
+    def test_invalid_numeric_inputs_rejected(self):
+        from recommender.spk import topsis
+        cases = [([[float('nan')]], [1], [False]), ([[float('inf')]], [1], [False]),
+                 ([[1]], [-1], [False]), ([[1]], [0], [False]), ([[1,2]], [1], [False])]
+        for scores, weights, costs in cases:
+            with self.subTest(scores=scores, weights=weights), self.assertRaises(ValueError):
+                topsis.rank(scores, weights, costs)
+
+    def test_cost_benefit_and_ties(self):
+        from recommender.spk import topsis
+        self.assertEqual(topsis.rank([[1],[2]], [1], [True])[0]['idx'], 0)
+        self.assertEqual(topsis.rank([[1],[2]], [1], [False])[0]['idx'], 1)
+        self.assertEqual([r['vi'] for r in topsis.rank([[0],[0]], [1], [False])], [1,1])
+
     def test_urutan_sama_dengan_excel(self):
         from recommender.spk import topsis
         from recommender.spk.profiles import IS_COST

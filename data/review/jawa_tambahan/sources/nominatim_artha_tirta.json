@@ -1,0 +1,32 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Artha+Tirta%2C+Purworejo%2C+Indonesia&format=jsonv2&limit=3&countrycodes=id",
+  "query": "Artha Tirta, Purworejo, Indonesia",
+  "accessed_at_utc": "2026-09-30T10:17:19.689567+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "ab70db9d009c525822d7b4e9e67454e64d6424bcbe00299704ed1502680fb9c5",
+  "results": [
+    {
+      "place_id": 32296639,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 211416682,
+      "lat": "-7.7010424",
+      "lon": "110.0253756",
+      "category": "leisure",
+      "type": "swimming_pool",
+      "place_rank": 30,
+      "importance": 3.935072861825005e-05,
+      "addresstype": "leisure",
+      "name": "Artha Tirta Swimming Pool",
+      "display_name": "Artha Tirta Swimming Pool, Jalan Raya Magelang-Purworejo, Sejiwan Kidul, Baledono, Purworejo, Loano, Purworejo, Jawa Tengah, 54118, Indonesia",
+      "boundingbox": [
+        "-7.7012819",
+        "-7.7008029",
+        "110.0251852",
+        "110.0255660"
+      ]
+    }
+  ]
+}

@@ -15,7 +15,15 @@ def rank(scores, weights, is_cost):
     n, m = len(scores), len(scores[0])
     if len(weights) != m or len(is_cost) != m or any(len(row) != m for row in scores):
         raise ValueError("Ukuran matriks, bobot, dan jenis kriteria harus sama.")
-    den = [math.sqrt(sum(scores[i][j] ** 2 for i in range(n))) for j in range(m)]
+    try:
+        valid = (m > 0 and all(math.isfinite(v) for row in scores for v in row)
+                 and all(math.isfinite(w) and w >= 0 for w in weights)
+                 and math.isfinite(sum(weights)) and sum(weights) > 0)
+    except TypeError as error:
+        raise ValueError("Matriks dan bobot harus numerik.") from error
+    if not valid:
+        raise ValueError("Matriks harus finite dan bobot nonnegatif dengan jumlah positif.")
+    den = [math.hypot(*(scores[i][j] for i in range(n))) for j in range(m)]
     # Kolom tanpa variansi (mis. semua C6 = 0) tidak membedakan alternatif;
     # beri nilai ternormalisasi 0 agar tidak division-by-zero dan tak
     # memengaruhi jarak ke solusi ideal.

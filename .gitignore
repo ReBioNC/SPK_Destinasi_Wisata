@@ -4,3 +4,6 @@ __pycache__/
 *.pyc
 db.sqlite3
 .DS_Store
+~$*.xlsx
+*.tmp
+archive/local_backups/

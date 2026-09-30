@@ -1,30 +1,30 @@
-"""Impor gabungan destinasi: XLSX 38 provinsi (basis) + CSV Jawa (overlay).
-
-- Basis: Dataset_Wisata_38_Provinsi.xlsx, sheet Destinasi_TravelFit_Ready.
-- Koordinat: sheet Destinasi_Raw, join (nama, kota) case-insensitive.
-- Overlay: data/processed/destinations_clean.csv,
-  join (nama, kota); menimpa rating destinasi, tag, dan 4 flag fasilitas.
-- Idempoten via update_or_create pada kunci natural (nama, kota).
-
-Catatan: fas_penginapan selalu False karena tidak ada kolom sumber yang
-berpadanan (flag accessibility/information_center tak dipetakan).
-"""
-
+"""Replace active destinations atomically from validated Java443 artifacts."""
+from datetime import datetime, timezone
 from pathlib import Path
+import sqlite3
+import uuid
 
-import openpyxl
 import pandas as pd
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
+from django.db import connection, transaction
 
+from recommender.data_pipeline import validate_artifacts
 from recommender.models import Destination
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
-XLSX = BASE_DIR / "Dataset_Wisata_38_Provinsi.xlsx"
-CLEAN_CSV = BASE_DIR / "data" / "processed" / "destinations_clean.csv"
-
-# Kanonik mengikuti kolom Province pada XLSX (38 provinsi).
-PROVINSI_ALIAS = {
-    "DI Yogyakarta": "Daerah Istimewa Yogyakarta",
+BASE_DIR = Path(__file__).resolve().parents[3]
+PROVINSI_ALIAS = {"DI Yogyakarta": "Daerah Istimewa Yogyakarta"}
+FACILITIES = {
+    "fas_toilet": "toilet", "fas_parkir": "parking", "fas_warung": "food",
+    "fas_mushola": "worship", "fas_accessibility": "accessibility",
+    "fas_information_center": "information_center",
+}
+TICKET_SOURCES = {
+    438: ("https://jdih.bantenprov.go.id/storage/places/peraturan/2024pd0036001_1706502771.pdf", 261, "Pengunjung umum Nusantara per hari"),
+    439: ("https://peraturan.bpk.go.id/Download/403089/2025pd3602001.pdf", 232, "Pengunjung umum"),
+    440: ("https://peraturan.bpk.go.id/Download/414805/3306pd2026001.pdf", 242, "Tarif dasar per orang"),
+    441: ("https://peraturan.bpk.go.id/Download/414805/3306pd2026001.pdf", 242, "Tarif dasar per orang"),
+    442: ("https://peraturan.bpk.go.id/Download/414805/3306pd2026001.pdf", 242, "Hari biasa Rp8.000; hari besar/libur Rp10.000"),
+    443: ("https://bakeu.ngawikab.go.id/home/public/files/ppd/PERDA%20NO%2010%20TAHUN%202023.pdf", 122, "Domestik dewasa per kunjungan"),
 }
 
 
@@ -32,121 +32,104 @@ def kanon_provinsi(nama):
     return PROVINSI_ALIAS.get(str(nama).strip(), str(nama).strip())
 
 
-def norm(s):
-    return str(s).strip().lower()
+def backup_sqlite(project_root):
+    """Use SQLite backup API (also captures committed WAL); never commit sessions."""
+    name = str(connection.settings_dict["NAME"])
+    if connection.vendor != "sqlite" or name == ":memory:" or "mode=memory" in name:
+        return None
+    source = Path(name).resolve()
+    if not source.is_file():
+        return None
+    directory = Path(project_root) / "archive/local_backups"
+    directory.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    target = directory / f"travelfit-before-java443-{stamp}-{uuid.uuid4().hex[:8]}.sqlite3"
+    with sqlite3.connect(source.as_uri() + "?mode=ro", uri=True) as original:
+        with sqlite3.connect(target) as copy:
+            original.backup(copy)
+    return target
+
+
+def _text(value):
+    return "" if pd.isna(value) else str(value)
+
+
+def _defaults(row, fingerprint):
+    ticket_url, page, tariff_note = TICKET_SOURCES.get(int(row["place_id"]),
+        (row["source_url"], None, "Harga snapshot dataset Kaggle; bukan jaminan tarif transaksi terkini."))
+    provenance = {key: _text(row[key]) for key in
+        ("source_dataset", "source_url", "rating_status", "rating_source_url", "rating_access_date")}
+    provenance.update({"ticket_source_url": ticket_url, "ticket_pdf_page": page,
+                       "tariff_note": tariff_note,
+                       "coordinate_source": "OpenStreetMap (ODbL, © OpenStreetMap contributors)" if row["place_id"] > 437 else "Koordinat snapshot Kaggle",
+                       "time_minutes": None if pd.isna(row["time_minutes"]) else float(row["time_minutes"])})
+    quality = {
+        "coordinate_review_required": bool(row["coordinate_review_required"]),
+        "coordinate_review_note": _text(row["coordinate_review_note"]),
+        "issues": _text(row["data_quality_issues"]).split("|") if _text(row["data_quality_issues"]) else [],
+        "rating_model_note": _text(row["rating_model_note"]),
+        "facility_review_note": _text(row["facility_review_note"]),
+        "facility_description_missing": bool(row["facility_description_missing"]),
+    }
+    return {
+        "nama": row["place_name"], "kota": row["city"], "provinsi": kanon_provinsi(row["province"]),
+        "kategori": row["category_clean"], "harga_tiket": int(row["price"]),
+        "rating": None if pd.isna(row["rating"]) else float(row["rating"]),
+        "rating_model": float(row["c2_rating_for_model"]), "rating_imputed": bool(row["rating_imputed"]),
+        "description": _text(row["description"]), "latitude": float(row["lat"]),
+        "longitude": float(row["long"]), "tag_aktivitas": _text(row["activity_tags"]),
+        "sumber_data": "kaggle_java" if row["place_id"] <= 437 else "curated_java",
+        "provenance": provenance, "data_quality": quality, "pipeline_fingerprint": fingerprint,
+        **{field: bool(row[f"facility_{key}_mentioned"]) for field, key in FACILITIES.items()},
+    }
 
 
 class Command(BaseCommand):
-    help = "Impor destinasi dari XLSX 38 provinsi + overlay CSV Jawa."
+    help = "Impor atomik 437 Kaggle + 6 destinasi kurasi Jawa; backup sebelum penggantian."
 
     def add_arguments(self, parser):
-        parser.add_argument("--dry-run", action="store_true",
-                            help="Hitung tanpa menyimpan ke database.")
+        parser.add_argument("--project-root", default=str(BASE_DIR))
+        parser.add_argument("--dry-run", action="store_true")
+        parser.add_argument("--backup-only", action="store_true", help="Backup sebelum migrate, tanpa query schema destinasi.")
 
-    def handle(self, *args, **opts):
-        dry = opts["dry_run"]
-
-        wb = openpyxl.load_workbook(XLSX, data_only=True, read_only=True)
-        coords = {}
-        ws_raw = wb["Destinasi_Raw"]
-        h_raw = [c.value for c in next(ws_raw.iter_rows(min_row=1, max_row=1))]
-        ir = {n: i for i, n in enumerate(h_raw)}
-        for row in ws_raw.iter_rows(min_row=2, values_only=True):
-            coords[(norm(row[ir["Place_Name"]]), norm(row[ir["City"]]))] = (
-                row[ir["Lat"]], row[ir["Long"]])
-
-        clean = pd.read_csv(CLEAN_CSV)
-        overlay = {}
-        for _, r in clean.iterrows():
-            overlay[(norm(r["place_name"]), norm(r["city"]))] = {
-                "rating": float(r["c2_rating"]),
-                "tags": "" if pd.isna(r["activity_tags"]) else str(r["activity_tags"]),
-                "toilet": bool(r["facility_toilet_mentioned"]),
-                "parkir": bool(r["facility_parking_mentioned"]),
-                "warung": bool(r["facility_food_mentioned"]),
-                "mushola": bool(r["facility_worship_mentioned"]),
-            }
-
-        ws = wb["Destinasi_TravelFit_Ready"]
-        h = [c.value for c in next(ws.iter_rows(min_row=1, max_row=1))]
-        ic = {n: i for i, n in enumerate(h)}
-        basis = tanpa_koordinat = jawa = 0
-        for row in ws.iter_rows(min_row=2, values_only=True):
-            basis += 1
-            nama, kota = str(row[ic["Place_Name"]]), str(row[ic["City"]])
-            key = (norm(nama), norm(kota))
-            lat, lon = coords.get(key, (None, None))
-            if lat is None:
-                tanpa_koordinat += 1
-            ov = overlay.get(key)
-            sumber = "xlsx38"
-            rating = float(row[ic["c2_rating"]])
-            tags = "" if row[ic["activity_tags"]] is None else str(row[ic["activity_tags"]])
-            flags = {
-                "fas_toilet": bool(row[ic["facility_toilet_mentioned"]]),
-                "fas_parkir": bool(row[ic["facility_parking_mentioned"]]),
-                "fas_warung": bool(row[ic["facility_food_mentioned"]]),
-                "fas_mushola": bool(row[ic["facility_worship_mentioned"]]),
-                "fas_penginapan": False,
-            }
-            if ov is not None:
-                sumber = "csv_jawa"
-                jawa += 1
-                rating = ov["rating"]
-                tags = ov["tags"]
-                flags.update({"fas_toilet": ov["toilet"], "fas_parkir": ov["parkir"],
-                              "fas_warung": ov["warung"], "fas_mushola": ov["mushola"]})
-            if not dry:
-                Destination.objects.update_or_create(
-                    nama=nama, kota=kota,
-                    defaults={
-                        "provinsi": kanon_provinsi(row[ic["Province"]]),
-                        "kategori": str(row[ic["Category_Clean"]]),
-                        "sub_kategori": "" if row[ic["Sub_Category"]] is None else str(row[ic["Sub_Category"]]),
-                        "harga_tiket": int(row[ic["c1_ticket_price"]]),
-                        "rating": rating,
-                        "latitude": lat, "longitude": lon,
-                        **flags,
-                        "tag_aktivitas": tags,
-                        "sumber_data": sumber,
-                        "cluster_label": "",
-                    })
-        wb.close()
-        basis_total = basis if dry else Destination.objects.count()
-
-        # Fase 2: overlay + suplemen CSV Jawa. Baris yang cocok kunci natural
-        # ditimpa; sisanya (nama sintetis XLSX tak sama dengan nama asli CSV)
-        # diimpor sebagai baris baru agar data detail Jawa tidak hilang.
-        jawa_overlay = jawa_baru = 0
-        for _, r in clean.iterrows():
-            nama, kota = str(r["place_name"]), str(r["city"])
-            key = (norm(nama), norm(kota))
-            ov = overlay[key]
-            exists = Destination.objects.filter(nama=nama, kota=kota).exists()
-            if exists:
-                jawa_overlay += 1
-            else:
-                jawa_baru += 1
-            if not dry:
-                Destination.objects.update_or_create(
-                    nama=nama, kota=kota,
-                    defaults={
-                        "provinsi": kanon_provinsi(r["province"]),
-                        "kategori": str(r["category_clean"]),
-                        "sub_kategori": "",
-                        "harga_tiket": int(r["c1_ticket_price"]),
-                        "rating": ov["rating"],
-                        "latitude": None if pd.isna(r["lat"]) else float(r["lat"]),
-                        "longitude": None if pd.isna(r["long"]) else float(r["long"]),
-                        "fas_toilet": ov["toilet"], "fas_parkir": ov["parkir"],
-                        "fas_warung": ov["warung"], "fas_mushola": ov["mushola"],
-                        "fas_penginapan": False,
-                        "tag_aktivitas": ov["tags"],
-                        "sumber_data": "csv_jawa",
-                        "cluster_label": "",
-                    })
-        total = basis_total if dry else Destination.objects.count()
-        self.stdout.write(
-            f"basis={basis} overlay_jawa={jawa} tanpa_koordinat={tanpa_koordinat} "
-            f"jawa_suplemen={jawa_baru} jawa_ditimpa={jawa_overlay} total={total}"
-            + (" (dry-run)" if dry else ""))
+    def handle(self, *args, **options):
+        root = Path(options["project_root"])
+        if options["backup_only"]:
+            path = backup_sqlite(root)
+            self.stdout.write(f"Backup: {path or 'tidak diperlukan (database memory/belum ada)'}")
+            return
+        try:
+            result = validate_artifacts(root)
+        except (ValueError, FileNotFoundError) as error:
+            raise CommandError(str(error)) from error
+        fingerprint = result.manifest["pipeline_fingerprint"]
+        rows = result.destinations.to_dict("records")
+        ids = [int(row["place_id"]) for row in rows]
+        existing = list(Destination.objects.values("pk", "source_id", "nama", "kota", "pipeline_fingerprint"))
+        by_id = {row["source_id"]: row for row in existing if row["source_id"] is not None}
+        by_name = {(row["nama"], row["kota"]): row for row in existing if row["source_id"] is None}
+        matched = [by_id.get(int(row["place_id"])) or by_name.get((row["place_name"], row["city"])) for row in rows]
+        retained_pks = {record["pk"] for record in matched if record}
+        created = sum(record is None for record in matched)
+        updated, deleted = 443 - created, len(existing) - len(retained_pks)
+        if options["dry_run"]:
+            self.stdout.write(f"DRY RUN: input=443 created={created} updated={updated} deleted={deleted}; tanpa perubahan.")
+            return
+        backup = backup_sqlite(root)
+        if backup:
+            self.stdout.write(f"Backup: {backup}")
+        with transaction.atomic():
+            for row, record in zip(rows, matched):
+                defaults = _defaults(row, fingerprint)
+                # Keep training only on an unchanged snapshot.
+                if record is None or record["pipeline_fingerprint"] != fingerprint:
+                    defaults["cluster_label"] = ""
+                destination = Destination.objects.get(pk=record["pk"]) if record else Destination()
+                destination.source_id = int(row["place_id"])
+                for key, value in defaults.items():
+                    setattr(destination, key, value)
+                destination.save()
+            Destination.objects.exclude(source_id__in=ids).delete()
+            if Destination.objects.count() != 443:
+                raise CommandError("Retensi database gagal; transaksi dibatalkan.")
+        self.stdout.write(f"input=443 created={created} updated={updated} deleted={deleted} total=443 fingerprint={fingerprint}")

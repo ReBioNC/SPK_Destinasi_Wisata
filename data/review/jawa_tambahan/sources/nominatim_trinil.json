@@ -1,0 +1,32 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Museum+Trinil%2C+Ngawi%2C+Indonesia&format=jsonv2&limit=3&countrycodes=id",
+  "query": "Museum Trinil, Ngawi, Indonesia",
+  "accessed_at_utc": "2026-09-30T10:17:21.274367+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "8ce158198dd01a28b70f85fb7596826fb472b54fd9bece8c3a35454f1c23778f",
+  "results": [
+    {
+      "place_id": 32378687,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 2376812002,
+      "lat": "-7.3743213",
+      "lon": "111.3578060",
+      "category": "tourism",
+      "type": "museum",
+      "place_rank": 30,
+      "importance": 4.0000762951049326e-05,
+      "addresstype": "tourism",
+      "name": "Museum Trinil Ngawi",
+      "display_name": "Museum Trinil Ngawi, Jalan Raya Ngancar - Sonde, Puntuk, Ngancar, Ngawi, Jawa Timur, Indonesia",
+      "boundingbox": [
+        "-7.3743713",
+        "-7.3742713",
+        "111.3577560",
+        "111.3578560"
+      ]
+    }
+  ]
+}

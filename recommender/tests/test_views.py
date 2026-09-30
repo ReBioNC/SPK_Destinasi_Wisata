@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from recommender.models import Destination
+from recommender.kota_asal import KOTA_ASAL
 
 # (nama, harga, rating, lat, lon, kategori, tags, n_fasilitas_True)
 FIXTURE = [
@@ -17,7 +18,35 @@ FIXTURE = [
 ]
 
 
+def _mock_rencanakan(lat1, lon1, prov1, lat2, lon2, prov2,
+                     moda="mobil", mode="termurah"):
+    """Pengganti deterministik tanpa network: darat bila sepulau."""
+    from recommender.spk import biaya, geo
+    from recommender.spk.biaya import PETA_PULAU
+    gc = geo.haversine(lat1, lon1, lat2, lon2)
+    if PETA_PULAU.get(prov1) == PETA_PULAU.get(prov2):
+        return {"transport": biaya.transport_pp(gc, moda), "cara": "darat",
+                "rincian": "mock darat", "sumber_jarak": "mock",
+                "opsi": None, "jarak_km": gc}
+    return {"transport": biaya.tarif_pesawat_pp(gc), "cara": "pesawat",
+            "rincian": "mock udara", "sumber_jarak": "estimasi-pesawat",
+            "opsi": None, "jarak_km": gc}
+
+
 class RekomendasiViewTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        from unittest.mock import patch
+        cls._patcher = patch("recommender.views.rencanakan",
+                             side_effect=_mock_rencanakan)
+        cls._patcher.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._patcher.stop()
+        super().tearDownClass()
+
     @classmethod
     def setUpTestData(cls):
         flags = ["fas_toilet", "fas_parkir", "fas_warung", "fas_mushola", "fas_penginapan"]
@@ -29,9 +58,10 @@ class RekomendasiViewTest(TestCase):
                                        tag_aktivitas=tag, **kw)
 
     def post_valid(self, **over):
-        data = {"budget": "250000", "kota_asal": "Bandung", "wilayah": "Jawa Barat",
+        data = {"budget": "500000", "kota_asal": "Bandung", "wilayah": "Jawa Barat",
                 "kategori_utama": "alam", "kategori_sekunder": "budaya",
-                "hobi": ["hiking", "fotografi"], "profil": "seimbang"}
+                "hobi": ["hiking", "fotografi"], "profil": "seimbang",
+                "moda": "mobil", "hari": "1", "mode_antar": "termurah"}
         extra = {k: over.pop(k) for k in list(over) if k.startswith("HTTP_")}
         data.update(over)
         return self.client.post("/", data, follow=True, **extra)
@@ -42,8 +72,8 @@ class RekomendasiViewTest(TestCase):
         names = [h["nama"] for h in r.context["hasil"]]
         self.assertEqual(names[0], "Gunung Tangkuban Perahu")
         self.assertEqual(len(names), 10)
-        self.assertContains(r, "Data simulasi")
-        self.assertContains(r, "garis lurus")
+        self.assertTrue(all(not h['simulasi'] for h in r.context['hasil']))
+        self.assertContains(r, "(darat)")
 
     def test_budget_format_ribuan_diterima(self):
         for b in ["250.000", "Rp 250000", "250,000"]:
@@ -77,11 +107,13 @@ class RekomendasiViewTest(TestCase):
         self.assertTrue(all(h["bars"][5]["no_effect"] for h in r.context["hasil"]))
         self.assertTrue(all(h["bars"][5]["sub"] == "Hobi tidak dipilih" for h in r.context["hasil"]))
 
-    def test_c4_memakai_empat_fasilitas_yang_tersedia(self):
+    def test_c4_memakai_enam_kelompok_deskripsi(self):
         destination = Destination.objects.get(nama="Kawah Putih Ciwidey")
+        destination.fas_accessibility = True
+        destination.fas_information_center = True
         self.assertEqual(destination.facility_score(), 1.0)
         destination.fas_toilet = False
-        self.assertEqual(destination.facility_score(), 0.75)
+        self.assertAlmostEqual(destination.facility_score(), 5/6)
 
     def test_penjelasan_kriteria_tetap_tidak_menyebut_unggul(self):
         from recommender.views import _bangun_alasan
@@ -127,13 +159,67 @@ class RekomendasiViewTest(TestCase):
         self.assertEqual(r.context["hasil"][0]["vi"], 1.0)
         self.assertContains(r, "belum ada perbandingan")
 
-    def test_refresh_membersihkan_hasil(self):
-        # Refresh = sesi baru: hasil hanya tampil sekali setelah redirect.
+    def test_refresh_membersihkan_hasil(self):        # Refresh = sesi baru: hasil hanya tampil sekali setelah redirect.
         r = self.post_valid()
         self.assertEqual(len(r.context["hasil"]), 10)
         r2 = self.client.get("/")
         self.assertIsNone(r2.context["hasil"])
         self.assertContains(r2, "Siap menghitung rekomendasi.")
+
+    def _mock_plan(self, transport=50000, cara="darat", jarak_km=36.5):
+        return {"transport": transport, "cara": cara,
+                "rincian": f"Mock {cara}.", "sumber_jarak": "osrm",
+                "opsi": None, "jarak_km": jarak_km}
+
+    def test_c1_total_biaya_dan_rincian(self):
+        from unittest.mock import patch
+        with patch("recommender.views.rencanakan",
+                   return_value=self._mock_plan()) as m:
+            r = self.post_valid()
+            self.assertEqual(r.status_code, 200)
+            h = r.context["hasil"][0]
+            d = r.context["hasil"]
+            self.assertIn("rincian", h)
+            # total = tiket + 50000 + 150000 + 0 dipantulkan ke C1 (harga)
+            for row in d:
+                self.assertEqual(row["harga"], row["rincian"]["total"])
+            self.assertEqual(r.context["ringkasan"]["moda"], "Mobil")
+            self.assertIn("rincian_txt", h)
+            self.assertTrue(m.called)
+
+    def test_budget_menyaring_total(self):
+        from unittest.mock import patch
+        with patch("recommender.views.rencanakan",
+                   return_value=self._mock_plan()):
+            r = self.post_valid(budget="100000")
+            self.assertTrue(r.context["kandidat_kosong"])
+
+    def test_saring_kasar_tanpa_network(self):
+        # Budget 6000: pra ada (tiket 5000) tapi kasar >> budget → rencanakan
+        # tak pernah dipanggil (hemat ratusan request OSRM).
+        from unittest.mock import patch
+        with patch("recommender.views.rencanakan",
+                   return_value=self._mock_plan()) as m:
+            r = self.post_valid(budget="6000")
+            self.assertTrue(r.context["kandidat_kosong"])
+            self.assertEqual(m.call_count, 0)
+
+    def test_moda_hari_invalid(self):
+        r = self.post_valid(moda="helikopter")
+        self.assertIn("moda", r.context["form"].errors)
+        r = self.post_valid(hari="0")
+        self.assertIn("hari", r.context["form"].errors)
+
+    def test_prahangat_cache_sekali_batch(self):
+        # 10 kandidat = 1 request Table API, bukan 10 request ber-throttle.
+        from unittest.mock import patch
+        with patch("recommender.views.jarak_table", return_value=[]) as t:
+            with patch("recommender.views.rencanakan",
+                       return_value=self._mock_plan()):
+                r = self.post_valid()
+                self.assertEqual(len(r.context["hasil"]), 10)
+        self.assertEqual(t.call_count, 1)
+        self.assertEqual(len(t.call_args[0][2]), 10)
 
     def test_wilayah_dari_peta_terisi_otomatis(self):
         r = self.client.get("/", {"wilayah": "Jawa Barat"})
@@ -154,12 +240,14 @@ class RekomendasiViewTest(TestCase):
 
     def test_help_text_deskripsi_pilihan(self):
         r = self.client.get("/")
-        self.assertContains(r, "otomatis tersaring")
+        self.assertContains(r, "total biaya per orang")
         self.assertContains(r, "menentukan jarak")
 
     def test_profil_terpilih_terlihat_langsung(self):
         r = self.client.get("/")
-        self.assertContains(r, ".profil-info:has(input:checked)")
+        self.assertContains(r, 'value="seimbang" checked')
+        self.assertContains(r, 'for="profile-seimbang"')
+        self.assertContains(r, 'recommender/travelfit.css')
 
     def test_profil_satu_sumber_status_terpilih(self):
         # Status terpilih hanya dari :has (sinkron DOM); tidak ada ring server
@@ -186,9 +274,10 @@ class RekomendasiViewTest(TestCase):
         self.assertEqual(r.status_code, 400)
         self.assertFalse(r.json()["ok"])
 
-    def test_budget_format_ribuan_hook(self):
-        r = self.client.get("/")
-        self.assertContains(r, "formatBudgetRibuan")
+    def test_budget_invalid_tetap_bisa_diperbaiki(self):
+        r = self.post_valid(budget="minus-seratus")
+        self.assertContains(r, 'type="text" name="budget" value="minus-seratus"')
+        self.assertTrue(r.context['form'].errors['budget'])
 
     def test_kota_asal_ratusan_kota_berkoordinat(self):
         from recommender.kota_asal import KOTA_ASAL
@@ -221,7 +310,7 @@ class RekomendasiViewTest(TestCase):
     def test_kota_searchable_di_form(self):
         r = self.client.get("/")
         self.assertContains(r, "kota_asal_input")
-        self.assertContains(r, "kota-menu")
+        self.assertContains(r, 'id="id_kota_asal"')
         self.assertContains(r, "Badung (Bali)")
 
     def test_kota_tanpa_lib_pihak_ketiga(self):
@@ -231,28 +320,45 @@ class RekomendasiViewTest(TestCase):
         self.assertNotIn("TomSelect", html)
         self.assertNotIn("tom-select", html)
 
-    def test_kota_menu_punya_class_terstyle(self):
-        # Menu dibuat via JS harus membawa class yang ditarget CSS (.kota-menu),
-        # kalau tidak ia ter-render polos di ujung body, di luar viewport.
+    def test_kota_select_native_memuat_semua_pilihan(self):
         r = self.client.get("/")
-        self.assertContains(r, "menu.className = 'kota-menu'")
+        self.assertContains(r, '<select name="kota_asal"')
+        self.assertEqual(len(r.context['form'].fields['kota_asal'].choices), len(KOTA_ASAL))
 
-    def test_kota_dropdown_terlihat_penuh(self):
-        # Menu milik sendiri: background/border/shadow eksplisit + di body.
+    def test_peta_bisa_dibuka_dari_beranda(self):
         r = self.client.get("/")
-        html = r.content.decode()
-        self.assertIn(".kota-menu", html)
-        self.assertNotIn("dropdownParent", html)  # sisa Tom Select harus hilang
-        self.assertIn("background:#fff", html.replace(" ", ""))
+        self.assertContains(r, 'href="/peta/"')
+        self.assertEqual(self.client.get('/peta/').status_code, 200)
+
+    def test_kota_terpilih_tetap_ada_saat_validasi_gagal(self):
+        r = self.post_valid(kota_asal="Badung", budget="gratis")
+        self.assertContains(r, 'value="Badung" selected')
+        self.assertContains(r, 'label for="id_kota_asal"')
+        self.assertNotContains(r, 'dropdownParent')
 
     def test_post_kota_baru_valid(self):
+        # Dari Badung (beda pulau, ongkos pesawat) semua total > budget:
+        # pilihan diterima valid, filter total bekerja.
         r = self.post_valid(kota_asal="Badung")
         self.assertEqual(r.status_code, 200)
         self.assertFalse(r.context["form"].errors)
-        self.assertEqual(len(r.context["hasil"]), 10)
+        self.assertTrue(r.context["kandidat_kosong"])
 
 
 class HalamanTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        from unittest.mock import patch
+        cls._patcher = patch("recommender.views.rencanakan",
+                             side_effect=_mock_rencanakan)
+        cls._patcher.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._patcher.stop()
+        super().tearDownClass()
+
     @classmethod
     def setUpTestData(cls):
         flags = ["fas_toilet", "fas_parkir", "fas_warung", "fas_mushola", "fas_penginapan"]
@@ -268,18 +374,20 @@ class HalamanTest(TestCase):
         self.assertEqual(self.client.get("/tentang/").status_code, 200)
 
     def test_peta_memakai_hasil_session(self):
-        self.client.post("/", {"budget": "250000", "kota_asal": "Bandung", "wilayah": "Jawa Barat",
+        self.client.post("/", {"budget": "500000", "kota_asal": "Bandung", "wilayah": "Jawa Barat",
                                "kategori_utama": "alam", "kategori_sekunder": "budaya",
-                               "hobi": ["hiking", "fotografi"], "profil": "seimbang"})
+                               "hobi": ["hiking", "fotografi"], "profil": "seimbang",
+                               "moda": "mobil", "hari": "1", "mode_antar": "termurah"})
         r = self.client.get("/peta/")
         self.assertContains(r, "Tangkuban Perahu")
 
     def test_peta_hasil_json_valid_array(self):
         import json
         import re
-        self.client.post("/", {"budget": "250000", "kota_asal": "Bandung", "wilayah": "Jawa Barat",
+        self.client.post("/", {"budget": "500000", "kota_asal": "Bandung", "wilayah": "Jawa Barat",
                                "kategori_utama": "alam", "kategori_sekunder": "budaya",
-                               "hobi": ["hiking", "fotografi"], "profil": "seimbang"})
+                               "hobi": ["hiking", "fotografi"], "profil": "seimbang",
+                               "moda": "mobil", "hari": "1", "mode_antar": "termurah"})
         r = self.client.get("/peta/")
         m = re.search(r'<script id="hasil-data" type="application/json">(.*?)</script>',
                       r.content.decode(), re.S)

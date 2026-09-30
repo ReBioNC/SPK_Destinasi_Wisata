@@ -1,0 +1,13 @@
+# Exact preprocessing hashes must survive a clone on Windows or Linux.
+data/raw/tourism_with_id.csv -text
+data/raw/tourism_rating.csv text eol=crlf
+data/review/banten/** text=auto eol=lf
+data/review/jawa_tambahan/** text=auto eol=lf
+data/review/jawa_tambahan/sources/nominatim_*.json text eol=crlf
+data/review/gabungan_jawa/** text=auto eol=lf
+data/review/gabungan_jawa/destinasi_jawa_review.csv text eol=lf
+data/review/gabungan_jawa/google_maps_rating_review.json text eol=lf
+data/processed/destinations_clean_java443.csv text eol=lf
+data/processed/destinations_kmeans_features_java443.csv text eol=lf
+reports/preprocessing/preprocessing_java443_summary.json text eol=lf
+reports/preprocessing/preprocessing_java443_manifest.json text eol=lf

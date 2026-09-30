@@ -1,0 +1,92 @@
+{
+  "destination_rows": 443,
+  "source_rows": {
+    "kaggle": 437,
+    "additional_java": 6
+  },
+  "rows_lost": 0,
+  "missing_destination_ids": [],
+  "missing_rating_ids": [
+    438
+  ],
+  "imputed_rating_ids": [
+    438
+  ],
+  "rating_imputation": {
+    "method": "median_observed_valid_ratings",
+    "value": 4.5,
+    "observed_rows": 442,
+    "imputed_ids": [
+      438
+    ],
+    "calculation_column": "c2_rating_for_model",
+    "source_rating_unchanged": true
+  },
+  "coordinate_review_ids": [
+    9
+  ],
+  "data_quality_review_ids": [
+    9,
+    438
+  ],
+  "model_features_complete_rows": 443,
+  "kmeans_training_ready": true,
+  "rating_rows_valid": 9597,
+  "cities": [
+    "Bandung",
+    "Jakarta",
+    "Lebak",
+    "Ngawi",
+    "Pandeglang",
+    "Purworejo",
+    "Semarang",
+    "Surabaya",
+    "Yogyakarta"
+  ],
+  "categories": [
+    "alam",
+    "bahari",
+    "belanja",
+    "budaya",
+    "hiburan",
+    "religi"
+  ],
+  "destinations_with_facility_evidence": 69,
+  "destinations_with_facility_keyword_matches": 84,
+  "destinations_with_facility_context_review": 16,
+  "destinations_without_facility_description": 0,
+  "destinations_with_activity_tags": 370,
+  "facility_evidence_definition": "Penyebutan deskripsi yang diterima; bukan fasilitas terverifikasi di lapangan.",
+  "feature_parameters": {
+    "feature_columns": [
+      "c1_ticket_price_z",
+      "c2_rating_z",
+      "category_alam",
+      "category_bahari",
+      "category_belanja",
+      "category_budaya",
+      "category_hiburan",
+      "category_religi"
+    ],
+    "categories": [
+      "alam",
+      "bahari",
+      "belanja",
+      "budaya",
+      "hiburan",
+      "religi"
+    ],
+    "ticket_price_cap_p99": 275799.9999999998,
+    "mean": [
+      22187.358916478555,
+      4.442889390519188
+    ],
+    "scale": [
+      47129.62168054756,
+      0.2076695455182245
+    ],
+    "excluded": "C4 hanya SPK; indikator deskripsi bukan fasilitas lapangan terverifikasi."
+  },
+  "pipeline_fingerprint": "c3b2f4ead1b955ed41c4be8df4ee201a374a915a5eb10823f8f58c65ace25eac",
+  "missing_value_policy": "Pertahankan 443 destinasi; imputasi hanya rating model Tahura. Time_Minutes boleh kosong."
+}
