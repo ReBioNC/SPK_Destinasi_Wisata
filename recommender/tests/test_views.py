@@ -35,19 +35,6 @@ def _mock_rencanakan(lat1, lon1, prov1, lat2, lon2, prov2,
 
 class RekomendasiViewTest(TestCase):
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        from unittest.mock import patch
-        cls._patcher = patch("recommender.views.rencanakan",
-                             side_effect=_mock_rencanakan)
-        cls._patcher.start()
-
-    @classmethod
-    def tearDownClass(cls):
-        cls._patcher.stop()
-        super().tearDownClass()
-
-    @classmethod
     def setUpTestData(cls):
         flags = ["fas_toilet", "fas_parkir", "fas_warung", "fas_mushola", "fas_penginapan"]
         for nama, harga, rating, lat, lon, kat, tag, n_true in FIXTURE:
@@ -73,7 +60,7 @@ class RekomendasiViewTest(TestCase):
         self.assertEqual(names[0], "Gunung Tangkuban Perahu")
         self.assertEqual(len(names), 10)
         self.assertTrue(all(not h['simulasi'] for h in r.context['hasil']))
-        self.assertContains(r, "(darat)")
+        self.assertContains(r, "garis lurus")
 
     def test_budget_format_ribuan_diterima(self):
         for b in ["250.000", "Rp 250000", "250,000"]:
@@ -166,60 +153,36 @@ class RekomendasiViewTest(TestCase):
         self.assertIsNone(r2.context["hasil"])
         self.assertContains(r2, "Siap menghitung rekomendasi.")
 
-    def _mock_plan(self, transport=50000, cara="darat", jarak_km=36.5):
-        return {"transport": transport, "cara": cara,
-                "rincian": f"Mock {cara}.", "sumber_jarak": "osrm",
-                "opsi": None, "jarak_km": jarak_km}
+    def test_c1_harga_tiket_dan_sisa_alokasi(self):
+        r = self.post_valid()
+        for row in r.context["hasil"]:
+            source = Destination.objects.get(nama=row["nama"])
+            self.assertEqual(row["harga"], source.harga_tiket)
+            self.assertEqual(row["sisa_budget"], 500000 - source.harga_tiket)
 
-    def test_c1_total_biaya_dan_rincian(self):
+    def test_budget_menyaring_tiket_bukan_total_perjalanan(self):
+        r = self.post_valid(budget="100000")
+        self.assertEqual(len(r.context["hasil"]), 9)
+        self.assertNotIn("Trans Studio Bandung", [row["nama"] for row in r.context["hasil"]])
+
+    def test_budget_6000_masih_menerima_tiket_5000(self):
+        r = self.post_valid(budget="6000")
+        self.assertEqual({row["nama"] for row in r.context["hasil"]},
+                         {"Museum Geologi Bandung", "Masjid Raya Al Jabbar"})
+
+    def test_parameter_transport_lama_diabaikan(self):
+        r = self.post_valid(moda="helikopter", hari="0", mode_antar="unknown")
+        self.assertFalse(r.context["form"].errors)
+        self.assertNotIn("moda", self.client.session["preference_input"])
+        self.assertNotIn("hari", self.client.session["preference_input"])
+
+    def test_rekomendasi_tanpa_network_atau_cache(self):
         from unittest.mock import patch
-        with patch("recommender.views.rencanakan",
-                   return_value=self._mock_plan()) as m:
+        from recommender.models import JarakCache
+        with patch("recommender.jarak._ambil_osrm", side_effect=AssertionError("Unexpected network")):
             r = self.post_valid()
-            self.assertEqual(r.status_code, 200)
-            h = r.context["hasil"][0]
-            d = r.context["hasil"]
-            self.assertIn("rincian", h)
-            # total = tiket + 50000 + 150000 + 0 dipantulkan ke C1 (harga)
-            for row in d:
-                self.assertEqual(row["harga"], row["rincian"]["total"])
-            self.assertEqual(r.context["ringkasan"]["moda"], "Mobil")
-            self.assertIn("rincian_txt", h)
-            self.assertTrue(m.called)
-
-    def test_budget_menyaring_total(self):
-        from unittest.mock import patch
-        with patch("recommender.views.rencanakan",
-                   return_value=self._mock_plan()):
-            r = self.post_valid(budget="100000")
-            self.assertTrue(r.context["kandidat_kosong"])
-
-    def test_saring_kasar_tanpa_network(self):
-        # Budget 6000: pra ada (tiket 5000) tapi kasar >> budget → rencanakan
-        # tak pernah dipanggil (hemat ratusan request OSRM).
-        from unittest.mock import patch
-        with patch("recommender.views.rencanakan",
-                   return_value=self._mock_plan()) as m:
-            r = self.post_valid(budget="6000")
-            self.assertTrue(r.context["kandidat_kosong"])
-            self.assertEqual(m.call_count, 0)
-
-    def test_moda_hari_invalid(self):
-        r = self.post_valid(moda="helikopter")
-        self.assertIn("moda", r.context["form"].errors)
-        r = self.post_valid(hari="0")
-        self.assertIn("hari", r.context["form"].errors)
-
-    def test_prahangat_cache_sekali_batch(self):
-        # 10 kandidat = 1 request Table API, bukan 10 request ber-throttle.
-        from unittest.mock import patch
-        with patch("recommender.views.jarak_table", return_value=[]) as t:
-            with patch("recommender.views.rencanakan",
-                       return_value=self._mock_plan()):
-                r = self.post_valid()
-                self.assertEqual(len(r.context["hasil"]), 10)
-        self.assertEqual(t.call_count, 1)
-        self.assertEqual(len(t.call_args[0][2]), 10)
+        self.assertEqual(len(r.context["hasil"]), 10)
+        self.assertEqual(JarakCache.objects.count(), 0)
 
     def test_wilayah_dari_peta_terisi_otomatis(self):
         r = self.client.get("/", {"wilayah": "Jawa Barat"})
@@ -240,7 +203,7 @@ class RekomendasiViewTest(TestCase):
 
     def test_help_text_deskripsi_pilihan(self):
         r = self.client.get("/")
-        self.assertContains(r, "total biaya per orang")
+        self.assertContains(r, "tiket masuk satu destinasi per orang")
         self.assertContains(r, "menentukan jarak")
 
     def test_profil_terpilih_terlihat_langsung(self):
@@ -337,28 +300,14 @@ class RekomendasiViewTest(TestCase):
         self.assertNotContains(r, 'dropdownParent')
 
     def test_post_kota_baru_valid(self):
-        # Dari Badung (beda pulau, ongkos pesawat) semua total > budget:
-        # pilihan diterima valid, filter total bekerja.
+        # Kota asal hanya mengubah C3, bukan harga tiket atau filter budget.
         r = self.post_valid(kota_asal="Badung")
         self.assertEqual(r.status_code, 200)
         self.assertFalse(r.context["form"].errors)
-        self.assertTrue(r.context["kandidat_kosong"])
+        self.assertEqual(len(r.context["hasil"]), 10)
 
 
 class HalamanTest(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        from unittest.mock import patch
-        cls._patcher = patch("recommender.views.rencanakan",
-                             side_effect=_mock_rencanakan)
-        cls._patcher.start()
-
-    @classmethod
-    def tearDownClass(cls):
-        cls._patcher.stop()
-        super().tearDownClass()
-
     @classmethod
     def setUpTestData(cls):
         flags = ["fas_toilet", "fas_parkir", "fas_warung", "fas_mushola", "fas_penginapan"]

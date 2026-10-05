@@ -9,7 +9,6 @@ from django.core.management import call_command
 from django.test import Client, TestCase
 from recommender.models import Destination
 from recommender.tests.test_data_pipeline import copy_sources
-from recommender.tests.test_views import _mock_rencanakan
 
 ROOT=Path(__file__).resolve().parents[2]
 
@@ -38,10 +37,9 @@ class Java443WorkflowTests(TestCase):
             call_command('train_clusters', project_root=str(root), stdout=io.StringIO())
             self.assertEqual(list(Destination.objects.order_by('source_id').values_list('source_id',flat=True)),list(range(1,444)))
             self.assertEqual(Destination.objects.exclude(cluster_label='').count(),443)
-            with patch('recommender.views.rencanakan',side_effect=_mock_rencanakan),patch('recommender.views.jarak_table',return_value=[]):
-                response=self.client.post('/',{'budget':'20000000','kota_asal':'Jakarta','wilayah':'Banten',
-                    'kategori_utama':'alam','kategori_sekunder':'budaya','profil':'seimbang',
-                    'hari':1,'moda':'mobil','mode_antar':'termurah'},follow=True)
+            response=self.client.post('/',{'budget':'20000000','kota_asal':'Jakarta','wilayah':'Banten',
+                'kategori_utama':'alam','kategori_sekunder':'budaya','profil':'seimbang',
+                'hari':1,'moda':'mobil','mode_antar':'termurah'},follow=True)
             self.assertTrue(response.context['hasil'])
             self.assertTrue(any(h['rating_imputed'] for h in response.context['hasil']))
             self.assertEqual(len(self.client.get('/peta/').context['map_destinations']),443)
