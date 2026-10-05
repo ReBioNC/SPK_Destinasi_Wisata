@@ -1,4 +1,5 @@
 from pathlib import Path
+import argparse
 import hashlib
 import json
 import zipfile
@@ -9,8 +10,11 @@ from lxml import etree
 build = Path(__file__).resolve().parent
 output = build.parent / 'Laporan_UTS_TravelFit.docx'
 qa = build / 'qa'
-reader = PdfReader(qa / 'report-ticket.pdf')
-pdf = pdfium.PdfDocument(str(qa / 'report-ticket.pdf'))
+parser = argparse.ArgumentParser()
+parser.add_argument('--pdf', default=str(qa / 'report-ticket.pdf'))
+args = parser.parse_args()
+reader = PdfReader(args.pdf)
+pdf = pdfium.PdfDocument(args.pdf)
 pages = []
 changed = []
 for i, page in enumerate(pdf):
@@ -38,6 +42,14 @@ with zipfile.ZipFile(output) as z:
     doc = etree.fromstring(z.read('word/document.xml'))
     styles = etree.fromstring(z.read('word/styles.xml'))
 ns = {'w':'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
+text = ' '.join(doc.xpath('//w:t/text()', namespaces=ns))
+out_of_scope = ['Agglomerative', 'DBSCAN', 'Decision Tree', 'Random Forest',
+                'SMART', 'PROMETHEE', 'ELECTRE', 'ontology', 'ontologi',
+                'Next.js', 'Flask', '1.900', '2.337', 'precision at k',
+                'Kegiatan Lanjutan', 'Rencana validasi']
+assert not [term for term in out_of_scope if term.casefold() in text.casefold()]
+for term in ['443', 'CRISP', 'K-Means', 'AHP', 'TOPSIS', '275.800', 'Logbook']:
+    assert term in text, f'Missing project content: {term}'
 sections = [dict(el.attrib) for el in doc.xpath('//w:sectPr/w:pgMar | //w:sectPr/w:pgSz',namespaces=ns)]
 stylefonts = styles.xpath('//w:style[w:name/@w:val="Normal"]/w:rPr/w:rFonts/@w:ascii',namespaces=ns)
 sizes = styles.xpath('//w:style[w:name/@w:val="Normal"]/w:rPr/w:sz/@w:val',namespaces=ns)
@@ -50,6 +62,7 @@ unchanged = all(hashlib.sha256((root/p).read_bytes()).hexdigest()==expected
 # destination snapshot separately; raw source/archive hashes remain immutable.
 assert unchanged
 audit = {'pages':pages,'changed_visual_pages':changed,'sections':sections,'normal_font':stylefonts,'normal_size':sizes,
-         'toc_entries':len(toc),'protected_sources_and_archives_unchanged':unchanged}
+         'toc_entries':len(toc),'protected_sources_and_archives_unchanged':unchanged,
+         'out_of_scope_content_removed': True}
 (qa/'audit.json').write_text(json.dumps(audit,ensure_ascii=False,indent=2),encoding='utf-8')
 print(json.dumps(audit,ensure_ascii=True))

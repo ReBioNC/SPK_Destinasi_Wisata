@@ -282,7 +282,7 @@ paragraph('Manfaat bagi wisatawan adalah tersedianya daftar pembanding yang sesu
 heading('1 4 Ruang Lingkup')
 paragraph('Wilayah tujuan aplikasi dibatasi pada enam provinsi di Jawa: Banten, DKI Jakarta, Jawa Barat, Jawa Tengah, Daerah Istimewa Yogyakarta, dan Jawa Timur. Kota asal masih dapat dipilih dari daftar kota di Indonesia. Pembatasan tujuan tidak berarti bahwa seluruh kabupaten, kota, atau objek wisata di setiap provinsi telah terwakili. Dataset awal berpusat pada lima kota, sedangkan tambahan mencakup Pandeglang, Lebak, Purworejo, dan Ngawi.')
 paragraph('Cakupan geografis mengikuti label administratif sumber dan keputusan retensi data. Beberapa wisata bahari berada di pulau lepas pantai, sehingga dataset tidak tepat disebut hanya destinasi daratan Pulau Jawa. Pelabuhan Marina dengan ID 9 tetap dipertahankan meskipun koordinat sumber berada di luar Jawa. Aplikasi menandainya sebagai data yang perlu ditinjau. Peta SVG memuat enam provinsi dan merupakan visualisasi skematis, bukan sistem navigasi atau pembuktian batas administratif.')
-paragraph('Dataset sintetis 1.900 baris dan gabungan lama 2.337 baris berada dalam arsip dan bukan input aktif website atau pelatihan model. Sistem belum mencakup pemesanan tiket, optimasi rute banyak destinasi, jadwal operasional lengkap, prakiraan cuaca, atau verifikasi langsung setiap fasilitas. Evaluasi respons pengguna melalui survei merupakan kegiatan lanjutan, belum hasil penelitian pada snapshot ini.')
+paragraph('Data aktif terdiri atas 437 destinasi Kaggle dan 6 destinasi tambahan hasil kurasi. Lingkup perhitungan adalah pemilihan satu destinasi berdasarkan enam kriteria. Pengguna memasukkan preferensi melalui formulir, lalu sistem menyaring kandidat berdasarkan provinsi dan budget tiket sebelum menghitung peringkat TOPSIS.')
 
 heading('1 5 Cara Pengumpulan Data')
 paragraph('Data utama diperoleh dari dataset Indonesia Tourism Destination milik aprabowo di Kaggle. Berkas tourism_with_id.csv memuat 437 destinasi dan tourism_rating.csv memuat 10.000 baris interaksi. Pemeriksaan terhadap unduhan langsung Kaggle pada 1 Oktober 2026 menunjukkan bahwa kedua berkas lokal identik secara byte dan SHA-256 dengan berkas dalam arsip unduhan. Dengan demikian, nilai sumber tidak dibuat oleh tahap preprocessing. Akan tetapi, kesamaan berkas tidak membuktikan bahwa semua atribut merupakan harga atau kondisi terkini (aprabowo, n.d.).')
@@ -308,7 +308,7 @@ paragraph('Kolom data_quality_issues menandai masalah, bukan otomatis menghapus 
 
 heading('1 7 Kategorisasi Masalah dan Pengguna Akhir')
 paragraph('Pemilihan destinasi termasuk masalah semi-terstruktur dan multikriteria. Harga, rating, jarak, serta skor hasil ekstraksi dapat dihitung, tetapi prioritas biaya, kualitas, kategori, dan hobi bergantung pada pengguna. Sistem membantu menyusun perbandingan tanpa menggantikan keputusan akhir wisatawan. Pengelompokan destinasi adalah masalah unsupervised karena dataset tidak menyediakan label cluster acuan yang benar untuk setiap objek.')
-paragraph('Pengguna akhir utama adalah wisatawan yang merencanakan tujuan berdasarkan anggaran dan minat. Mahasiswa dan wisatawan dengan anggaran terbatas dapat menggunakan profil Hemat; pengguna yang menekankan rating dapat menggunakan profil Kualitas. Profil Petualang pada implementasi menekankan jarak dan kecocokan, bukan sertifikasi bahwa destinasi memiliki aktivitas petualangan. Profil Seimbang menjadi pilihan umum. Pengelola data merupakan pengguna administratif yang menjalankan preprocessing, impor, dan pembaruan model.')
+paragraph('Pengguna akhir utama adalah wisatawan yang merencanakan tujuan berdasarkan anggaran dan minat. Mahasiswa dan wisatawan dengan anggaran terbatas dapat menggunakan profil Hemat; pengguna yang menekankan rating dapat menggunakan profil Kualitas. Profil Petualang menekankan jarak dan kecocokan, sedangkan profil Seimbang menjadi pilihan umum. Pengelola data menjalankan preprocessing, impor, dan pembaruan model.')
 paragraph('Tahap Intelligence mengidentifikasi masalah dan mengumpulkan informasi. Tahap Design merumuskan alternatif, kriteria, metode, dan rancangan pengujian. Tahap Choice diwujudkan sebagai pemeringkatan TOPSIS dan pemilihan alternatif oleh pengguna. Implementasi menempatkan perhitungan tersebut pada aplikasi Django agar dapat digunakan kembali untuk preferensi yang berbeda.')
 
 heading('1 8 Penerapan CRISP DM')
@@ -318,7 +318,7 @@ for name,text in [
     ('Data Understanding','Kami memeriksa sumber Kaggle, enam tambahan, penilaian pengguna, distribusi kota dan kategori, nilai kosong, serta konflik identitas dan lokasi. Tahap ini menemukan keterbatasan representasi wilayah dan semantik harga.'),
     ('Data Preparation','Kami menggabungkan data, merapikan kolom dan teks, melakukan konversi angka, menyimpan penanda kualitas, mengagregasi interaksi, membentuk fitur deskripsi, serta membuat Z-score dan one-hot encoding dengan retensi semua ID.'),
     ('Modeling','Kami melatih K-Means pada seluruh 443 destinasi. AHP menghitung bobot enam kriteria dan TOPSIS menyusun peringkat kandidat pada saat pengguna mengirim preferensi. Label cluster tidak menjadi filter kandidat TOPSIS.'),
-    ('Evaluation','Kami mengevaluasi konfigurasi k, silhouette, inertia, ukuran cluster, konsistensi AHP, hasil perhitungan, edge case, sensitivitas, dan integrasi aplikasi. Survei penerimaan pengguna belum menghasilkan ukuran empiris.'),
+    ('Evaluation','Kami mengevaluasi konfigurasi k, silhouette, inertia, ukuran cluster, konsistensi AHP, hasil perhitungan, edge case, sensitivitas, dan integrasi aplikasi. Evaluasi ini memeriksa hasil teknis model dan perhitungan SPK.'),
     ('Deployment','Kami mengintegrasikan data tervalidasi dan hasil pengelompokan ke Django dan SQLite. Website menampilkan rekomendasi, harga tiket, kualitas data, dan peta Jawa. Penerapan yang tercatat merupakan lingkungan lokal, bukan layanan publik yang telah diuji operasional.')]:
     heading(name,3);paragraph(text)
 
@@ -338,7 +338,7 @@ paragraph('Output utama adalah maksimal sepuluh rekomendasi yang diurutkan berda
 paragraph('C1 harga tiket tidak dihitung dari jarak. C3 menilai kedekatan secara tersendiri sehingga transportasi tidak dihitung ulang di dalam C1. Dua atribut ini memiliki definisi berbeda; hal tersebut tidak berarti keduanya dijamin tidak berkorelasi pada data.')
 
 heading('2 2 Arsitektur dan Alur Sistem')
-paragraph('Backend memakai Django dan SQLite. Pengolahan numerik menggunakan Python, pandas, dan NumPy. Frontend menggunakan template HTML, CSS, serta JavaScript native. Website tidak bergantung pada Next.js atau Flask pada implementasi aktif. Pemisahan modul memungkinkan rumus AHP, TOPSIS, harga tiket, jarak, dan kemiripan diuji secara terpisah dari tampilan.')
+paragraph('Backend memakai Django dan SQLite. Pengolahan numerik menggunakan Python, pandas, dan NumPy. Frontend menggunakan template HTML, CSS, serta JavaScript native. Pemisahan modul memungkinkan rumus AHP, TOPSIS, harga tiket, jarak, dan kemiripan diuji secara terpisah dari tampilan.')
 paragraph('Alur offline adalah sumber data, preprocessing bersama, ekspor master dan fitur, validasi manifest, impor database, lalu pelatihan K-Means. Manifest menyimpan hash sumber, parameter fitur, daftar ID, serta fingerprint pipeline. Importer dan trainer menolak artefak yang tidak sesuai sumber atau transformasi. Tujuannya mencegah database maupun model memakai hasil preprocessing yang usang.')
 paragraph('Alur online dimulai dari validasi formulir. Aplikasi mengambil destinasi pada provinsi tujuan dengan harga sumber yang masih berada dalam batas budget. Sistem menghitung Haversine bagi kandidat yang tiketnya lolos. Filter tidak menambahkan ongkos perjalanan dan tidak menghapus destinasi dari database. Budget Rp0 tetap menerima destinasi gratis. TOPSIS menilai semua kandidat yang lolos tanpa penyaringan berdasarkan cluster.')
 paragraph('Peta menampilkan enam provinsi, 443 destinasi dalam daftar, dan 442 titik dalam bingkai visual. Titik Marina tidak ditampilkan pada bingkai Jawa karena koordinatnya berada di luar jangkauan. Filter provinsi dari peta mengisi formulir, sedangkan rekomendasi baru memperbarui kartu hasil dan daftar hasil peta dari snapshot respons yang sama.')
@@ -356,18 +356,21 @@ paragraph('Fitur K-Means berjumlah delapan: harga sumber yang dibatasi P99 dan d
 paragraph('P99 sebesar Rp275.800 membatasi nilai harga hanya pada matriks fitur model. Ada '+str(km['capped_training_rows'])+' baris harga di atas batas ini. Harga Rp900.000, misalnya, menjadi Rp275.800 pada fitur sebelum Z-score, tetapi tetap Rp900.000 pada master dan C1 TOPSIS. P99 mengurangi pengaruh nilai ekstrem, tetapi tidak memperbaiki ketidakjelasan apakah Price merupakan tiket atau paket wisata.')
 equation('z = ', 'x − μ', 'σ')
 paragraph('Mean dan standard deviation dihitung dengan ddof 0 dari data pelatihan. Parameter harga sesudah pembatasan adalah mean '+number(result.manifest['feature_parameters']['mean'][0],6)+' dan standard deviation '+number(result.manifest['feature_parameters']['scale'][0],6)+'. Untuk rating model, mean '+number(result.manifest['feature_parameters']['mean'][1],6)+' dan standard deviation '+number(result.manifest['feature_parameters']['scale'][1],6)+'. Parameter yang sama diperlukan jika fitur data baru akan dibandingkan dengan model tersimpan.')
-paragraph('Tabel kandidat algoritma berikut memenuhi kebutuhan perbandingan metode tanpa menciptakan hasil eksperimen. Accuracy, precision, recall, dan F1-score membutuhkan label acuan dan definisi kelas. Dataset ini tidak menyediakan label cluster acuan, sehingga metrik tersebut tidak berlaku untuk evaluasi clustering yang sedang dilakukan. Nilai N/A bukan nol. Decision Tree dan Random Forest hanya menjadi pilihan bila kelak ada target berlabel, misalnya relevansi rekomendasi dari pengguna (scikit-learn developers, n.d.).')
-caption('Tabel 5 Perbandingan kandidat algoritma dan metrik klasifikasi')
-table(['Algoritma','Accuracy','Precision','Recall','F1 score','Interpretability'],[
-    ['K-Means','N/A','N/A','N/A','N/A','Centroid mudah dijelaskan'],
-    ['Agglomerative clustering','N/A','N/A','N/A','N/A','Dendrogram kelompok'],
-    ['DBSCAN','N/A','N/A','N/A','N/A','Noise dan kepadatan'],
-    ['Decision Tree','Belum diuji','Belum diuji','Belum diuji','Belum diuji','Aturan pohon'],
-    ['Random Forest','Belum diuji','Belum diuji','Belum diuji','Belum diuji','Gabungan banyak pohon']], [3.2,2.1,2.1,1.5,1.5,3.6])
-paragraph('K-Means dipilih karena sesuai dengan tujuan segmentasi tanpa label, tersedia pada codebase, dan menghasilkan centroid yang mudah dijelaskan. Agglomerative dan DBSCAN belum mempunyai hasil benchmark pada dataset aktif sehingga tidak dinyatakan lebih buruk secara numerik. K-Means juga memiliki keterbatasan: sensitif terhadap skala dan pencilan, serta cenderung sesuai untuk kelompok dengan bentuk tertentu. Penilaian pilihan metode harus mempertimbangkan keterbatasan tersebut, bukan hanya kemudahan implementasi.')
+paragraph('K-Means digunakan untuk mengelompokkan destinasi tanpa label acuan. Model menghasilkan centroid yang merangkum karakteristik setiap kelompok sehingga hasilnya dapat dijelaskan melalui harga, rating, dan kategori. Evaluasinya menggunakan silhouette, inertia, dan jumlah anggota cluster sesuai tujuan pengelompokan (scikit-learn developers, n.d.).')
+caption('Tabel 5 Konfigurasi K Means yang digunakan')
+table(['Parameter','Nilai pada implementasi'],[
+    ['Data pelatihan','Seluruh 443 destinasi'],
+    ['Jumlah fitur','8 fitur numerik hasil transformasi'],
+    ['Inisialisasi centroid','k-means++'],
+    ['Jumlah inisialisasi','10'],
+    ['Seed','42'],
+    ['Kandidat jumlah cluster','k = 2 sampai 6'],
+    ['Maksimal iterasi','100'],
+    ['Toleransi perpindahan centroid','0,000001']], [6,8])
+paragraph('K-Means sensitif terhadap skala dan pencilan. Standardisasi menyamakan skala fitur, sedangkan pembatasan harga pada P99 mengurangi pengaruh harga ekstrem pada pelatihan. Nilai harga sumber tetap dipertahankan untuk perhitungan SPK. Centroid dan label segmen merupakan ringkasan data, bukan penilaian bahwa semua anggota cluster memiliki kualitas yang sama.')
 
 heading('2 5 Hasil Evaluasi K Means pada Snapshot Aktif')
-paragraph('Implementasi K-Means memakai NumPy dengan inisialisasi k-means++, sepuluh titik awal, seed 42, maksimal 100 iterasi, serta toleransi perpindahan centroid 0,000001. Sistem mencoba k dari 2 sampai 6. Ukuran minimum cluster ditetapkan 22 anggota berdasarkan maksimum antara 5 dan pembulatan 5% dari 443. Semua kandidat pada laporan memenuhi batas tersebut. Konfigurasi terpilih adalah yang mempunyai silhouette terbesar di antara konfigurasi yang layak.')
+paragraph('Implementasi K-Means memakai NumPy dengan konfigurasi pada Tabel 5. Ukuran minimum cluster ditetapkan 22 anggota berdasarkan maksimum antara 5 dan pembulatan 5% dari 443. Semua kandidat pada laporan memenuhi batas tersebut. Konfigurasi terpilih adalah yang mempunyai silhouette terbesar di antara konfigurasi yang layak.')
 caption('Tabel 6 Evaluasi jumlah cluster dari laporan model aktif')
 table(['k','Silhouette','Inertia','Cluster terkecil'],[[str(c['k']),number(c['silhouette'],5),number(c['inertia'],5),str(c['smallest_cluster'])] for c in km['candidates']], [1.5,4,4.5,4],(0,1,2,3))
 caption('Tabel 7 Karakteristik dua segmen terpilih')
@@ -375,7 +378,7 @@ table(['Segmen','Anggota','Mean harga sumber','Mean rating model'],[
     ['Segmen 1 harga rendah','414',money(km['clusters'][0]['mean_price']),number(km['clusters'][0]['mean_rating'],3)],
     ['Segmen 2 harga tinggi hiburan','29',money(km['clusters'][1]['mean_price']),number(km['clusters'][1]['mean_rating'],3)]],[4.2,2,4.5,3.3],(1,2,3))
 paragraph('Kedua cluster mempunyai rata-rata rating yang hampir sama. Perbedaan yang paling terlihat adalah harga, sementara cluster kedua didominasi hiburan. Label harga rendah dan harga tinggi bersifat relatif terhadap snapshot, bukan batas resmi kategori ekonomi atau premium. Harga rata-rata pada ringkasan segmen memakai harga sumber, sedangkan centroid K-Means dibentuk dari harga yang sudah dibatasi dan distandardisasi. Karena itu, kedua besaran tersebut tidak boleh ditafsirkan sebagai nilai yang sama.')
-paragraph('Seluruh 443 destinasi mendapatkan label hasil pelatihan, termasuk keenam tambahan. Silhouette dihitung pada data pelatihan yang sama dan memberi evaluasi internal bentuk kelompok. Tidak ada klaim train-test accuracy, precision, recall, atau F1-score. Keberhasilan clustering tidak otomatis menunjukkan bahwa urutan rekomendasi telah sesuai penilaian pengguna.')
+paragraph('Seluruh 443 destinasi mendapatkan label hasil pelatihan, termasuk keenam tambahan. Silhouette dihitung pada data pelatihan yang sama dan memberi evaluasi internal bentuk kelompok. Hasil pengelompokan menjelaskan kemiripan destinasi; urutan rekomendasi dihitung secara terpisah menggunakan TOPSIS.')
 
 heading('2 6 Alternatif Tindakan')
 paragraph('Alternatif tindakan A1, A2, A3, dan seterusnya adalah keputusan untuk mengunjungi destinasi tertentu yang lolos filter pada satu permintaan. A1 bukan nama tetap satu destinasi untuk semua pengguna. Jumlah alternatif berubah mengikuti provinsi dan budget. ID sumber tetap disimpan agar hasil tidak tertukar ketika urutan ranking berubah.')
@@ -413,7 +416,6 @@ table(['Komponen','Aturan','Batas interpretasi'],[
     ['Sisa tiket','Budget dikurangi harga kandidat','Tidak otomatis untuk belanja'],
     ['Transport, makan, inap','Tidak dihitung','Di luar cakupan']],[3.2,5.5,5.3])
 paragraph('Perubahan ini menghilangkan kebutuhan koefisien ongkos yang belum terkalibrasi. Nilai harga sumber tetap perlu diaudit bila merupakan paket, bukan tiket masuk murni. Koordinat kota asal adalah titik representatif, bukan lokasi pengguna yang presisi (Kelompok TravelFit, 2026c).')
-paragraph('Pengelompokan pengalaman tematik, budaya/kota, dan alam/bahari masih merupakan rencana. Mapping kategori saja adalah aturan klasifikasi, bukan ontology formal dengan reasoner. Bila diterapkan, kelompok harus mengambil hasil ranking global yang sama agar skor tetap sebanding. Sistem saat ini tidak melakukan optimasi itinerary multi-destinasi.')
 
 heading('2 9 Dasar Bobot dan Pemilihan MCDM')
 paragraph('AHP digunakan untuk pembobotan kriteria melalui matriks perbandingan berpasangan, sedangkan TOPSIS digunakan untuk meranking alternatif. Pemisahan ini menghindari kebutuhan membandingkan ratusan destinasi secara berpasangan. AHP membandingkan enam kriteria saja. Bobot diperoleh melalui normalisasi kolom dan rata-rata baris, lalu diuji dengan consistency ratio atau CR. Profil digunakan jika CR kurang dari 0,1 (Saaty, 2008).')
@@ -423,19 +425,17 @@ for key,p in profiles.ACTIVE_PROFILES.items():
     paragraph('Profil '+p['label']+' dengan CR '+number(p['cr'],6))
     table(['C1','C2','C3','C4','C5','C6'],[[number(w*100,4)+'%' for w in p['weights']]], [14/6]*6,tuple(range(6)))
 paragraph('Slider pada website menormalisasi enam nilai nonnegatif agar jumlah bobot menjadi 1. Ketika slider diubah pengguna, bobot tersebut merupakan bobot langsung kustom, bukan AHP baru. Tidak ada matriks perbandingan baru atau CR baru untuk slider. Jika semua nilai slider nol, aplikasi kembali memakai bobot profil yang dipilih.')
-caption('Tabel 12 Perbandingan fungsi metode MCDM')
-table(['Metode','Pertimbangan dalam proyek','Status'],[
+caption('Tabel 12 Metode SPK dan perannya pada TravelFit')
+table(['Metode','Fungsi dalam proyek','Penggunaan'],[
     ['AHP','Membuat bobot dan memeriksa konsistensi enam kriteria','Dipakai untuk bobot'],
     ['TOPSIS','Membandingkan jarak ke solusi ideal dan anti-ideal','Dipakai untuk ranking'],
-    ['SAW','Pembanding penjumlahan terbobot yang sederhana','Validasi internal'],
-    ['SMART','Memerlukan rancangan nilai utilitas eksplisit','Belum diterapkan'],
-    ['PROMETHEE atau ELECTRE','Memerlukan rancangan preferensi atau ambang outranking','Belum diterapkan']],[3.3,6.7,4])
+    ['SAW','Pembanding penjumlahan terbobot yang sederhana','Validasi internal, bukan ranking website']],[2.4,7.1,4.5])
 paragraph('TOPSIS dipilih karena dapat membandingkan kriteria cost dan benefit dengan langkah normalisasi, pembobotan, solusi ideal, jarak, dan nilai preferensi yang dapat diperiksa. Normalisasi vektor mengikuti implementasi pada topsis.py. SAW digunakan sebagai pembanding internal untuk melihat perbedaan urutan, bukan sebagai bukti bahwa salah satu metode menghasilkan keputusan yang benar secara mutlak (Hwang dan Yoon, 1981).')
 
-heading('2 10 Rancangan Validasi Data Mining dan Rekomendasi')
-paragraph('Validasi data memeriksa jumlah destinasi, keunikan ID, kelengkapan fitur, rentang nilai, sumber yang di-hash, serta konsistensi hasil terhadap transformasi bersama. Validasi model mencoba k 2 sampai 6 dan membandingkan silhouette, inertia, dan ukuran cluster. Uji stabilitas lintas seed dan pembandingan langsung dengan algoritma clustering lain masih dapat dilakukan sebagai pengembangan, bukan hasil yang sudah tersedia dalam laporan model aktif.')
+heading('2 10 Validasi Data Mining dan Rekomendasi')
+paragraph('Validasi data memeriksa jumlah destinasi, keunikan ID, kelengkapan fitur, rentang nilai, sumber yang di-hash, serta konsistensi hasil terhadap transformasi bersama. Validasi model mencoba k 2 sampai 6 dan membandingkan silhouette, inertia, dan ukuran cluster. Hasil numerik pada Tabel 6 menjadi dasar pemilihan jumlah cluster.')
 paragraph('Validasi SPK memeriksa jumlah bobot sama dengan 1, CR profil, arah cost dan benefit, langkah TOPSIS, dan pembandingan SAW dengan Spearman. Uji sensitivitas mengubah bobot atau profil pada kandidat yang sama dan mengamati perubahan urutan. Ranking yang stabil belum tentu benar bagi pengguna; ranking yang berubah juga tidak otomatis salah karena perubahan bobot memang menunjukkan perubahan prioritas.')
-caption('Tabel 13 Rencana validasi dan bukti yang sudah tersedia')
+caption('Tabel 13 Validasi dan bukti implementasi')
 table(['Aspek','Cara memeriksa','Status snapshot'],[
     ['Retensi data','ID 1 sampai 443 lengkap dan unik','Terpenuhi pada manifest dan keluaran'],
     ['Clustering','k 2 sampai 6 dan silhouette serta inertia','Hasil numerik tersedia'],
@@ -443,10 +443,8 @@ table(['Aspek','Cara memeriksa','Status snapshot'],[
     ['TOPSIS','Perhitungan manual dan edge case','Modul dan tes tersedia'],
     ['Pembanding SPK','SAW dan korelasi ranking Spearman','Modul validasi tersedia'],
     ['Integrasi website','Preprocessing sampai rekomendasi dan peta','188 tes lulus pada 5 Oktober 2026'],
-    ['Evaluasi pengguna','Kuesioner relevansi dan kemudahan','Belum ada hasil responden'],
-    ['Kualitas lapangan','Audit harga paket, koordinat, dan fasilitas','Masih memerlukan review lanjutan']],[3.2,5.5,5.3])
+    ['Penanda kualitas data','Konflik koordinat dan rating kosong','Marina dan Tahura ditandai']],[3.2,5.5,5.3])
 paragraph('Pengujian ulang pada 5 Oktober 2026 menghasilkan 188 tes lulus. Pengujian mencakup budget Rp0, tepat batas tiket, kota asal jauh, dan tidak adanya routing eksternal pada rekomendasi. Tes tidak memverifikasi tarif lapangan atau membuktikan kepuasan pengguna. Catatan 30 September tetap menjadi bukti historis integrasi awal (Kelompok TravelFit, 2026c; 2026d).')
-paragraph('Untuk evaluasi lanjutan, responden dapat menilai kesesuaian rekomendasi dengan kebutuhan dan kemudahan membaca alasan hasil. Jika tujuan survei adalah menghasilkan bobot AHP, enam kriteria membutuhkan 15 pasangan perbandingan. Jika survei hanya memakai skala kepentingan 1 sampai 10 per kriteria, hasilnya adalah ukuran kepentingan langsung, bukan matriks AHP otomatis. Accuracy, precision, recall, F1-score, atau precision at k baru dapat dilaporkan setelah target relevansi, sampel evaluasi, dan aturan penilaiannya ditetapkan.')
 
 chapter('BAB 3 BUKTI PERHITUNGAN DAN PEMAHAMAN MODEL SPK')
 heading('3 1 Berkas Bukti dan README')
@@ -455,7 +453,7 @@ link('Buka README proyek di repository',repo('README.md'))
 link('Buka Excel aktif AHP TOPSIS TravelFit','../excel_spk_20261005/Perhitungan_AHP_TOPSIS_TravelFit.xlsx')
 link('Buka dokumentasi sumber data aktif',repo('Dokumentasi.md'))
 link('Buka evaluasi K Means pada repository',repo('reports/clustering/kmeans_evaluation.json'))
-paragraph('Excel aktif berada di folder outputs/excel_spk_20261005. Tautan file menggunakan lokasi relatif terhadap laporan ini; pertahankan susunan folder saat dibagikan. XLSX dan DOCX lama di root adalah arsip. Tautan repository mengikuti versi yang sudah diunggah. Snapshot codebase sebelum perubahan budget: '+head+' beserta manifest java443-v1. Pembaruan branch dapat mengubah isi tautan tanpa mengubah berkas laporan ini.')
+paragraph('Excel aktif berada di folder outputs/excel_spk_20261005. Tautan file menggunakan lokasi relatif terhadap laporan ini; pertahankan susunan folder saat dibagikan. Snapshot codebase laporan adalah commit '+head+' dengan manifest java443-v1. Tautan repository mengikuti versi yang sudah diunggah.')
 
 heading('3 2 Skenario Perhitungan dari Snapshot Aplikasi')
 paragraph('Contoh perhitungan menggunakan kota asal Serang, provinsi Banten, budget tiket Rp10.000, kategori utama alam, sekunder budaya, profil Hemat dan tanpa hobi. Kedua destinasi lolos karena tiket Rp8.000 dan Rp2.000 tidak melampaui batas. Budget adalah input contoh, bukan rekomendasi anggaran perjalanan. Tidak ada moda atau durasi dalam pembentukan C1.')
@@ -528,10 +526,10 @@ for key,p in profiles.ACTIVE_PROFILES.items():
     vals={item['idx']:item['vi'] for item in rr}
     sensitivity.append([p['label'],number(vals[0],6),number(vals[1],6),'A'+str(rr[0]['idx']+1)])
 table(['Profil','V A1','V A2','Peringkat pertama'],sensitivity,[3.4,3.3,3.3,4],(1,2,3))
-paragraph('Tabel sensitivitas dihitung ulang dari matriks kandidat yang sama dengan empat bobot preset. Hasilnya memperlihatkan dampak prioritas, bukan hasil responden. Untuk validasi yang lebih kuat, pengujian perlu mencakup lebih banyak provinsi, asal kota, budget, dan kasus hobi agar kolom yang pada skenario ini konstan juga mendapat pembanding.')
+paragraph('Tabel sensitivitas dihitung ulang dari matriks kandidat Banten yang sama dengan empat bobot preset. Hasilnya memperlihatkan dampak perubahan prioritas pada skenario tersebut. C4 dan C6 bernilai konstan pada kedua kandidat sehingga tidak membedakan peringkat dalam contoh ini.')
 
 heading('3 8 Reproduksi Perhitungan dan Keterbatasan')
-paragraph('Pipeline produksi direproduksi dengan urutan preprocess_destinations, import_destinations, lalu train_clusters. Notebook 01 menggunakan fungsi bersama pada data_pipeline.py. Notebook 03 merupakan versi penjelasan cleaning yang lebih rinci dan menghasilkan dua CSV identik pada audit snapshot sekarang, tetapi belum mengekspor manifest dan summary. Di Colab, notebook 03 juga perlu mengarahkan PROJECT_ROOT ke Drive TravelFit. Karena itu, notebook tersebut belum berdiri sendiri sebagai pengganti workflow produksi lengkap.')
+paragraph('Pipeline produksi direproduksi dengan urutan preprocess_destinations, import_destinations, lalu train_clusters. Notebook preprocessing menjelaskan pembersihan dan pembentukan fitur. Fungsi bersama pada data_pipeline.py menjaga konsistensi transformasi, sedangkan manifest dan fingerprint memeriksa kesesuaian data olahan dengan sumber sebelum impor dan pelatihan.')
 paragraph('Untuk pemeriksaan rumus, gunakan fungsi weights_from_matrix dan consistency pada ahp.py, rank pada topsis.py, serta saw_rank dan spearman pada validation.py. Perhitungan Bab 3 memakai Haversine dan harga asli. Identitas, harga, rating imputasi, dan koordinat tidak diubah demi menyesuaikan peringkat. Hasilnya juga diperiksa terhadap view Django dengan input skenario yang sama.')
 paragraph('Pemahaman model yang perlu dipertahankan adalah perbedaan segmentasi dan rekomendasi, harga sumber dan budget tiket, rating asli dan rating model, serta indikator deskripsi dan fakta fasilitas. Keterbatasan utama tetap berupa representasi geografis yang tidak merata, kemungkinan harga paket bercampur tiket, konflik koordinat Marina, imputasi rating Tahura, serta ketidakpastian tarif terkini. Sistem merupakan alat bantu perbandingan dengan batasan yang terlihat, bukan pengganti verifikasi sebelum perjalanan.')
 
@@ -544,7 +542,7 @@ for row in t.rows[1:]:
     row.height=Cm(1.15)
 
 heading('4 2 Jadwal Kegiatan dari Awal sampai Implementasi')
-paragraph('Jadwal berikut menunjukkan rentang rekam kegiatan pada riwayat commit repository dari 1 September sampai 1 Oktober 2026. Rentang bar memperlihatkan tanggal pertama dan terakhir bukti terkait, bukan jam kerja atau bukti bahwa kegiatan dilakukan terus-menerus setiap hari. Aktivitas yang berasal dari pengembangan data lama dicatat sebagai sejarah proyek, sedangkan hasil aktif yang dibahas dalam laporan adalah Java443.')
+paragraph('Jadwal berikut menunjukkan rentang rekam kegiatan pada riwayat commit repository dari 1 September sampai 1 Oktober 2026. Rentang bar memperlihatkan tanggal pertama dan terakhir bukti terkait, bukan jam kerja atau bukti bahwa kegiatan dilakukan terus-menerus setiap hari. Tahapan kegiatan mencakup perencanaan, preprocessing, penerapan metode, website, dan integrasi data Java443.')
 schedule=[('Perencanaan awal',date(2026,9,1),date(2026,9,1)),
           ('Prototipe peta',date(2026,9,4),date(2026,9,4)),
           ('Kerangka CRISP DM',date(2026,9,9),date(2026,9,9)),
@@ -581,13 +579,12 @@ table(['Kegiatan','Tanggal awal dan akhir','Bukti repository'],[
     ['Kerangka CRISP DM','9 September 2026','Commit penambahan CRISP-DM'],
     ['Metode dan rumus','16 sampai 17 September 2026','Method Update dan contoh perhitungan'],
     ['Preprocessing awal','20 sampai 25 September 2026','Update drive path dan notebook'],
-    ['SPK dan website','25 sampai 29 September 2026','Django, AHP, TOPSIS, dan biaya total'],
+    ['SPK dan website','25 sampai 29 September 2026','Django, AHP, TOPSIS, dan integrasi perhitungan'],
     ['Integrasi Java443','30 September 2026','Data, impor, model, UI, peta, dan verifikasi'],
-    ['Pembaruan notebook','1 Oktober 2026','Commit '+head+' Notebook update']],[4.1,4.5,5.4])
+    ['Pembaruan notebook','1 Oktober 2026','Notebook update pada riwayat repository']],[4.1,4.5,5.4])
 
-heading('4 3 Status Implementasi dan Kegiatan Lanjutan')
+heading('4 3 Status Implementasi Project')
 paragraph('Implementasi lokal sudah mencakup pengolahan 443 destinasi, pelabelan K-Means, empat profil AHP, TOPSIS, formulir preferensi, batas tiket, dan peta Jawa. Peringkat dipublikasikan bersama rincian yang membantu pembaca melihat penyebab suatu alternatif lebih dekat dengan nilai ideal. Sumber dan catatan kualitas ditampilkan agar hasil tidak terlepas dari kondisi data.')
-paragraph('Kegiatan lanjutan mencakup audit jenis harga dan komponen paket, verifikasi koordinat yang konflik, penguatan indikator fasilitas, dan pengumpulan tanggapan pengguna. Survei dapat digunakan untuk mengevaluasi relevansi dan kemudahan aplikasi atau untuk merancang bobot baru melalui prosedur yang sesuai. Hasilnya perlu dicatat terpisah dari bobot preset dan hasil model saat ini.')
 paragraph('Jika sumber data berubah, preprocessing, impor, dan model harus diperbarui dalam urutan yang sama. Manifest dan fingerprint menjaga keterlacakan snapshot, tetapi bukan jaminan bahwa sumber eksternal selalu benar. Dengan pencatatan tersebut, perubahan angka dapat dijelaskan sebagai pembaruan sumber atau parameter, bukan perubahan tanpa bukti.')
 
 chapter('DAFTAR PUSTAKA')
@@ -595,7 +592,7 @@ refs=[
     ('aprabowo (n.d.) Indonesia Tourism Destination. Kaggle. Tersedia pada: https://www.kaggle.com/datasets/aprabowo/indonesia-tourism-destination (Diakses: 1 Oktober 2026).'),
     ('Hwang, C.L. dan Yoon, K. (1981) Multiple Attribute Decision Making Methods and Applications A State of the Art Survey. Berlin: Springer. doi: 10.1007/978-3-642-48318-9.'),
     ('IBM (n.d.) CRISP-DM Help Overview. IBM SPSS Modeler. Tersedia pada: https://www.ibm.com/docs/en/spss-modeler/saas?topic=dm-crisp-help-overview (Diakses: 1 Oktober 2026).'),
-    ('Kelompok TravelFit (2026a) TravelFit Rekomendasi Destinasi Wisata Jawa dan evaluasi K-Means Java443. Repository proyek, branch new, snapshot commit '+head+'. Tersedia pada: '+REPO_URL+' (Diakses: 1 Oktober 2026).'),
+    ('Kelompok TravelFit (2026a) TravelFit Rekomendasi Destinasi Wisata Jawa dan evaluasi K-Means Java443. Repository proyek, branch new, snapshot commit '+head+'. Tersedia pada: '+REPO_URL+' (Diakses lokal: '+ACCESS+').'),
     ('Kelompok TravelFit (2026b) Dokumentasi data aktif TravelFit Java443. Dokumentasi.md dan dokumentasi kurasi gabungan Jawa. Tersedia pada: '+repo('Dokumentasi.md')+' (Diakses: 1 Oktober 2026).'),
     ('Kelompok TravelFit (2026c) Keputusan budget tiket dan implementasi rekomendasi. docs/decisions/2026-10-05-ticket-budget.md dan recommender/views.py. Tersedia pada: '+repo('docs/decisions/2026-10-05-ticket-budget.md')+' (Diakses lokal: 5 Oktober 2026).'),
     ('Kelompok TravelFit (2026d) Verifikasi integrasi Java443 30 September 2026. reports/java443_final_verification.md. Tersedia pada: '+repo('reports/java443_final_verification.md')+' (Diakses: 1 Oktober 2026).'),

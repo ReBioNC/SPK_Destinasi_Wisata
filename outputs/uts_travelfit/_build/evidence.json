@@ -1,5 +1,5 @@
 {
-  "head": "fc4b956",
+  "head": "93a6a0f",
   "rows": 443,
   "categories": {
     "hiburan": 136,
@@ -270,7 +270,7 @@
   "protected_hashes": {
     "Laporan_SPK_TravelFit.docx": "34ee9ed27a65ce2233d0a58b04519119debf5411f42f2f4347ef81c2e7259304",
     "Perhitungan_SPK_TravelFit.xlsx": "fbcceb745f34af5e970a58f75d6a566b25837d4d3087a4a8f18680dd1ad1ce05",
-    "db.sqlite3": "00b53974bb91c990a9337d9446ef4cc70b80606b36416ecf866eeb782905af42",
+    "db.sqlite3": "a9b0bd912a11dc8b74daf3b7747d0f9a55321360ca2ba9607d560424fbcf4587",
     "data/raw/tourism_with_id.csv": "f7be2257d5f7007cd93c4ebe11f4f0182bf0782d87a0380e3a93f744a8348b7c",
     "data/review/gabungan_jawa/destinasi_jawa_review.csv": "1aef6226d01ccef43580f7b04edae06b9e64a381fee0c98c41839b4f196ba86b",
     "data/review/gabungan_jawa/google_maps_rating_review.json": "367baffad904d985a42fa3e74a12ef4916bf4936e06e0b72dc9fdae8108c969a",
