@@ -1,3 +1,9 @@
+# Status historis
+
+Audit ini membahas model biaya perjalanan lama. Sejak 5 Oktober 2026 website
+memakai [budget tiket saja](../docs/decisions/2026-10-05-ticket-budget.md).
+Parameter biaya di bawah tidak lagi dipakai untuk rekomendasi aktif.
+
 # Audit Parameter Biaya (C1 = Estimasi Total per Orang)
 
 > Setiap angka di `recommender/spk/biaya.py` harus terlacak ke baris tabel ini.

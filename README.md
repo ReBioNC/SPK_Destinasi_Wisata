@@ -1,6 +1,6 @@
 # TravelFit — Rekomendasi Destinasi Wisata Jawa
 
-TravelFit membantu memilih tujuan berdasarkan budget dan preferensi menggunakan
+TravelFit membantu memilih tujuan berdasarkan budget tiket dan preferensi menggunakan
 CRISP-DM, K-Means, serta AHP–TOPSIS. Stack tetap **Django + SQLite + Python**,
 frontend template HTML, CSS dan JavaScript native. Branch integrasi: `new`.
 
@@ -82,16 +82,20 @@ cluster414/29; **bukan akurasi rekomendasi**.
 
 | Kriteria SPK runtime | Jenis | Nilai |
 | --- | --- | --- |
-| C1 Estimasi biaya total | Cost | Tiket + transport PP + makan + inap / orang |
+| C1 Harga tiket | Cost | Harga sumber satu destinasi per orang, tanpa cap p99 |
 | C2 Rating | Benefit | Rating teramati atau imputasi model yang ditandai |
-| C3 Jarak | Cost | OSRM / fallback berlabel |
+| C3 Jarak garis lurus | Cost | Haversine dari koordinat kota asal, bukan jarak jalan |
 | C4 Fasilitas | Benefit | Penyebutan deskripsi diterima /6, bukan kelengkapan lapangan |
 | C5 Kategori | Benefit | Utama1, sekunder0,5, lainnya0 |
 | C6 Hobi | Benefit | Jaccard hobi dan tag aktivitas |
 
-Budget perjalanan dan jarak adalah **estimasi**, bukan semua tarif resmi.
+Budget adalah **batas harga tiket satu destinasi per orang**, bukan budget perjalanan.
+Kandidat harus memenuhi `harga_tiket <= budget`. Nilai0 menerima destinasi gratis.
+Sisa alokasi tiket = budget − tiket, bukan estimasi uang perjalanan yang tersisa.
+Transportasi, makan, penginapan dan moda tidak digunakan. Jarak garis lurus tidak
+menjadi estimasi ongkos. Harga snapshot perlu diperiksa sebelum berkunjung.
 Tahura: rating sumber kosong, median4,5 hanya untuk model. MarinaID9 tetap ada,
-koordinat luar Jawa ditandai; jarak/biayanya perlu review. AHP empat preset
+koordinat luar Jawa ditandai; jaraknya perlu review. AHP empat preset
 pengembang CR<0,1 **belum hasil survei**; slider merupakan uji sensitivitas.
 
 ## Struktur aktif
@@ -99,7 +103,7 @@ pengembang CR<0,1 **belum hasil survei**; slider merupakan uji sensitivitas.
 ```text
 recommender/data_pipeline.py                 # satu transformasi bersama
 recommender/management/commands/             # preprocess/import/train
-recommender/spk/                             # AHP, TOPSIS, biaya, kemiripan
+recommender/spk/                             # AHP, TOPSIS, geografi, kemiripan
 recommender/templates/recommender/           # base, form, hasil, peta, metode
 recommender/static/recommender/              # travelfit dan java-map lokal
 notebooks/01_preprocessing_travelfit.ipynb    # notebook tipis
@@ -126,8 +130,9 @@ Retensi ID tidak menghapus alias atau membuktikan data representatif seluruh Jaw
 ```
 
 Tes menggunakan database sementara, termasuk alur preprocessing → impor →
-training → rekomendasi/peta. Permintaan routing eksternal dimock pada tes;
-bukan alasan untuk menganggap tarif/hasil survei telah tervalidasi.
+training → rekomendasi/peta. Website tidak memanggil routing eksternal untuk rekomendasi. Tes modul biaya dan
+routing lama tetap disimpan sebagai pengujian kode historis yang tidak aktif;
+kelulusan tes tidak membuktikan tarif terkini atau hasil survei.
 Hash file sumber/bukti dan DOCX dijaga. CSRF tetap aktif; data JSON memakai
 `json_script`, bukan interpolasi HTML yang tidak di-escape.
 
@@ -135,7 +140,11 @@ Desain mengikuti UI-UX Pro Max: hierarki krem–teal, label native, fokus/error 
 jelas, progressive enhancement; [keputusan & verifikasi UI](docs/design/travelfit-java-ui.md).
 [Daftar cleanup dan recovery](docs/maintenance/java443-cleanup.md).
 
-`Laporan_SPK_TravelFit.docx` **tidak diubah**; belum menggambarkan integrasi terbaru.
+Laporan aktif: [Laporan UTS](outputs/uts_travelfit/Laporan_UTS_TravelFit.docx).
+Bukti formula aktif: [Excel AHP–TOPSIS](outputs/excel_spk_20261005/Perhitungan_AHP_TOPSIS_TravelFit.xlsx).
+[Keputusan budget tiket](docs/decisions/2026-10-05-ticket-budget.md) dan
+[rencana pengelompokan pengalaman](docs/IMPLEMENTATION_PLAN_ONTOLOGY.md).
+`Laporan_SPK_TravelFit.docx` di root tetap merupakan dokumen historis, bukan laporan aktif.
 `Perhitungan_SPK_TravelFit.xlsx` tetap sebagai referensi historis, bukan input produksi.
 Review open-data historis ada di `scripts/open_data_review`, terisolasi dari website;
 default fixture1900 berada di arsip. Tidak ada push/deploy otomatis pada task ini.
