@@ -1,0 +1,211 @@
+{
+  "period": [
+    "2026-09-01",
+    "2026-10-09"
+  ],
+  "activities": [
+    {
+      "activity": "Perencanaan awal",
+      "start": "2026-09-01",
+      "end": "2026-09-01",
+      "commits": [
+        {
+          "sha": "cf5eee29e392e21838f4dd6b09b1e24ac90dec6b",
+          "date": "2026-09-01",
+          "subject": "Initial commit"
+        },
+        {
+          "sha": "579956e711a71a54e700821d63bdf7478a059bca",
+          "date": "2026-09-01",
+          "subject": "Initial plan"
+        }
+      ]
+    },
+    {
+      "activity": "Kerangka CRISP-DM",
+      "start": "2026-09-09",
+      "end": "2026-09-09",
+      "commits": [
+        {
+          "sha": "9b07e6c30b3e039a61bf29cf021673ea3b5db68a",
+          "date": "2026-09-09",
+          "subject": "docs: add CRISP-DM framework"
+        }
+      ]
+    },
+    {
+      "activity": "Metode dan rumus",
+      "start": "2026-09-16",
+      "end": "2026-09-17",
+      "commits": [
+        {
+          "sha": "d34b8d1eb6c92d744c0eaa40c54cf07e2f65208d",
+          "date": "2026-09-16",
+          "subject": "Method Update"
+        },
+        {
+          "sha": "10d995a02b6ec26b93efde9373e6e3b2863dc4df",
+          "date": "2026-09-17",
+          "subject": "Contoh perhitungan project kita nanti ygy"
+        }
+      ]
+    },
+    {
+      "activity": "Preprocessing awal",
+      "start": "2026-09-20",
+      "end": "2026-09-25",
+      "commits": [
+        {
+          "sha": "49ad2222e64f12850259dc12fb66a07d7f77c40f",
+          "date": "2026-09-20",
+          "subject": "Data preprocessing"
+        },
+        {
+          "sha": "c8870e40ade5cd1faeda966c1171f43bb0c10e8b",
+          "date": "2026-09-25",
+          "subject": "Notebook update"
+        }
+      ]
+    },
+    {
+      "activity": "Perhitungan AHP dan TOPSIS",
+      "start": "2026-09-25",
+      "end": "2026-09-25",
+      "commits": [
+        {
+          "sha": "e8850ebc8184e52450abaf06065996c6772a34c6",
+          "date": "2026-09-25",
+          "subject": "feat(spk): add AHP weighting with 4 verified profiles"
+        },
+        {
+          "sha": "44f2824f7204ec5176cb6f02bb24e45ad3c0b124",
+          "date": "2026-09-25",
+          "subject": "feat(spk): add TOPSIS ranking with SAW/Spearman validation"
+        }
+      ]
+    },
+    {
+      "activity": "Kurasi dan preprocessing 443 data",
+      "start": "2026-09-30",
+      "end": "2026-09-30",
+      "commits": [
+        {
+          "sha": "75d040ad93badcd08e2c212637a1735d9b693e2c",
+          "date": "2026-09-30",
+          "subject": "data: add sourced Banten destination review"
+        },
+        {
+          "sha": "7a26cd293286451850ed76f0ac052de9ac7336bf",
+          "date": "2026-09-30",
+          "subject": "data: add four sourced Java destination reviews"
+        },
+        {
+          "sha": "6be2aaf56f6d4ceefae8278510b2571b515d79b1",
+          "date": "2026-09-30",
+          "subject": "fix(data): preserve all 443 Java destinations in preprocessing"
+        },
+        {
+          "sha": "437a5dfaf4a7d634e8de91ae6c5eea369c827414",
+          "date": "2026-09-30",
+          "subject": "refactor(data): share Java443 preprocessing contract"
+        }
+      ]
+    },
+    {
+      "activity": "Pelatihan dan evaluasi K-Means",
+      "start": "2026-09-30",
+      "end": "2026-09-30",
+      "commits": [
+        {
+          "sha": "7da9c1f0bb62ddc40dc4b8e850e44025d5f62b3f",
+          "date": "2026-09-30",
+          "subject": "feat(model): train and evaluate K-Means on all 443 destinations"
+        }
+      ]
+    },
+    {
+      "activity": "Pembaruan notebook",
+      "start": "2026-10-01",
+      "end": "2026-10-05",
+      "commits": [
+        {
+          "sha": "d5fce97446274c817c76f94d6fc032db2c0ab911",
+          "date": "2026-10-01",
+          "subject": "Notebook update"
+        },
+        {
+          "sha": "9565e0a7b7e352471dab36122355551b8ba539a2",
+          "date": "2026-10-05",
+          "subject": "docs: align notebooks and ontology plan with ticket budget"
+        }
+      ]
+    },
+    {
+      "activity": "Penyesuaian konsep budget tiket",
+      "start": "2026-10-05",
+      "end": "2026-10-05",
+      "commits": [
+        {
+          "sha": "59e1a5d7c9711c82957aa4ed2d4e80bb2f59d068",
+          "date": "2026-10-05",
+          "subject": "fix: use ticket-only budget and Haversine ranking"
+        },
+        {
+          "sha": "9565e0a7b7e352471dab36122355551b8ba539a2",
+          "date": "2026-10-05",
+          "subject": "docs: align notebooks and ontology plan with ticket budget"
+        }
+      ]
+    },
+    {
+      "activity": "Spreadsheet dan revisi laporan",
+      "start": "2026-10-05",
+      "end": "2026-10-05",
+      "commits": [
+        {
+          "sha": "f811dbecfd93d12c6582e97cb19776e573b70750",
+          "date": "2026-10-05",
+          "subject": "docs: add verified ticket-budget report and formula workbook"
+        },
+        {
+          "sha": "93a6a0fbf175ea572cec9ab62fd3c771bb1d7221",
+          "date": "2026-10-05",
+          "subject": "Excel update"
+        },
+        {
+          "sha": "aae3166df19c12b7aa9da0c811a927438186de6e",
+          "date": "2026-10-05",
+          "subject": "docs: focus UTS report on implemented TravelFit scope"
+        }
+      ]
+    },
+    {
+      "activity": "README dan daftar pustaka",
+      "start": "2026-10-09",
+      "end": "2026-10-09",
+      "commits": [
+        {
+          "sha": "d6137500604218b5cd4b49a5688243ea135c352b",
+          "date": "2026-10-09",
+          "subject": "docs: document TravelFit identity and AHP TOPSIS calculation"
+        },
+        {
+          "sha": "94f528170edcbe3e35741070205d0fbf07c0e226",
+          "date": "2026-10-09",
+          "subject": "docs: refresh bibliography in user-revised UTS report"
+        }
+      ]
+    }
+  ],
+  "excluded": [
+    "prototipe peta",
+    "pengembangan website",
+    "integrasi UI dan peta"
+  ],
+  "meaning": "Rentang tanggal commit yang terkait, bukan jam atau durasi kerja harian.",
+  "image_size": [
+    2700,
+    1750
+  ],
+  "dpi": 300
+}
