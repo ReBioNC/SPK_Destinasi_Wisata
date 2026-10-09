@@ -1,0 +1,20 @@
+{
+  "source_sha256": "04c3e6a3076864d8340ce100cfad47a660a5de331ad2547c8cdd4ba03b8eb064",
+  "source_unchanged": true,
+  "body_children_unchanged": 167,
+  "tables_unchanged": 15,
+  "old_references": 15,
+  "new_references": 14,
+  "only_changed_package_parts": [
+    "word/document.xml",
+    "word/_rels/document.xml.rels"
+  ],
+  "removed_reference": "Project OSRM",
+  "replaced_reference": "Kelompok TravelFit (2026c): budget tiket",
+  "github_links_reviewed_locally_not_publicly_verified": true,
+  "rendered_pages": 21,
+  "changed_visual_pages": [
+    20,
+    21
+  ]
+}
