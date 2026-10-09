@@ -1,0 +1,87 @@
+[
+  {
+    "profile": "hemat",
+    "budget": "1000000",
+    "hobbies": [
+      "fotografi",
+      "edukasi"
+    ],
+    "candidates": 124,
+    "top10_order_display_exact": true,
+    "max_vi_difference": 0.0
+  },
+  {
+    "profile": "seimbang",
+    "budget": "1000000",
+    "hobbies": [
+      "fotografi",
+      "edukasi"
+    ],
+    "candidates": 124,
+    "top10_order_display_exact": true,
+    "max_vi_difference": 0.0
+  },
+  {
+    "profile": "kualitas",
+    "budget": "1000000",
+    "hobbies": [
+      "fotografi",
+      "edukasi"
+    ],
+    "candidates": 124,
+    "top10_order_display_exact": true,
+    "max_vi_difference": 1.1102230246251565E-16
+  },
+  {
+    "profile": "petualang",
+    "budget": "1000000",
+    "hobbies": [
+      "fotografi",
+      "edukasi"
+    ],
+    "candidates": 124,
+    "top10_order_display_exact": true,
+    "max_vi_difference": 0.0
+  },
+  {
+    "profile": "hemat",
+    "budget": "25000",
+    "hobbies": [
+      "fotografi",
+      "edukasi"
+    ],
+    "candidates": 94,
+    "top10_order_display_exact": true,
+    "max_vi_difference": 1.1102230246251565E-16
+  },
+  {
+    "profile": "hemat",
+    "budget": "0",
+    "hobbies": [
+      "fotografi",
+      "edukasi"
+    ],
+    "candidates": 37,
+    "top10_order_display_exact": true,
+    "max_vi_difference": 1.1102230246251565E-16
+  },
+  {
+    "profile": "hemat",
+    "budget": "1000000",
+    "hobbies": [],
+    "candidates": 124,
+    "top10_order_display_exact": true,
+    "max_vi_difference": 1.1102230246251565E-16
+  },
+  {
+    "profile": "hemat",
+    "budget": "1000000",
+    "hobbies": [
+      "fotografi",
+      "edukasi"
+    ],
+    "candidates": 124,
+    "top10_order_display_exact": true,
+    "max_vi_difference": 0.0
+  }
+]

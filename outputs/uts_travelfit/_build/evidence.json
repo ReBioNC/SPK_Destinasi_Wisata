@@ -1,0 +1,279 @@
+{
+  "head": "93a6a0f",
+  "rows": 443,
+  "categories": {
+    "hiburan": 136,
+    "budaya": 119,
+    "alam": 108,
+    "bahari": 48,
+    "religi": 17,
+    "belanja": 15
+  },
+  "provinces": {
+    "DI Yogyakarta": 126,
+    "Jawa Barat": 124,
+    "DKI Jakarta": 84,
+    "Jawa Tengah": 60,
+    "Jawa Timur": 47,
+    "Banten": 2
+  },
+  "summary": {
+    "destination_rows": 443,
+    "source_rows": {
+      "kaggle": 437,
+      "additional_java": 6
+    },
+    "rows_lost": 0,
+    "missing_destination_ids": [],
+    "missing_rating_ids": [
+      438
+    ],
+    "imputed_rating_ids": [
+      438
+    ],
+    "rating_imputation": {
+      "method": "median_observed_valid_ratings",
+      "value": 4.5,
+      "observed_rows": 442,
+      "imputed_ids": [
+        438
+      ],
+      "calculation_column": "c2_rating_for_model",
+      "source_rating_unchanged": true
+    },
+    "coordinate_review_ids": [
+      9
+    ],
+    "data_quality_review_ids": [
+      9,
+      438
+    ],
+    "model_features_complete_rows": 443,
+    "kmeans_training_ready": true,
+    "rating_rows_valid": 9597,
+    "cities": [
+      "Bandung",
+      "Jakarta",
+      "Lebak",
+      "Ngawi",
+      "Pandeglang",
+      "Purworejo",
+      "Semarang",
+      "Surabaya",
+      "Yogyakarta"
+    ],
+    "categories": [
+      "alam",
+      "bahari",
+      "belanja",
+      "budaya",
+      "hiburan",
+      "religi"
+    ],
+    "destinations_with_facility_evidence": 69,
+    "destinations_with_facility_keyword_matches": 84,
+    "destinations_with_facility_context_review": 16,
+    "destinations_without_facility_description": 0,
+    "destinations_with_activity_tags": 370,
+    "facility_evidence_definition": "Penyebutan deskripsi yang diterima; bukan fasilitas terverifikasi di lapangan.",
+    "feature_parameters": {
+      "feature_columns": [
+        "c1_ticket_price_z",
+        "c2_rating_z",
+        "category_alam",
+        "category_bahari",
+        "category_belanja",
+        "category_budaya",
+        "category_hiburan",
+        "category_religi"
+      ],
+      "categories": [
+        "alam",
+        "bahari",
+        "belanja",
+        "budaya",
+        "hiburan",
+        "religi"
+      ],
+      "ticket_price_cap_p99": 275799.9999999998,
+      "mean": [
+        22187.358916478555,
+        4.442889390519188
+      ],
+      "scale": [
+        47129.62168054756,
+        0.2076695455182245
+      ],
+      "excluded": "C4 hanya SPK; indikator deskripsi bukan fasilitas lapangan terverifikasi."
+    },
+    "pipeline_fingerprint": "c3b2f4ead1b955ed41c4be8df4ee201a374a915a5eb10823f8f58c65ace25eac",
+    "missing_value_policy": "Pertahankan 443 destinasi; imputasi hanya rating model Tahura. Time_Minutes boleh kosong."
+  },
+  "scenario": {
+    "origin": "Serang",
+    "province": "Banten",
+    "budget": 10000,
+    "budget_basis": "ticket",
+    "distance_basis": "haversine",
+    "profile": "hemat",
+    "primary": "alam",
+    "secondary": "budaya",
+    "hobbies": []
+  },
+  "decision": [
+    [
+      8000.0,
+      4.5,
+      28.005700319616366,
+      0.0,
+      1.0,
+      0.0
+    ],
+    [
+      2000.0,
+      4.6,
+      31.99051868825909,
+      0.0,
+      0.5,
+      0.0
+    ]
+  ],
+  "denominators": [
+    8246.211251235321,
+    6.435060217278467,
+    42.517202828220185,
+    0.0,
+    1.118033988749895,
+    0.0
+  ],
+  "normalized": [
+    [
+      0.9701425001453319,
+      0.6992941554637312,
+      0.6586910346093602,
+      0.0,
+      0.8944271909999159,
+      0.0
+    ],
+    [
+      0.24253562503633297,
+      0.7148340255851473,
+      0.7524135305304196,
+      0.0,
+      0.4472135954999579,
+      0.0
+    ]
+  ],
+  "weighted": [
+    [
+      0.39386077371846595,
+      0.0888738790617371,
+      0.08744767063447996,
+      0.0,
+      0.11874394867309808,
+      0.0
+    ],
+    [
+      0.09846519342961649,
+      0.09084885415199791,
+      0.09989024769066648,
+      0.0,
+      0.05937197433654904,
+      0.0
+    ]
+  ],
+  "ideal_positive": [
+    0.09846519342961649,
+    0.09084885415199791,
+    0.08744767063447996,
+    0.0,
+    0.11874394867309808,
+    0.0
+  ],
+  "ideal_negative": [
+    0.39386077371846595,
+    0.0888738790617371,
+    0.09989024769066648,
+    0.0,
+    0.05937197433654904,
+    0.0
+  ],
+  "distance_provenance": [
+    {
+      "place_id": 438,
+      "distance": 28.005700319616366,
+      "source": "Haversine"
+    },
+    {
+      "place_id": 439,
+      "distance": 31.99051868825909,
+      "source": "Haversine"
+    }
+  ],
+  "rank": [
+    {
+      "idx": 1,
+      "vi": 0.8296323993478285,
+      "d_pos": 0.0606617594570004,
+      "d_neg": 0.2954021824238834,
+      "gap": [
+        0.0,
+        0.0,
+        0.012442577056186524,
+        0.0,
+        0.05937197433654904,
+        0.0
+      ],
+      "span": [
+        0.2953955802888495,
+        0.0019749750902608026,
+        0.012442577056186524,
+        0.0,
+        0.05937197433654904,
+        0.0
+      ]
+    },
+    {
+      "idx": 0,
+      "vi": 0.17036760065217146,
+      "d_pos": 0.2954021824238834,
+      "d_neg": 0.0606617594570004,
+      "gap": [
+        0.2953955802888495,
+        0.0019749750902608026,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "span": [
+        0.2953955802888495,
+        0.0019749750902608026,
+        0.012442577056186524,
+        0.0,
+        0.05937197433654904,
+        0.0
+      ]
+    }
+  ],
+  "saw": [
+    [
+      1,
+      0.9170832283444729
+    ],
+    [
+      0,
+      0.6927503610139708
+    ]
+  ],
+  "spearman": 1.0,
+  "protected_hashes": {
+    "Laporan_SPK_TravelFit.docx": "34ee9ed27a65ce2233d0a58b04519119debf5411f42f2f4347ef81c2e7259304",
+    "Perhitungan_SPK_TravelFit.xlsx": "fbcceb745f34af5e970a58f75d6a566b25837d4d3087a4a8f18680dd1ad1ce05",
+    "db.sqlite3": "a9b0bd912a11dc8b74daf3b7747d0f9a55321360ca2ba9607d560424fbcf4587",
+    "data/raw/tourism_with_id.csv": "f7be2257d5f7007cd93c4ebe11f4f0182bf0782d87a0380e3a93f744a8348b7c",
+    "data/review/gabungan_jawa/destinasi_jawa_review.csv": "1aef6226d01ccef43580f7b04edae06b9e64a381fee0c98c41839b4f196ba86b",
+    "data/review/gabungan_jawa/google_maps_rating_review.json": "367baffad904d985a42fa3e74a12ef4916bf4936e06e0b72dc9fdae8108c969a",
+    "data/raw/tourism_rating.csv": "d2c432924f8dcb7eb5bacaf3b58c0d888390a1b2057eba29e47c62b04df17ffe"
+  }
+}

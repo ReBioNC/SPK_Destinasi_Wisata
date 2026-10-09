@@ -4,8 +4,7 @@
 {% include 'recommender/_field.html' with field=form.budget %}
 <div class="field"><label for="kota_asal_input">Cari kota asal (opsional)</label><input type="search" id="kota_asal_input" placeholder="Ketik nama kota..." aria-describedby="city-search-note"><small id="city-search-note">Pencarian menyaring pilihan di bawah; pilih kota asal untuk menentukan jarak.</small></div>
 {% include 'recommender/_field.html' with field=form.kota_asal %}{% include 'recommender/_field.html' with field=form.wilayah %}
-<div class="form-row">{% include 'recommender/_field.html' with field=form.moda %}{% include 'recommender/_field.html' with field=form.hari %}</div>
-{% include 'recommender/_field.html' with field=form.mode_antar %}</fieldset>
+</fieldset>
 <fieldset class="panel"><legend><span class="step-number">2</span> Minat perjalanan</legend>
 {% include 'recommender/_field.html' with field=form.kategori_utama %}{% include 'recommender/_field.html' with field=form.kategori_sekunder %}{% include 'recommender/_field.html' with field=form.hobi %}
 <div class="field-note"><strong>Tidak harus satu jenis wisata.</strong><p>Kategori utama bernilai 1, kedua 0,5. Destinasi lain tetap dipertimbangkan, bukan otomatis dibuang.</p></div></fieldset>
@@ -15,4 +14,4 @@
 <details class="advanced"><summary>Sesuaikan bobot lanjutan</summary><p class="muted">Slider adalah uji sensitivitas, bukan matriks AHP baru. Bobot dinormalisasi saat dihitung.</p><input type="hidden" name="sentuh_bobot" id="sentuh_bobot" value="{% if custom_selected %}1{% else %}0{% endif %}">
 {% for slider in slider_fields %}<div class="slider-row"><label for="{{ slider.name }}">{{ slider.label }}</label><output for="{{ slider.name }}" id="{{ slider.name }}-value">{{ slider.value }}%</output><input type="range" id="{{ slider.name }}" name="{{ slider.name }}" min="0" max="100" value="{{ slider.value }}" step="1"></div>{% endfor %}
 {% for field in form %}{% if field.name|slice:':1' == 'w' %}{% for error in field.errors %}<p class="error-text">{{ field.label }}: {{ error }}</p>{% endfor %}{% endif %}{% endfor %}</details></fieldset></div>
-<div class="submit-row"><p><strong>Budget mencakup estimasi total biaya per orang.</strong><br>Tiket + transport pulang-pergi + makan + inap. Harga tiket dan asumsi perjalanan berbeda sumber.</p><button class="button primary" type="submit" id="recommend-button">Cari Rekomendasi →</button></div><p id="form-status" role="status" aria-live="polite"></p><noscript><p class="notice">JavaScript nonaktif. Pilih kota dari dropdown lalu kirim form; perhitungan tetap bekerja.</p></noscript></form>
+<div class="submit-row"><p><strong>Budget hanya untuk tiket masuk satu destinasi per orang.</strong><br>Belum termasuk transportasi, makan, dan penginapan. Harga merupakan snapshot sumber; cek tarif sebelum berkunjung.</p><button class="button primary" type="submit" id="recommend-button">Cari Rekomendasi →</button></div><p id="form-status" role="status" aria-live="polite"></p><noscript><p class="notice">JavaScript nonaktif. Pilih kota dari dropdown lalu kirim form; perhitungan tetap bekerja.</p></noscript></form>

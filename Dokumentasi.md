@@ -52,7 +52,7 @@ alasan selalu disimpan. Hilangnya rating lain akan menghentikan pembuatan fitur,
 bukan otomatis mendapat median atau dibuang. `Time_Minutes` tambahan tetap kosong.
 
 Pelabuhan Marina ID9 tetap ada. Label Jakarta berkonflik dengan koordinat
-1,07888 / 103,931398. Koordinat tidak dipindahkan; perhitungan jarak/biaya record
+1,07888 / 103,931398. Koordinat tidak dipindahkan; perhitungan jarak record
 ini perlu review. Di peta, Marina tidak dipaksakan masuk bingkai Jawa.
 
 ## Preprocessing dan metode
@@ -71,19 +71,21 @@ ini perlu review. Di peta, Marina tidak dipaksakan masuk bingkai Jawa.
   kualitas tidak dimasukkan dalam jarak clustering. Seed42, 10 starts, k2–6.
 - Hasil snapshot: k2; silhouette **0,54302**, cluster **414 / 29**. Ini pemisahan
   fitur, bukan akurasi rekomendasi. Semua 443 mendapat label; bukan 1900 proyeksi.
-- SPK memakai C1 estimasi total biaya (cost), C2 rating model (benefit), C3 jarak
+- SPK memakai C1 harga tiket sumber (cost), C2 rating model (benefit), C3 jarak garis lurus Haversine
   (cost), C4 indikator deskripsi, C5 kecocokan kategori, C6 Jaccard hobi (benefit).
   Label cluster tidak menjadi filter keras rekomendasi.
 - Empat profil AHP konsisten CR<0,1 adalah preset pengembang, **belum hasil survei**.
   Slider hanya sensitivitas bobot yang dinormalisasi, bukan matriks AHP survei baru.
 
-## Biaya, geografi, dan batasan
+## Budget tiket, geografi, dan batasan
 
-Budget adalah total estimasi per orang: tiket + transport PP + makan + inap.
-Harga tiket dan parameter transport/makan/inap berbeda sumber. Parameter biaya
-perjalanan bukan penawaran pemesanan dan tidak semuanya tarif resmi; jarak OSRM
-memiliki fallback Haversine ×1,3 yang diberi label. Hari biasa Artha Tirta menjadi
-tarif model dasar, bukan penentuan tanggal otomatis.
+Budget adalah batas harga tiket masuk **satu destinasi per orang**. Filter:
+`harga_tiket <= budget`; harga asli tetap utuh dan tidak dicap p99 dalam SPK.
+Budget0 memperbolehkan tiket gratis. Sisa alokasi tiket bukan sisa anggaran
+perjalanan. Tidak ada estimasi transportasi, makan, inap, atau biaya berbasis moda.
+C3 memakai Haversine (jarak garis lurus), bukan jarak jalan dan bukan ongkos.
+Harga tetap snapshot sesuai sumber; periksa tarif sebelum berkunjung. Hari biasa
+Artha Tirta menjadi tarif dasar, bukan penentuan tanggal otomatis.
 
 Tujuan hanya enam provinsi Jawa; kota asal luar Jawa tetap boleh dipilih. Peta
 SVG adalah pendekatan visual dari aset enam provinsi lama, bukan proyeksi GIS
@@ -100,5 +102,6 @@ Git attributes mengunci newline sumber sesuai snapshot; ekspor JSON/CSV aktif
 memakai LF konsisten. Tes hash menjaga byte raw/bukti/DOCX tidak berubah.
 
 Alur aktif dan file Drive: [README](README.md). Daftar arsip dan pemulihan:
-[cleanup](docs/maintenance/java443-cleanup.md). Laporan DOCX belum disesuaikan
-dengan migrasi ini, sesuai instruksi pengguna; jangan menganggap isinya status terbaru.
+[cleanup](docs/maintenance/java443-cleanup.md). Laporan dan Excel aktif berada di `outputs/uts_travelfit/` dan
+`outputs/excel_spk_20261005/`. DOCX/XLSX lama di root tetap arsip historis.
+Keputusan 5 Oktober 2026: [budget tiket](docs/decisions/2026-10-05-ticket-budget.md).

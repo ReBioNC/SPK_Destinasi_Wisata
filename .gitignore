@@ -7,3 +7,6 @@ db.sqlite3
 ~$*.xlsx
 *.tmp
 archive/local_backups/
+
+# JavaScript dependencies, including nested build folders
+node_modules/

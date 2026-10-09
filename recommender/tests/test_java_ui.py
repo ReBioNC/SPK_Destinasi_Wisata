@@ -2,7 +2,6 @@ import io
 from unittest.mock import patch
 from django.core.management import call_command
 from django.test import TestCase
-from recommender.tests.test_views import _mock_rencanakan
 
 
 class JavaUITests(TestCase):
@@ -35,11 +34,10 @@ class JavaUITests(TestCase):
         data={'budget':'20000000','kota_asal':'Jakarta','wilayah':'Banten',
               'kategori_utama':'alam','kategori_sekunder':'budaya','profil':'seimbang',
               'hari':1,'moda':'mobil','mode_antar':'termurah'}
-        with patch('recommender.views.rencanakan',side_effect=_mock_rencanakan),patch('recommender.views.jarak_table',return_value=[]):
-            response=self.client.post('/',data,follow=True)
+        response=self.client.post('/',data,follow=True)
         self.assertContains(response,'Rating diimputasi')
         self.assertContains(response,'Kurasi Jawa')
-        self.assertContains(response,'Estimasi total')
+        self.assertContains(response,'Tiket / orang')
         self.assertNotContains(response,'★ None')
 
     def test_method_page_covers_crispdm_and_limits(self):

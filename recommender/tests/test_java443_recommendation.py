@@ -1,7 +1,6 @@
 from unittest.mock import patch
 from django.test import TestCase
 from recommender.models import Destination
-from recommender.tests.test_views import _mock_rencanakan
 
 
 class Java443RecommendationTests(TestCase):
@@ -24,8 +23,7 @@ class Java443RecommendationTests(TestCase):
                 'kategori_utama':'alam','kategori_sekunder':'budaya','profil':'seimbang',
                 'moda':'mobil','hari':'1','mode_antar':'termurah'}
         data.update(changes)
-        with patch('recommender.views.rencanakan',side_effect=_mock_rencanakan), patch('recommender.views.jarak_table',return_value=[]):
-            return self.client.post('/',data,follow=True,**({'HTTP_X_REQUESTED_WITH':'XMLHttpRequest'} if ajax else {}))
+        return self.client.post('/',data,follow=True,**({'HTTP_X_REQUESTED_WITH':'XMLHttpRequest'} if ajax else {}))
 
     def test_redirect_preserves_preferences_and_raw_custom_weights(self):
         Destination.objects.filter(source_id=438).update(tag_aktivitas='hiking|fotografi')
@@ -33,7 +31,7 @@ class Java443RecommendationTests(TestCase):
                            w1='42',w2='15',w3='14',w4='12',w5='8',w6='9',hari='2',moda='motor')
         form=response.context['form']
         for name,value in {'budget':'20000000','kota_asal':'Serang','profil':'hemat',
-                           'hobi':['hiking'],'hari':'2','moda':'motor','sentuh_bobot':'1'}.items():
+                           'hobi':['hiking'],'sentuh_bobot':'1'}.items():
             self.assertEqual(form[name].value(),value,name)
         self.assertEqual([float(s['value']) for s in response.context['slider_fields']],[42,15,14,12,8,9])
         self.assertContains(response,'id="sentuh_bobot" value="1"')
@@ -53,7 +51,7 @@ class Java443RecommendationTests(TestCase):
         self.assertNotIn('svg',fragment)  # Do not resend all443 destination rows.
 
     def test_empty_search_clears_prior_map_results_in_both_filters(self):
-        for budget in ('0','10000'):
+        for budget in ('0','1000'):
             for ajax in (False,True):
                 with self.subTest(budget=budget,ajax=ajax):
                     self.post()

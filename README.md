@@ -1,13 +1,202 @@
-# TravelFit — Rekomendasi Destinasi Wisata Jawa
+# TravelFit — Sistem Pendukung Keputusan Rekomendasi Destinasi Wisata Jawa
 
-TravelFit membantu memilih tujuan berdasarkan budget dan preferensi menggunakan
-CRISP-DM, K-Means, serta AHP–TOPSIS. Stack tetap **Django + SQLite + Python**,
-frontend template HTML, CSS dan JavaScript native. Branch integrasi: `new`.
+TravelFit membantu wisatawan memilih destinasi berdasarkan batas harga tiket,
+kota asal, kategori, hobi, dan profil prioritas. Data aktif berjumlah **443
+destinasi: 437 dari Kaggle dan 6 hasil kurasi Jawa**, dengan label tujuan pada
+Banten, DKI Jakarta, Jawa Barat, Jawa Tengah, Daerah Istimewa Yogyakarta, dan
+Jawa Timur. CRISP-DM menjadi kerangka pengolahan data, K-Means mengelompokkan
+destinasi, dan AHP–TOPSIS menghasilkan rekomendasi.
 
-Dataset aktif **443 = 437 Kaggle + 6 kurasi Jawa**; semua ID dipertahankan dan
-semuanya dilatih K-Means. Data sintetis 1900/2337 sudah menjadi arsip, tidak lagi
-dibaca website. “Kurasi” tidak berarti seluruh atribut resmi atau terverifikasi
-lapangan. Penjelasan sumber/bukti/keterbatasan: [Dokumentasi.md](Dokumentasi.md).
+## Identitas kelompok
+
+| Nama | NIM |
+| --- | --- |
+| Kristofer Ryan Giggs Eka Saputra | 412024005 |
+| Cristian Dion | 412024006 |
+| Reynard Liu | 412025022 |
+| Justin Augusto Liustri | 412025029 |
+
+## Metode SPK dan alasan pemilihan
+
+Metode SPK yang digunakan adalah **AHP untuk pembobotan kriteria** dan
+**TOPSIS untuk pemeringkatan destinasi**.
+
+- **AHP** membandingkan enam kriteria secara berpasangan dan memeriksa
+  konsistensi matriks. Yang dibandingkan adalah kriteria, bukan seluruh destinasi.
+- **TOPSIS** menilai alternatif berdasarkan kedekatan terhadap solusi ideal
+  dengan mempertimbangkan kriteria cost dan benefit. Tahap perhitungannya dapat
+  ditelusuri dari matriks keputusan sampai skor akhir.
+
+Bobot berasal dari empat profil preset rancangan pengembang, bukan hasil survei.
+Setiap profil memiliki consistency ratio (CR) kurang dari 0,1.
+
+| Profil | Prioritas utama | CR |
+| --- | --- | --- |
+| Seimbang | Mempertimbangkan seluruh kriteria; bobot tidak sama rata | 0,008418 |
+| Hemat | Harga tiket | 0,002559 |
+| Kualitas | Rating | 0,012159 |
+| Petualang | Jarak serta kecocokan kategori dan hobi | 0,004431 |
+
+**K-Means bukan metode pemeringkatan SPK.** Algoritma ini memberi label segmen
+berdasarkan kemiripan fitur. Label cluster tidak menyaring kandidat TOPSIS dan
+tidak menentukan bobot AHP.
+
+## Kriteria pengambilan keputusan
+
+Cost mengutamakan nilai lebih kecil, sedangkan benefit mengutamakan nilai lebih besar.
+
+| Kode | Kriteria | Jenis | Arti nilai pada aplikasi |
+| --- | --- | --- | --- |
+| C1 | Harga tiket | Cost | Harga sumber satu destinasi per orang, tanpa pembatasan P99 |
+| C2 | Rating model | Benefit | Rating sumber atau nilai imputasi yang diberi penanda |
+| C3 | Jarak garis lurus | Cost | Jarak Haversine dari kota asal ke koordinat destinasi, dalam km |
+| C4 | Indikator fasilitas | Benefit | Jumlah kelompok penyebutan fasilitas yang diterima dari deskripsi, dibagi 6 |
+| C5 | Kecocokan kategori | Benefit | Kategori utama bernilai 1, sekunder 0,5, dan lainnya 0 |
+| C6 | Kecocokan hobi | Benefit | Kemiripan Jaccard antara hobi pengguna dan tag aktivitas destinasi |
+
+C4 mencakup toilet, parkir, makanan, tempat ibadah, aksesibilitas, dan pusat
+informasi. Nilai 0 berarti tidak ditemukan penyebutan yang diterima, bukan
+fasilitas pasti tidak tersedia. Jika pengguna tidak memilih hobi, C6 ditetapkan 0.
+
+Budget hanya membatasi **harga tiket satu destinasi per orang**. Kandidat harus
+memenuhi `harga_tiket <= budget`; budget Rp0 tetap menerima destinasi gratis.
+Sisa alokasi tiket adalah budget dikurangi harga tiket, bukan estimasi sisa uang
+perjalanan. Jarak tidak menambah harga tiket.
+
+## Rumus utama
+
+### AHP
+
+Untuk matriks perbandingan $A=[a_{ij}]$ dengan $n=6$ kriteria, normalisasi kolom
+dan rata-rata baris menghasilkan bobot:
+
+$$
+b_{ij}=\frac{a_{ij}}{\sum_{p=1}^{n}a_{pj}},\qquad
+w_i=\frac{1}{n}\sum_{j=1}^{n}b_{ij}
+$$
+
+Uji konsistensi mengikuti perhitungan pada aplikasi:
+
+$$
+\lambda_{\max}\approx\frac{1}{n}\sum_{i=1}^{n}\frac{(Aw)_i}{w_i},\qquad
+CI=\frac{\lambda_{\max}-n}{n-1},\qquad CR=\frac{CI}{RI}
+$$
+
+Untuk enam kriteria, $RI=1{,}24$. Matriks preset digunakan jika $CR<0{,}1$.
+Implementasi: [ahp.py](recommender/spk/ahp.py) dan
+[profiles.py](recommender/spk/profiles.py).
+
+### TOPSIS
+
+Untuk $m$ alternatif dan enam kriteria, $x_{ij}$ adalah nilai alternatif $i$
+pada kriteria $j$. Normalisasi dan pembobotan dihitung sebagai berikut:
+
+$$
+r_{ij}=\frac{x_{ij}}{\sqrt{\sum_{p=1}^{m}x_{pj}^{2}}},\qquad
+v_{ij}=w_jr_{ij}
+$$
+
+Jika penyebut sebuah kolom nol, nilai normalisasi kolom tersebut ditetapkan 0.
+Solusi ideal positif ($A^+$) mengambil nilai maksimum untuk benefit dan minimum
+untuk cost; solusi ideal negatif ($A^-$) mengambil nilai sebaliknya.
+
+$$
+D_i^+=\sqrt{\sum_{j=1}^{6}(v_{ij}-A_j^+)^2},\qquad
+D_i^-=\sqrt{\sum_{j=1}^{6}(v_{ij}-A_j^-)^2}
+$$
+
+$$
+V_i=\frac{D_i^-}{D_i^++D_i^-}
+$$
+
+Alternatif diurutkan berdasarkan $V_i$ terbesar. Implementasi:
+[topsis.py](recommender/spk/topsis.py).
+
+### Pembentukan nilai kriteria
+
+- **C1:** harga tiket sumber; sisa alokasi = budget − harga tiket.
+- **C2:** rating model; Tahura menggunakan median 4,5, sementara rating sumber
+  tetap kosong dan status imputasi ditampilkan.
+- **C3:** $d=2R\arcsin(\sqrt{a})$, dengan
+  $a=\sin^2(\Delta\varphi/2)+\cos\varphi_1\cos\varphi_2\sin^2(\Delta\lambda/2)$.
+  Sudut dalam radian dan $R=6371$ km. Implementasi: [geo.py](recommender/spk/geo.py).
+- **C4:** jumlah kelompok penyebutan fasilitas yang diterima / 6.
+- **C5:** utama = 1; sekunder = 0,5; lainnya = 0. Jika kedua pilihan sama,
+  kategori utama diperiksa lebih dahulu.
+- **C6:** $J(H,T)=|H\cap T|/|H\cup T|$, dengan $H$ hobi pengguna dan $T$ tag
+  destinasi. Alur website menetapkan C6 = 0 saat hobi pengguna kosong.
+  Implementasi: [similarity.py](recommender/spk/similarity.py).
+
+## Tahapan algoritma
+
+### Pengolahan data dan K-Means secara offline
+
+1. Gabungkan 437 destinasi Kaggle dan 6 kurasi Jawa, bersihkan data, bentuk
+   indikator fasilitas dan tag aktivitas, lalu periksa retensi seluruh 443 ID.
+2. Ekspor CSV master dan matriks fitur beserta manifest untuk validasi sumber.
+3. Bentuk delapan fitur K-Means: harga dibatasi P99 Rp275.800 dan distandardisasi
+   Z-score, rating model distandardisasi, serta enam kolom one-hot kategori.
+   Z-score menggunakan $z=(x-\mu)/\sigma$ dengan simpangan baku populasi (`ddof=0`).
+   Pembatasan P99 hanya berlaku untuk fitur pelatihan, bukan C1 TOPSIS.
+4. Latih seluruh 443 destinasi dengan k-means++, 10 inisialisasi, seed 42, dan
+   kandidat $k=2$ sampai $k=6$. Pilih silhouette tertinggi pada konfigurasi yang
+   memenuhi ukuran minimum cluster 22 anggota. Pada data aktif, semua kandidat
+   memenuhi batas tersebut.
+5. Simpan label dan evaluasi model. Hasil saat ini adalah **2 cluster dengan
+   414 dan 29 anggota**, serta silhouette **0,54302**. Label tersimpan dalam
+   [kmeans_evaluation.json](reports/clustering/kmeans_evaluation.json).
+
+### Perhitungan rekomendasi secara online
+
+1. Validasi kota asal, provinsi tujuan, budget tiket, kategori, hobi, dan profil.
+2. Ambil kandidat pada provinsi tujuan dengan harga tiket tidak melebihi budget.
+3. Gunakan bobot AHP profil pilihan dan bentuk matriks keputusan C1–C6.
+4. Normalisasi matriks, kalikan dengan bobot, dan tentukan solusi ideal TOPSIS.
+5. Hitung $D_i^+$, $D_i^-$, dan $V_i$, lalu urutkan dari skor tertinggi.
+6. Tampilkan maksimal 10 rekomendasi beserta rincian kriteria, sisa alokasi tiket,
+   catatan kualitas data, label segmen, dan hasil pada peta.
+
+Website juga menyediakan slider bobot. Jika diubah, bobotnya dinormalisasi agar
+berjumlah 1 dan menjadi bobot langsung kustom, **bukan perhitungan AHP baru**.
+CR preset tidak berlaku untuk bobot slider. Jika semua slider nol, aplikasi
+kembali menggunakan bobot profil. Penjelasan profil dan contoh di atas memakai
+bobot preset.
+
+## Interpretasi hasil SPK
+
+- **Skor lebih tinggi** berarti alternatif lebih dekat dengan solusi ideal
+  relatif terhadap kandidat, bobot, dan preferensi pada permintaan tersebut.
+  Skor 0,8 tidak berarti akurasi atau kepuasan pengguna sebesar 80%.
+- **Peringkat dapat berubah** jika budget, wilayah, kategori, hobi, kota asal,
+  atau profil berubah. Hasil bukan penilaian destinasi terbaik untuk semua orang.
+- **Label cluster** menjelaskan kemiripan destinasi, bukan urutan rekomendasi.
+  Silhouette 0,54302 adalah ukuran evaluasi internal clustering, bukan akurasi SPK.
+- **Kandidat kosong** menghasilkan pesan tanpa rekomendasi. Jika hanya satu
+  kandidat atau semua kandidat identik, implementasi memberi $V_i=1$ untuk
+  menghindari pembagian nol; nilai itu bukan kualitas sempurna.
+- **Catatan kualitas** tetap perlu dibaca: rating Tahura diimputasi, koordinat
+  Pelabuhan Marina perlu ditinjau, fasilitas dan tag aktivitas berasal dari
+  deskripsi, serta harga merupakan snapshot sumber.
+
+## Data dan status implementasi
+
+- [CSV hasil preprocessing](data/processed/destinations_clean_java443.csv)
+  memuat seluruh 443 destinasi; [CSV fitur K-Means](data/processed/destinations_kmeans_features_java443.csv)
+  memuat fitur pelatihan.
+- [JSON model](reports/clustering/kmeans_evaluation.json) memuat label seluruh
+  destinasi. `place_id` pada CSV cocok dengan `source_id` pada assignment JSON.
+- Website saat ini menggunakan **Django + SQLite + Python**, dengan Django
+  Template, HTML, CSS, dan JavaScript native. CSV menjadi artefak preprocessing
+  yang diimpor ke database; hasil cluster juga disimpan ke database.
+- Pembacaan CSV + JSON langsung tanpa database sudah menjadi rencana perubahan,
+  tetapi **belum diterapkan pada kode website**. Status ini tidak mengubah rumus SPK.
+
+Sumber dan batasan atribut tersedia di [Dokumentasi.md](Dokumentasi.md).
+Bukti perhitungan tersedia pada [Excel AHP–TOPSIS](outputs/excel_spk_20261005/Perhitungan_AHP_TOPSIS_TravelFit.xlsx)
+dan [laporan UTS](outputs/uts_travelfit/Laporan_UTS_TravelFit.docx).
+
+<details>
+<summary>Panduan menjalankan aplikasi dan preprocessing</summary>
 
 ## Menjalankan lokal
 
@@ -60,64 +249,7 @@ File sumber disimpan di Drive sehingga tidak perlu upload ulang setiap runtime.
 Mount Drive tetap memerlukan login/otorisasi Colab. Output disimpan ke
 `data/processed/` dan `reports/preprocessing/` di folder TravelFit.
 
-## Alur perhitungan
-
-1. **Business Understanding:** memilih tujuan Jawa sesuai preferensi, bukan satu
-   destinasi terbaik untuk semua wisatawan.
-2. **Data Understanding:** pahami snapshot Kaggle, tarif peraturan, lokasi OSM,
-   rating Google Maps, nilai kosong dan konflik sumber.
-3. **Data Preparation:** normalisasi, agregat interaksi, fitur deskripsi, median
-   model Tahura, Z-score dan one-hot; tetap443 ID dan manifest ber-hash.
-4. **Modeling:** K-Means443 offline untuk segmen, AHP preset untuk bobot,
-   TOPSIS untuk ranking kandidat sesuai budget/wilayah. K-Means tidak menggantikan
-   TOPSIS atau menentukan bobot pengguna.
-5. **Evaluation:** k2–6/inertia/silhouette/ukuran cluster, retensi, idempotensi,
-   rollback, edge cases dan sensitivitas. Evaluasi survei belum dilakukan.
-6. **Deployment:** Django membaca artifact pipeline tervalidasi, menampilkan
-   hasil, sumber dan catatan kualitas; map/form server tetap berguna tanpa JS.
-
-Fitur K-Means: harga tiket p99+Z-score, rating model+Z-score, one-hot kategori.
-C4 bukan fitur clustering. Snapshot menghasilkan k2, silhouette0,54302,
-cluster414/29; **bukan akurasi rekomendasi**.
-
-| Kriteria SPK runtime | Jenis | Nilai |
-| --- | --- | --- |
-| C1 Estimasi biaya total | Cost | Tiket + transport PP + makan + inap / orang |
-| C2 Rating | Benefit | Rating teramati atau imputasi model yang ditandai |
-| C3 Jarak | Cost | OSRM / fallback berlabel |
-| C4 Fasilitas | Benefit | Penyebutan deskripsi diterima /6, bukan kelengkapan lapangan |
-| C5 Kategori | Benefit | Utama1, sekunder0,5, lainnya0 |
-| C6 Hobi | Benefit | Jaccard hobi dan tag aktivitas |
-
-Budget perjalanan dan jarak adalah **estimasi**, bukan semua tarif resmi.
-Tahura: rating sumber kosong, median4,5 hanya untuk model. MarinaID9 tetap ada,
-koordinat luar Jawa ditandai; jarak/biayanya perlu review. AHP empat preset
-pengembang CR<0,1 **belum hasil survei**; slider merupakan uji sensitivitas.
-
-## Struktur aktif
-
-```text
-recommender/data_pipeline.py                 # satu transformasi bersama
-recommender/management/commands/             # preprocess/import/train
-recommender/spk/                             # AHP, TOPSIS, biaya, kemiripan
-recommender/templates/recommender/           # base, form, hasil, peta, metode
-recommender/static/recommender/              # travelfit dan java-map lokal
-notebooks/01_preprocessing_travelfit.ipynb    # notebook tipis
-data/raw/                                   # sumber Kaggle tidak diubah
-data/review/                                 # kurasi + salinan bukti
-data/processed/destinations_*_java443.csv     # master dan fitur aktif
-reports/preprocessing/preprocessing_java443* # summary & manifest
-reports/clustering/kmeans_evaluation.json    # evaluasi/label seluruh443
-archive/legacy/                             # workflow/prototipe/output lama
-archive/local_backups/                      # backup DB, tidak masuk Git
-```
-
-Peta memuat enam provinsi; SVG dan posisi titik adalah pendekatan visual, bukan
-GIS/navigasi atau audit batas. Daftar tetap443, titik442 karena Marina di luar
-bingkai. Kota asal di seluruh Indonesia masih sah meskipun tujuan hanya Jawa.
-Retensi ID tidak menghapus alias atau membuktikan data representatif seluruh Jawa.
-
-## Pengujian / keamanan data
+## Pengujian
 
 ```powershell
 .venv/Scripts/python.exe manage.py test recommender.tests --noinput
@@ -125,17 +257,10 @@ Retensi ID tidak menghapus alias atau membuktikan data representatif seluruh Jaw
 .venv/Scripts/python.exe manage.py makemigrations --check --dry-run
 ```
 
-Tes menggunakan database sementara, termasuk alur preprocessing → impor →
-training → rekomendasi/peta. Permintaan routing eksternal dimock pada tes;
-bukan alasan untuk menganggap tarif/hasil survei telah tervalidasi.
-Hash file sumber/bukti dan DOCX dijaga. CSRF tetap aktif; data JSON memakai
-`json_script`, bukan interpolasi HTML yang tidak di-escape.
+Tes menggunakan database sementara dan mencakup preprocessing, impor, training,
+serta rekomendasi/peta. Kelulusan tes memeriksa fungsi aplikasi, bukan membuktikan
+tarif terkini atau kepuasan pengguna. Peta SVG merupakan visualisasi skematis;
+daftar tetap memuat 443 destinasi, dengan 442 titik dalam bingkai Jawa karena
+koordinat Marina berada di luar bingkai.
 
-Desain mengikuti UI-UX Pro Max: hierarki krem–teal, label native, fokus/error yang
-jelas, progressive enhancement; [keputusan & verifikasi UI](docs/design/travelfit-java-ui.md).
-[Daftar cleanup dan recovery](docs/maintenance/java443-cleanup.md).
-
-`Laporan_SPK_TravelFit.docx` **tidak diubah**; belum menggambarkan integrasi terbaru.
-`Perhitungan_SPK_TravelFit.xlsx` tetap sebagai referensi historis, bukan input produksi.
-Review open-data historis ada di `scripts/open_data_review`, terisolasi dari website;
-default fixture1900 berada di arsip. Tidak ada push/deploy otomatis pada task ini.
+</details>
