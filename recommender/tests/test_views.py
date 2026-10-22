@@ -122,16 +122,16 @@ class RekomendasiViewTest(TestCase):
 
     def test_submit_normal_tanpa_sentuh_slider_pakai_profil(self):
         # Payload browser asli: slider selalu terkirim dengan nilai default.
-        r = self.post_valid(**{"w1": "27", "w2": "18", "w3": "16", "w4": "8",
-                               "w5": "16", "w6": "16", "sentuh_bobot": "0"})
+        r = self.post_valid(**{"w1": "16", "w2": "14", "w3": "8", "w4": "13",
+                               "w5": "26", "w6": "23", "sentuh_bobot": "0"})
         self.assertFalse(r.context["mode_custom"])
         self.assertNotContains(r, "Memakai bobot kustom")
 
     def test_slider_hasil_menampilkan_persen_bobot(self):
         r = self.post_valid()
         html = r.content.decode()
-        for val in ['name="w1" min="0" max="100" value="27"',
-                    'name="w4" min="0" max="100" value="8"']:
+        for val in ['name="w1" min="0" max="100" value="16"',
+                    'name="w4" min="0" max="100" value="13"']:
             self.assertIn(val, html)
 
     def test_satu_kandidat_tidak_500(self):
@@ -198,7 +198,7 @@ class RekomendasiViewTest(TestCase):
     def test_profil_ada_deskripsi_bobot(self):
         r = self.client.get("/")
         self.assertContains(r, "profil-info")
-        for teks in ["Hemat", "Kualitas", "Petualang", "Seimbang", "41%", "38%", "34%", "27%"]:
+        for teks in ["Hemat", "Kualitas", "Petualang", "Seimbang", "41%", "38%", "34%", "26%"]:
             self.assertContains(r, teks)
 
     def test_help_text_deskripsi_pilihan(self):

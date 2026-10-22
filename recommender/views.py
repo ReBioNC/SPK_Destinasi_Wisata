@@ -152,7 +152,7 @@ PROFIL_BLURB = {
     "hemat": "Pilih ini bila budget adalah prioritas utama liburan Anda.",
     "kualitas": "Pilih ini bila pengalaman terbaik yang utama, soal harga nomor dua.",
     "petualang": "Pilih ini bila ingin destinasi yang mudah dijangkau dan sesuai hobi.",
-    "seimbang": "Pilihan aman untuk umum; semua kriteria dipertimbangkan proporsional.",
+    "seimbang": "Bobot hasil kuesioner 28 responden; kecocokan kategori dan hobi paling diutamakan.",
 }
 
 

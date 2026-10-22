@@ -20,19 +20,42 @@ class GeoSimilarityTest(SimpleTestCase):
 
 
 class AhpTest(SimpleTestCase):
-    def test_bobot_seimbang_sama_dengan_spreadsheet(self):
+    def test_bobot_seimbang_dari_kuesioner(self):
         from recommender.spk import ahp, profiles
         m = profiles.matrix_from_upper(profiles.PROFILE_UPPERS["seimbang"])
         w = ahp.weights_from_matrix(m)
-        for got, exp in zip(w, [0.2693, 0.1785, 0.1567, 0.0820, 0.1567, 0.1567]):
+        for got, exp in zip(w, [0.1613, 0.1351, 0.0790, 0.1323, 0.2604, 0.2319]):
             self.assertAlmostEqual(got, exp, places=4)
 
     def test_cr_seimbang(self):
         from recommender.spk import ahp, profiles
         m = profiles.matrix_from_upper(profiles.PROFILE_UPPERS["seimbang"])
         res = ahp.consistency(m, ahp.weights_from_matrix(m))
-        self.assertAlmostEqual(res["cr"], 0.008418, places=5)
+        self.assertAlmostEqual(res["cr"], 0.060147, places=5)
         self.assertLess(res["cr"], 0.1)
+
+    def test_rekap_kuesioner_sama_dengan_profil(self):
+        import csv
+        from pathlib import Path
+        from recommender.spk import profiles
+        path = Path(__file__).resolve().parents[2] / "data/survey/kuesioner_bobot_rekap.csv"
+        with path.open(encoding="utf-8", newline="") as handle:
+            rows = list(csv.DictReader(handle))
+        counts = {(int(r["kriteria_i"][1:]) - 1, int(r["kriteria_j"][1:]) - 1): (int(r["pilih_i"]), int(r["pilih_j"]))
+                  for r in rows}
+        self.assertEqual(counts, profiles.SURVEY_COUNTS)
+        for r in rows:
+            self.assertEqual(int(r["pilih_i"]) + int(r["pilih_j"]), int(r["responden"]))
+            self.assertEqual(int(r["responden"]), profiles.SURVEY_RESPONDENTS)
+
+    def test_rasio_kuesioner_dalam_skala_saaty(self):
+        from recommender.spk import profiles
+        upper = profiles.upper_from_counts({(0, 1): (19, 9), (0, 2): (28, 0), (1, 2): (0, 28)})
+        self.assertAlmostEqual(upper[(0, 1)], 19 / 9)
+        self.assertEqual(upper[(0, 2)], 9.0)
+        self.assertAlmostEqual(upper[(1, 2)], 1 / 9)
+        with self.assertRaises(ValueError):
+            profiles.upper_from_counts({(0, 1): (0, 0)})
 
     def test_semua_profil_aktif_konsisten(self):
         from recommender.spk import profiles
@@ -55,6 +78,7 @@ A10 = [
     [20000, 4.3, 39.6859, 0.6, 1.0, 0.40],   # A9
     [5000, 4.1, 8.4023, 0.8, 0.0, 0.20],     # A10
 ]
+# Bobot spreadsheet tersebut (profil Seimbang sebelum memakai kuesioner); fixture tetap.
 W_SEIMBANG = [0.269294111685416, 0.17848214587345024, 0.15674301543866762,
               0.08199469612513091, 0.15674301543866762, 0.15674301543866762]
 
