@@ -27,12 +27,13 @@ Metode SPK yang digunakan adalah **AHP untuk pembobotan kriteria** dan
   dengan mempertimbangkan kriteria cost dan benefit. Tahap perhitungannya dapat
   ditelusuri dari matriks keputusan sampai skor akhir.
 
-Bobot berasal dari empat profil preset rancangan pengembang, bukan hasil survei.
-Setiap profil memiliki consistency ratio (CR) kurang dari 0,1.
+Bobot profil **Seimbang** (default) berasal dari kuesioner perbandingan berpasangan
+28 responden. Tiga profil lain adalah preset rancangan pengembang. Setiap profil
+memiliki consistency ratio (CR) kurang dari 0,1.
 
 | Profil | Prioritas utama | CR |
 | --- | --- | --- |
-| Seimbang | Mempertimbangkan seluruh kriteria; bobot tidak sama rata | 0,008418 |
+| Seimbang | Hasil kuesioner; kecocokan kategori (26,0%) dan hobi (23,2%) | 0,060147 |
 | Hemat | Harga tiket | 0,002559 |
 | Kualitas | Rating | 0,012159 |
 | Petualang | Jarak serta kecocokan kategori dan hobi | 0,004431 |
@@ -82,9 +83,23 @@ $$
 CI=\frac{\lambda_{\max}-n}{n-1},\qquad CR=\frac{CI}{RI}
 $$
 
-Untuk enam kriteria, $RI=1{,}24$. Matriks preset digunakan jika $CR<0{,}1$.
+Untuk enam kriteria, $RI=1{,}24$. Matriks profil digunakan jika $CR<0{,}1$.
 Implementasi: [ahp.py](recommender/spk/ahp.py) dan
 [profiles.py](recommender/spk/profiles.py).
+
+Kuesioner hanya meminta responden memilih kriteria yang lebih penting pada 15
+pasangan, tanpa skala 1–9. Jawaban digabung menjadi rasio jumlah pemilih:
+
+$$
+a_{ij}=rac{n_i}{n_j}=rac{p_{ij}}{1-p_{ij}},\qquad 	frac{1}{9}\le a_{ij}\le 9
+$$
+
+dengan $n_i$ jumlah responden yang memilih $C_i$ pada pasangan $(i,j)$. Hasilnya
+C1 16,13%, C2 13,51%, C3 7,90%, C4 13,23%, C5 26,04%, C6 23,19%. Rekap anonim ada
+di [kuesioner_bobot_rekap.csv](data/survey/kuesioner_bobot_rekap.csv) dan dibuat
+ulang dengan `scripts/rekap_kuesioner.py`. Batasannya: kuesioner menyebut "biaya
+total" dan "jarak tempuh", sedangkan C1 hanya harga tiket dan C3 jarak garis lurus;
+responden adalah 28 mahasiswa, bukan sampel seluruh wisatawan.
 
 ### TOPSIS
 
@@ -158,9 +173,9 @@ Alternatif diurutkan berdasarkan $V_i$ terbesar. Implementasi:
 
 Website juga menyediakan slider bobot. Jika diubah, bobotnya dinormalisasi agar
 berjumlah 1 dan menjadi bobot langsung kustom, **bukan perhitungan AHP baru**.
-CR preset tidak berlaku untuk bobot slider. Jika semua slider nol, aplikasi
+CR profil tidak berlaku untuk bobot slider. Jika semua slider nol, aplikasi
 kembali menggunakan bobot profil. Penjelasan profil dan contoh di atas memakai
-bobot preset.
+bobot profil.
 
 ## Interpretasi hasil SPK
 

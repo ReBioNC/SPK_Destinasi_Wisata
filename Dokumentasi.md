@@ -74,8 +74,9 @@ ini perlu review. Di peta, Marina tidak dipaksakan masuk bingkai Jawa.
 - SPK memakai C1 harga tiket sumber (cost), C2 rating model (benefit), C3 jarak garis lurus Haversine
   (cost), C4 indikator deskripsi, C5 kecocokan kategori, C6 Jaccard hobi (benefit).
   Label cluster tidak menjadi filter keras rekomendasi.
-- Empat profil AHP konsisten CR<0,1 adalah preset pengembang, **belum hasil survei**.
-  Slider hanya sensitivitas bobot yang dinormalisasi, bukan matriks AHP survei baru.
+- Empat profil AHP konsisten CR<0,1. **Seimbang** dari kuesioner 28 responden
+  ([rekap anonim](data/survey/kuesioner_bobot_rekap.csv)); Hemat, Kualitas, Petualang
+  preset pengembang. Slider hanya sensitivitas bobot yang dinormalisasi, bukan AHP baru.
 
 ## Budget tiket, geografi, dan batasan
 

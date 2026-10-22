@@ -10,3 +10,6 @@ archive/local_backups/
 
 # JavaScript dependencies, including nested build folders
 node_modules/
+
+# Respons kuesioner mentah berisi nama dan email; simpan hanya rekap anonim
+*(Responses).xlsx

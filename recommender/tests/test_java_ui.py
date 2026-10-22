@@ -44,5 +44,5 @@ class JavaUITests(TestCase):
         response=self.client.get('/tentang/')
         for title in ('Business Understanding','Data Understanding','Data Preparation','Modeling','Evaluation','Deployment'):
             self.assertContains(response,title)
-        self.assertContains(response,'belum hasil survei')
+        self.assertContains(response,'kuesioner 28 responden')
         self.assertContains(response,'bukan akurasi')
