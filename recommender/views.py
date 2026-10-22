@@ -69,8 +69,6 @@ def _sync_session(request, state):
 
 def _quality_notes(destination):
     notes = []
-    if destination.rating_imputed:
-        notes.append(destination.data_quality.get("rating_model_note") or "Rating diimputasi median; bukan rating teramati.")
     if destination.data_quality.get("coordinate_review_required"):
         notes.append(destination.data_quality.get("coordinate_review_note") or "Koordinat perlu review.")
     if destination.data_quality.get("facility_review_note"):

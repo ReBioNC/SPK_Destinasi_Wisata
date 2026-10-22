@@ -131,7 +131,7 @@ Alternatif diurutkan berdasarkan $V_i$ terbesar. Implementasi:
 
 - **C1:** harga tiket sumber; sisa alokasi = budget − harga tiket.
 - **C2:** rating model; Tahura menggunakan median 4,5, sementara rating sumber
-  tetap kosong dan status imputasi ditampilkan.
+  tetap kosong. Status imputasi tidak ditampilkan pada kartu hasil.
 - **C3:** $d=2R\arcsin(\sqrt{a})$, dengan
   $a=\sin^2(\Delta\varphi/2)+\cos\varphi_1\cos\varphi_2\sin^2(\Delta\lambda/2)$.
   Sudut dalam radian dan $R=6371$ km. Implementasi: [geo.py](recommender/spk/geo.py).

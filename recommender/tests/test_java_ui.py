@@ -30,12 +30,12 @@ class JavaUITests(TestCase):
         self.assertEqual(response.status_code,400)
         self.assertTrue('budget' in response.json().get('errors',{}))
 
-    def test_tahura_imputation_visible_without_expansion(self):
+    def test_tahura_tanpa_label_imputasi(self):
         data={'budget':'20000000','kota_asal':'Jakarta','wilayah':'Banten',
               'kategori_utama':'alam','kategori_sekunder':'budaya','profil':'seimbang',
               'hari':1,'moda':'mobil','mode_antar':'termurah'}
         response=self.client.post('/',data,follow=True)
-        self.assertContains(response,'Rating diimputasi')
+        self.assertNotContains(response,'imputasi')
         self.assertContains(response,'Kurasi Jawa')
         self.assertContains(response,'Tiket / orang')
         self.assertNotContains(response,'★ None')
