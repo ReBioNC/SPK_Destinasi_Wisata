@@ -274,8 +274,7 @@ Mount Drive tetap memerlukan login/otorisasi Colab. Output disimpan ke
 
 Tes menggunakan database sementara dan mencakup preprocessing, impor, training,
 serta rekomendasi/peta. Kelulusan tes memeriksa fungsi aplikasi, bukan membuktikan
-tarif terkini atau kepuasan pengguna. Peta SVG merupakan visualisasi skematis;
-daftar tetap memuat 443 destinasi, dengan 442 titik dalam bingkai Jawa karena
-koordinat Marina berada di luar bingkai.
+tarif terkini atau kepuasan pengguna. Peta SVG merupakan visualisasi skematis
+provinsi tanpa titik destinasi; daftar di bawah peta tetap memuat 443 destinasi.
 
 </details>
