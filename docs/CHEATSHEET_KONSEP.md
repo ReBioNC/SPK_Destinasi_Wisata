@@ -98,7 +98,7 @@ Hierarchical lebih berat dan label akhirnya tetap perlu dipotong manual.
 | Kriteria | Pilihan | Alasan |
 | --- | --- | --- |
 | C1 Harga | Harga tiket asli 1 destinasi/orang | Budget = batas **tiket**, bukan total perjalanan. Ongkos transport/makan/inap tidak punya data yang terkalibrasi |
-| C2 Rating | Rating sumber; Tahura diimputasi median 4,5 (ditandai) | Lebih baik daripada membuang destinasi; status imputasi ditampilkan ke user |
+| C2 Rating | Rating sumber; Tahura diimputasi median 4,5 | Lebih baik daripada membuang destinasi; imputasi dicatat di data, tidak ditampilkan di kartu hasil |
 | C3 Jarak | **Haversine** (garis lurus, R = 6371 km) | Deterministik, tanpa API eksternal (OSRM ada rate limit). Konsekuensinya bukan jarak jalan |
 | C4 Fasilitas | Jumlah penyebutan di deskripsi ÷ 6 | Tidak ada data fasilitas lapangan. **0 = tidak disebut**, bukan pasti tidak ada |
 | C5 Kategori | Utama 1, sekunder 0,5, lain 0 | Sederhana dan mengakomodasi dua minat |

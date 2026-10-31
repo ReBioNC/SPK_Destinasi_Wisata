@@ -134,7 +134,7 @@ class Command(BaseCommand):
         training = result.features[columns].to_numpy(dtype=float)
         candidates = []
         minimum = max(5, round(len(destinations) * 0.05))
-        for k in range(2, 7):
+        for k in range(2, 7): # K= 2-6
             inertia, centers, labels = _fit_kmeans(training, k, seed=42, starts=10)
             if len(set(labels)) != k:
                 continue

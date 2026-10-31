@@ -50,7 +50,8 @@ class JavaMapTests(TestCase):
         self.assertContains(response,'Pelabuhan Marina')
         self.assertContains(response,'Di luar bingkai Jawa')
         self.assertContains(response,'id="destination-9"')
-        self.assertNotContains(response,'data-point-id="9"')
+        self.assertNotContains(response,'data-point-id')
+        self.assertNotContains(response,'<circle')
 
     def test_json_escape_and_stale_session(self):
         Destination.objects.filter(source_id=1).update(nama='<script>alert(1)</script>')
