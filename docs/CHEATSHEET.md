@@ -360,5 +360,5 @@ git switch new                 # branch aktif
 | --- | --- | --- |
 | Kristofer Ryan Giggs Eka Saputra | 412024005 | |
 | Cristian Dion | 412024006 | [@ReBioNC](https://github.com/ReBioNC) |
-| Reynard Liu | 412025022 | [@jiromar740](https://github.com/jiromar740) |
-| Justin Augusto Liustri | 412025029 | [@shenmorri](https://github.com/shenmorri) |
+| Reynard Liu | 412025022 | [@ReynardLiu](https://github.com/ReynardLiu) (Shen Morri) |
+| Justin Augusto Liustri | 412025029 | [@jiromar740](https://github.com/jiromar740) |
