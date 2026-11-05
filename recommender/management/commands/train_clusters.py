@@ -8,6 +8,7 @@ import numpy as np
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction, DatabaseError
 from recommender.data_pipeline import validate_artifacts
+from recommender.model_report import silhouette_samples
 from recommender.models import Destination
 
 def _save_labels_and_report(destinations, labels, names, report, path):
@@ -90,20 +91,7 @@ def _fit_kmeans(data, k, seed=42, starts=10, max_iter=100):
 
 def _silhouette(data, labels):
     """Silhouette rata-rata dengan jarak Euclidean pada data pelatihan."""
-    norms = (data ** 2).sum(axis=1)
-    distances = np.sqrt(np.maximum(norms[:, None] + norms[None, :] - 2 * data @ data.T, 0))
-    values = []
-    for i, own in enumerate(labels):
-        same = labels == own
-        if same.sum() == 1:
-            values.append(0.0)
-            continue
-        a = distances[i, same].sum() / (same.sum() - 1)
-        b = min(distances[i, labels == other].mean()
-                for other in set(labels) if other != own)
-        values.append((b - a) / max(a, b) if max(a, b) else 0.0)
-    return float(np.mean(values))
-
+    return float(silhouette_samples(data, labels)[2].mean())
 
 
 class Command(BaseCommand):

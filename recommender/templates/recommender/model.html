@@ -1,0 +1,133 @@
+{% extends 'recommender/base.html' %}{% load static %}
+{% block title %}Model K-Means — TravelFit{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'recommender/model-report.css' %}"><script defer src="{% static 'recommender/model-report.js' %}"></script>{% endblock %}
+{% block content %}
+<section class="page-intro"><p class="eyebrow">Modeling &amp; evaluation</p><h1>Model K-Means,<br><em>dari data sampai angka.</em></h1><p class="lead">Rincian pelatihan segmen destinasi: pemilihan jumlah cluster, perhitungan silhouette, dan isi tiap segmen. K-Means hanya memberi label; peringkat rekomendasi tetap dihitung AHP–TOPSIS.</p></section>
+{% if not model.available %}
+<section class="panel"><h2>Laporan model belum tersedia</h2><p>Jalankan <code>manage.py train_clusters</code> setelah preprocessing dan impor, lalu muat ulang halaman ini.</p></section>
+{% else %}
+<div class="viz-root">
+<dl class="stat-grid">
+<div><dt>Jumlah cluster terpilih</dt><dd>k = {{ model.selected_k }}</dd></div>
+<div><dt>Silhouette rata-rata</dt><dd>{{ model.silhouette_text }}</dd></div>
+<div><dt>Inertia</dt><dd>{{ model.inertia_text }}</dd></div>
+<div><dt>Data latih</dt><dd>{{ model.rows_count }} × {{ model.feature_count }}</dd></div>
+</dl>
+
+<section class="panel report-section" id="alur"><p class="eyebrow">01 / Pelatihan</p><h2>Cara model dilatih</h2>
+<p>Pelatihan dijalankan offline dengan <code>manage.py train_clusters</code>, memakai implementasi NumPy pada <code>train_clusters.py</code>. Website hanya membaca hasilnya.</p>
+<ol class="steps">
+<li><strong>Periksa artefak.</strong> Manifest preprocessing dicocokkan dengan sumber; artefak usang ditolak.</li>
+<li><strong>Inisialisasi k-means++.</strong> Pusat pertama diambil acak, pusat berikutnya diberi peluang sebanding dengan kuadrat jaraknya ke pusat terdekat.</li>
+<li><strong>Tetapkan cluster.</strong> Setiap destinasi masuk ke pusat dengan jarak Euclidean terdekat.</li>
+<li><strong>Perbarui pusat.</strong> Pusat baru adalah rata-rata anggota cluster. Langkah 3–4 berulang sampai pusat berubah kurang dari 10<sup>−6</sup> atau mencapai 100 iterasi.</li>
+<li><strong>Ulangi 10 kali.</strong> Dari 10 inisialisasi (seed 42), disimpan hasil dengan inertia terkecil.</li>
+<li><strong>Pilih k.</strong> Langkah di atas dijalankan untuk k = 2 sampai 6. Dipilih silhouette tertinggi pada k yang cluster terkecilnya minimal {{ model.minimum }} anggota (5% dari {{ model.rows_count }}).</li>
+</ol></section>
+
+<section class="panel report-section" id="fitur"><p class="eyebrow">02 / Fitur</p><h2>Data yang dilatih</h2>
+<p>Seluruh {{ model.rows_count }} destinasi dipakai, masing-masing dengan {{ model.feature_count }} fitur: harga dan rating yang distandardisasi, serta enam kolom one-hot kategori. Indikator fasilitas (C4), koordinat, dan provinsi tidak ikut.</p>
+<div class="table-scroll" tabindex="0"><table><thead><tr><th>Fitur</th><th>Transformasi</th><th class="num">Rata-rata (μ)</th><th class="num">Simpangan baku (σ)</th></tr></thead><tbody>
+<tr><td>Harga tiket</td><td>Dibatasi P99 {{ model.cap }} ({{ model.capped_rows }} baris terkena), lalu Z-score</td><td class="num">{{ model.mean_price }}</td><td class="num">{{ model.scale_price }}</td></tr>
+<tr><td>Rating model</td><td>Z-score</td><td class="num">{{ model.mean_rating }}</td><td class="num">{{ model.scale_rating }}</td></tr>
+<tr><td>Kategori</td><td>One-hot: alam, bahari, belanja, budaya, hiburan, religi</td><td class="num">—</td><td class="num">—</td></tr>
+</tbody></table></div>
+<p class="formula">z = (x − μ) / σ</p>
+<p>Contoh <strong>{{ model.example.nama }}</strong>: harga ({{ model.example.harga_raw }} − {{ model.example.mean_price }}) / {{ model.example.scale_price }} = <strong>{{ model.example.z_price }}</strong>; rating ({{ model.example.rating }} − {{ model.example.mean_rating }}) / {{ model.example.scale_rating }} = <strong>{{ model.example.z_rating }}</strong>; kategori {{ model.example.kategori }} bernilai 1 dan kategori lain 0. Batas P99 hanya berlaku untuk pelatihan; C1 TOPSIS tetap memakai harga asli.</p></section>
+
+<section class="panel report-section" id="pemilihan-k"><p class="eyebrow">03 / Pemilihan k</p><h2>Mengapa k = {{ model.selected_k }}?</h2>
+<div class="chart-pair">
+<figure><figcaption><strong>Silhouette per k</strong><span>Makin tinggi, cluster makin terpisah. Ini kriteria pemilihan.</span></figcaption>{% include 'recommender/_model_line.html' with chart=model.chart_silhouette axis='Silhouette untuk k tersebut' %}</figure>
+<figure><figcaption><strong>Inertia per k (elbow)</strong><span>Selalu turun saat k naik, jadi tidak dipakai sendiri.</span></figcaption>{% include 'recommender/_model_line.html' with chart=model.chart_inertia axis='Inertia untuk k tersebut' %}</figure>
+</div>
+<div class="table-scroll" tabindex="0"><table><thead><tr><th>k</th><th class="num">Silhouette</th><th class="num">Inertia</th><th class="num">Penurunan inertia</th><th class="num">Cluster terkecil</th><th>Syarat ≥ {{ model.minimum }}</th></tr></thead><tbody>
+{% for c in model.candidates %}<tr{% if c.selected %} class="selected-row"{% endif %}><td>{{ c.k }}{% if c.selected %} <span class="tag">terpilih</span>{% endif %}</td><td class="num">{{ c.silhouette_text }}</td><td class="num">{{ c.inertia_text }}</td><td class="num">{{ c.drop_text|default:"—" }}</td><td class="num">{{ c.smallest_cluster }}</td><td>{% if c.eligible %}Terpenuhi{% else %}Tidak{% endif %}</td></tr>
+{% endfor %}</tbody></table></div>
+<p>Semua kandidat memenuhi syarat ukuran, sehingga k ditentukan oleh silhouette tertinggi. Penurunan inertia terbesar juga terjadi pada awal rentang, tetapi inertia tetap turun pada setiap k, sehingga tidak menunjukkan satu titik pilihan yang tegas.</p></section>
+
+<section class="panel report-section" id="silhouette"><p class="eyebrow">04 / Silhouette</p><h2>Cara menghitung silhouette</h2>
+<p>Silhouette membandingkan kedekatan satu destinasi dengan clusternya sendiri dan dengan cluster lain.</p>
+<dl class="definition-list">
+<div><dt>a(i)</dt><dd>Rata-rata jarak destinasi i ke anggota lain di clusternya. Makin kecil, makin rapat.</dd></div>
+<div><dt>b(i)</dt><dd>Rata-rata jarak destinasi i ke anggota cluster lain yang terdekat. Makin besar, makin terpisah.</dd></div>
+<div><dt>s(i)</dt><dd>Nilai −1 sampai 1. Mendekati 1 berarti tepat, mendekati 0 berarti di perbatasan, dan negatif berarti lebih dekat ke cluster lain.</dd></div>
+</dl>
+<p class="formula">s(i) = (b(i) − a(i)) / max(a(i), b(i))</p>
+<p class="formula">Silhouette model = rata-rata s(i) seluruh {{ model.rows_count }} destinasi</p>
+<h3>Contoh: {{ model.example.nama }}</h3>
+<ol class="steps">
+<li><strong>Jarak ke pusat.</strong> {% for d in model.example.distances %}{{ d.label }} = {{ d.value }}{% if not forloop.last %}; {% endif %}{% endfor %}. Jarak terdekat menempatkannya di {{ model.example.own_label }}.</li>
+<li><strong>a(i)</strong> = rata-rata jarak ke {{ model.example.own_others }} anggota lain di clusternya = <strong>{{ model.example.a }}</strong>.</li>
+<li><strong>b(i)</strong> = rata-rata jarak ke {{ model.example.other_size }} anggota {{ model.example.other_label }} = <strong>{{ model.example.b }}</strong>.</li>
+<li><strong>s(i)</strong> = ({{ model.example.b }} − {{ model.example.a }}) / {{ model.example.max }} = {{ model.example.gap }} / {{ model.example.max }} = <strong>{{ model.example.s }}</strong>.</li>
+</ol>
+<figure class="wide-figure"><figcaption><strong>Silhouette tiap destinasi</strong><span>Diurutkan per segmen; lebar segmen sebanding dengan jumlah anggota. Arahkan kursor untuk melihat nama destinasi.</span></figcaption>
+<div class="legend">{% for c in model.clusters %}<span><i class="key slot-{{ c.slot }}"></i>{{ c.label }}</span>{% endfor %}</div>
+<div class="chart-scroll"><svg class="chart" data-hover="samples-data" data-hover-mode="x" viewBox="0 0 {{ model.chart_samples.width }} {{ model.chart_samples.height }}" role="img" aria-label="Silhouette {{ model.rows_count }} destinasi per segmen dengan rata-rata {{ model.silhouette_short }}. Nilai lengkap ada pada tabel data.">
+{% for t in model.chart_samples.ticks %}<line class="grid" x1="{{ model.chart_samples.left }}" x2="{{ model.chart_samples.right }}" y1="{{ t.y }}" y2="{{ t.y }}"/><text class="tick" x="{{ model.chart_samples.tick_x }}" y="{{ t.y }}" dy="4" text-anchor="end">{{ t.text }}</text>{% endfor %}
+{% for g in model.chart_samples.groups %}<polygon class="area slot-{{ g.slot }}" points="{{ g.area }}"/><polyline class="line slot-{{ g.slot }}" points="{{ g.line }}"/><text class="tick" x="{{ g.label_x }}" y="{{ model.chart_samples.axis_y }}" text-anchor="middle">{{ g.label }}</text>{% endfor %}
+<line class="axis" x1="{{ model.chart_samples.left }}" x2="{{ model.chart_samples.right }}" y1="{{ model.chart_samples.zero }}" y2="{{ model.chart_samples.zero }}"/>
+<line class="reference" x1="{{ model.chart_samples.left }}" x2="{{ model.chart_samples.right }}" y1="{{ model.chart_samples.mean_y }}" y2="{{ model.chart_samples.mean_y }}"/>
+<text class="annotation" x="{{ model.chart_samples.mean_text_x }}" y="{{ model.chart_samples.mean_text_y }}">{{ model.chart_samples.mean_text }}</text>
+<circle class="hover-mark" r="5" cx="-20" cy="-20"/></svg></div></figure>
+<div class="table-scroll" tabindex="0"><table><thead><tr><th>Segmen</th><th class="num">Anggota</th><th class="num">Rata-rata s(i)</th><th class="num">Terendah</th><th class="num">Tertinggi</th><th class="num">Negatif</th></tr></thead><tbody>
+{% for c in model.clusters %}<tr><td>{{ c.label }}</td><td class="num">{{ c.size }}</td><td class="num">{{ c.s_mean }}</td><td class="num">{{ c.s_min }}</td><td class="num">{{ c.s_max }}</td><td class="num">{{ c.negative }}</td></tr>
+{% endfor %}</tbody></table></div>
+<h3>Cara membaca {{ model.silhouette_short }}</h3>
+<p>Menurut panduan Kaufman &amp; Rousseeuw (1990), nilai 0,51–0,70 menunjukkan struktur yang wajar; 0,71–1 kuat; 0,26–0,50 lemah; dan 0,25 ke bawah tidak substansial. Nilai ini hanya mengukur bentuk cluster pada data latih, <strong>bukan akurasi rekomendasi</strong>. Ada {{ model.negative_count }} destinasi dengan s(i) negatif, artinya lebih dekat ke segmen lain.</p>
+<div class="table-scroll" tabindex="0"><table><caption>Lima destinasi dengan s(i) terendah</caption><thead><tr><th>Destinasi</th><th>Segmen</th><th class="num">a(i)</th><th class="num">b(i)</th><th class="num">s(i)</th></tr></thead><tbody>
+{% for r in model.lowest %}<tr><td>{{ r.nama }}</td><td class="nowrap">Segmen {{ r.slot }}</td><td class="num">{{ r.a_text }}</td><td class="num">{{ r.b_text }}</td><td class="num">{{ r.s_text }}</td></tr>
+{% endfor %}</tbody></table></div></section>
+
+<section class="panel report-section" id="segmen"><p class="eyebrow">05 / Hasil</p><h2>Isi tiap segmen</h2>
+<div class="segmented" role="img" aria-label="{% for c in model.clusters %}{{ c.label }}: {{ c.size }} destinasi, {{ c.share }}%{% if not forloop.last %}; {% endif %}{% endfor %}">{% for c in model.clusters %}<div class="slot-{{ c.slot }}" style="flex-basis:{{ c.share_width }}%" title="{{ c.label }}: {{ c.size }} destinasi"><span>{{ c.share }}%</span></div>{% endfor %}</div>
+<div class="legend">{% for c in model.clusters %}<span><i class="key slot-{{ c.slot }}"></i>{{ c.label }}</span>{% endfor %}</div>
+<div class="table-scroll" tabindex="0"><table><thead><tr><th>Segmen</th><th class="num">Anggota</th><th class="num">Harga asli rata-rata</th><th class="num">Harga pada pusat</th><th class="num">Rating rata-rata</th><th>Kategori terbanyak</th><th class="num">Jarak rata-rata ke pusat</th></tr></thead><tbody>
+{% for c in model.clusters %}<tr><td>{{ c.label }}</td><td class="num">{{ c.size }}</td><td class="num">{{ c.mean_price }}</td><td class="num">{{ c.center_price }}</td><td class="num">{{ c.mean_rating }}</td><td>{{ c.dominant }}</td><td class="num">{{ c.spread }}</td></tr>
+{% endfor %}</tbody></table></div>
+<p>Harga pada pusat dapat lebih rendah daripada harga asli rata-rata karena pusat dihitung dari harga yang sudah dibatasi P99.</p>
+<figure class="wide-figure"><figcaption><strong>Harga dan rating dalam skala Z-score</strong><span>Menampilkan 2 dari {{ model.feature_count }} fitur, jadi tumpang tindih di sini tidak berarti cluster yang sama pada seluruh fitur.</span></figcaption>
+<div class="legend">{% for c in model.clusters %}<span><i class="key slot-{{ c.slot }}"></i>{{ c.label }}</span>{% endfor %}<span><i class="key diamond"></i>Pusat cluster</span></div>
+<div class="chart-scroll"><svg class="chart" data-hover="scatter-data" data-hover-mode="nearest" viewBox="0 0 {{ model.chart_scatter.width }} {{ model.chart_scatter.height }}" role="img" aria-label="Sebaran {{ model.rows_count }} destinasi berdasarkan harga dan rating. Nilai lengkap ada pada tabel data.">
+{% for t in model.chart_scatter.y_ticks %}<line class="grid" x1="{{ model.chart_scatter.left }}" x2="{{ model.chart_scatter.right }}" y1="{{ t.y }}" y2="{{ t.y }}"/><text class="tick" x="{{ model.chart_scatter.tick_x }}" y="{{ t.y }}" dy="4" text-anchor="end">{{ t.text }}</text>{% endfor %}
+{% for t in model.chart_scatter.x_ticks %}<line class="grid" x1="{{ t.x }}" x2="{{ t.x }}" y1="{{ model.chart_scatter.top }}" y2="{{ model.chart_scatter.bottom }}"/><text class="tick" x="{{ t.x }}" y="{{ model.chart_scatter.axis_y }}" text-anchor="middle">{{ t.text }}</text>{% endfor %}
+{% for p in model.chart_scatter.points %}<circle class="dot slot-{{ p.slot }}" cx="{{ p.cx }}" cy="{{ p.cy }}" r="4"/>{% endfor %}
+{% for c in model.chart_scatter.centers %}<polygon class="center" points="{{ c.shape }}"/><text class="annotation" x="{{ c.label_x }}" y="{{ c.label_y }}" text-anchor="middle">{{ c.label }}</text>{% endfor %}
+<text class="tick" x="{{ model.chart_scatter.title_x }}" y="{{ model.chart_scatter.title_y }}" text-anchor="middle">Sumbu datar: harga tiket (Z-score) · sumbu tegak: rating (Z-score)</text>
+<circle class="hover-mark" r="6" cx="-20" cy="-20"/></svg></div></figure>
+<h3>Komposisi kategori</h3>
+<div class="category-bars">{% for c in model.categories %}<div class="category-row"><span class="category-name">{{ c.nama }}</span><div>{% for b in c.bars %}<div class="bar-line"><i class="slot-{{ b.slot }}" style="width:{{ b.width }}%"></i><span>{{ b.text }}</span></div>{% endfor %}</div></div>{% endfor %}</div>
+<h3>Nilai pusat cluster (centroid)</h3>
+<div class="table-scroll" tabindex="0"><table><thead><tr><th>Fitur</th>{% for c in model.clusters %}<th class="num">Segmen {{ c.slot }}</th>{% endfor %}<th class="num">Selisih</th></tr></thead><tbody>
+{% for r in model.centroid_rows %}<tr><td>{{ r.label }}</td>{% for v in r.values %}<td class="num">{{ v }}</td>{% endfor %}<td class="num">{{ r.diff }}</td></tr>
+{% endfor %}</tbody></table></div>
+<p>Selisih terbesar ada pada <strong>{{ model.strongest.label }}</strong> ({{ model.strongest.diff }}). Artinya, pemisahan segmen terutama didorong harga, sedangkan rating hampir sama.</p></section>
+
+<section class="panel report-section" id="metrik"><p class="eyebrow">06 / Metrik lain</p><h2>Ukuran kualitas tambahan</h2>
+<div class="table-scroll" tabindex="0"><table><thead><tr><th>Metrik</th><th>Rumus</th><th class="num">Nilai</th><th>Arti</th></tr></thead><tbody>
+<tr><td>Inertia (WSS)</td><td>Σ jarak² ke pusat</td><td class="num">{{ model.inertia_text }}</td><td>Variasi di dalam cluster; makin kecil makin rapat.</td></tr>
+<tr><td>Total variasi (TSS)</td><td>Σ jarak² ke rata-rata data</td><td class="num">{{ model.metrics.total }}</td><td>Variasi data sebelum dikelompokkan.</td></tr>
+<tr><td>Variasi antarcluster (BSS)</td><td>TSS − WSS</td><td class="num">{{ model.metrics.between }}</td><td>Variasi yang dijelaskan pembagian cluster.</td></tr>
+<tr><td>Variasi terjelaskan</td><td>BSS / TSS</td><td class="num">{{ model.metrics.explained }}%</td><td>Sisanya tetap berada di dalam cluster.</td></tr>
+<tr><td>Calinski–Harabasz</td><td>[BSS / (k − 1)] / [WSS / (n − k)]</td><td class="num">{{ model.metrics.calinski }}</td><td>Makin besar, pemisahan makin baik.</td></tr>
+<tr><td>Davies–Bouldin</td><td>Rata-rata (Sᵢ + Sⱼ) / d(cᵢ, cⱼ)</td><td class="num">{{ model.metrics.davies }}</td><td>Makin kecil, cluster makin terpisah.</td></tr>
+<tr><td>Jarak antarpusat</td><td>d(c₁, c₂)</td><td class="num">{{ model.metrics.center_distance }}</td><td>Jarak Euclidean kedua centroid.</td></tr>
+</tbody></table></div></section>
+
+<section class="panel report-section" id="batasan"><p class="eyebrow">07 / Batasan</p><h2>Yang perlu diingat</h2><ul>
+<li>Variasi terjelaskan hanya {{ model.metrics.explained }}%: dua segmen ini ringkasan kasar, terutama pembagian harga, bukan pengelompokan minat wisata yang rinci.</li>
+<li>Segmen 2 kecil ({{ model.clusters.1.size }} destinasi) dan berisi destinasi dengan harga jauh di atas mayoritas.</li>
+<li>K-Means sensitif terhadap skala dan pencilan, karena itu harga dibatasi P99 dan distandardisasi.</li>
+<li>Label segmen tidak menyaring kandidat dan tidak mengubah skor TOPSIS.</li>
+<li>Tidak ada data acuan, sehingga evaluasi ini internal dan bukan akurasi.</li>
+<li>Rating dan harga adalah snapshot sumber. Rating Taman Hutan Raya Banten diisi median untuk pelatihan.</li>
+</ul><p class="source-note">Sumber: <code>reports/clustering/kmeans_evaluation.json</code> dan <code>data/processed/destinations_kmeans_features_java443.csv</code>. Metode: {{ model.method }}. Fingerprint pipeline: <code class="fingerprint">{{ model.fingerprint }}</code></p></section>
+
+<details class="panel report-section data-table"><summary>Data lengkap {{ model.rows_count }} destinasi</summary>
+<div class="table-scroll tall" tabindex="0"><table><thead><tr><th class="num">ID</th><th>Destinasi</th><th>Kategori</th><th class="num">Harga</th><th class="num">Rating</th><th>Segmen</th><th class="num">a(i)</th><th class="num">b(i)</th><th class="num">s(i)</th></tr></thead><tbody>
+{% for r in model.rows %}<tr><td class="num">{{ r.id }}</td><td>{{ r.nama }}</td><td>{{ r.kategori }}</td><td class="num">{{ r.harga }}</td><td class="num">{{ r.rating }}</td><td>{{ r.slot }}</td><td class="num">{{ r.a_text }}</td><td class="num">{{ r.b_text }}</td><td class="num">{{ r.s_text }}</td></tr>
+{% endfor %}</tbody></table></div></details>
+<div class="chart-tooltip" role="status" hidden><strong></strong><span></span><small></small></div>
+</div>
+{{ model.chart_samples.hover|json_script:"samples-data" }}{{ model.chart_scatter.hover|json_script:"scatter-data" }}
+{% endif %}{% endblock %}

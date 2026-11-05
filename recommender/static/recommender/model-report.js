@@ -1,0 +1,10 @@
+(()=>{'use strict';const tip=document.querySelector('.chart-tooltip');if(!tip)return;
+const [title,detail,note]=tip.children;
+const show=(value,name,extra,x,y)=>{title.textContent=value;detail.textContent=name;note.textContent=extra;tip.hidden=false;const box=tip.getBoundingClientRect();tip.style.left=Math.max(8,Math.min(innerWidth-box.width-8,x+14))+'px';tip.style.top=Math.max(8,y-box.height-12)+'px';};
+const hide=()=>{tip.hidden=true;};
+document.querySelectorAll('.hit').forEach(mark=>{const data=mark.dataset,open=event=>{const box=mark.getBoundingClientRect();show(data.tipValue,data.tipName,data.tipNote,event.clientX||box.right,event.clientY||box.top);};mark.addEventListener('pointermove',open);mark.addEventListener('focus',open);mark.addEventListener('pointerleave',hide);mark.addEventListener('blur',hide);});
+document.querySelectorAll('svg[data-hover]').forEach(svg=>{const source=document.getElementById(svg.dataset.hover);if(!source)return;const points=JSON.parse(source.textContent),ring=svg.querySelector('.hover-mark'),byX=svg.dataset.hoverMode==='x';
+const clear=()=>{ring.setAttribute('cx',-20);ring.setAttribute('cy',-20);hide();};
+svg.addEventListener('pointermove',event=>{const matrix=svg.getScreenCTM();if(!matrix)return;const at=new DOMPoint(event.clientX,event.clientY).matrixTransform(matrix.inverse());let best=null,bestDistance=Infinity;for(const p of points){const dx=p.x-at.x,dy=byX?0:p.y-at.y,distance=dx*dx+dy*dy;if(distance<bestDistance){best=p;bestDistance=distance;}}if(!best||bestDistance>(byX?400:900)){clear();return;}ring.setAttribute('cx',best.x);ring.setAttribute('cy',best.y);show(best.value,best.name,best.note,event.clientX,event.clientY);});
+svg.addEventListener('pointerleave',clear);});
+})();

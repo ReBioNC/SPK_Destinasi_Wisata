@@ -238,13 +238,17 @@ preprocessing → impor → training; importer/trainer menolak artifact yang usa
 mengubah destinasi/label/laporan; preprocessing memang mengekspor output.
 
 Halaman: [rekomendasi](http://127.0.0.1:8000/),
-[peta Jawa](http://127.0.0.1:8000/peta/), [metode & data](http://127.0.0.1:8000/tentang/).
+[peta Jawa](http://127.0.0.1:8000/peta/), [model K-Means](http://127.0.0.1:8000/model/),
+[metode & data](http://127.0.0.1:8000/tentang/).
 Server development bukan konfigurasi deployment publik; jangan mengaktifkan
 DEBUG atau memakai secret development sebagai konfigurasi produksi.
 
 ## Google Colab / Drive Saya → TravelFit
 
-Buka `notebooks/01_preprocessing_travelfit.ipynb`. Di Colab folder dasar:
+Notebook `03_preprocessing_simple.ipynb` menampilkan cleaning beserta grafik ringkasannya, dan
+`04_training_kmeans.ipynb` menampilkan pelatihan K-Means, perhitungan silhouette, serta grafik
+evaluasi tanpa menulis file. Keduanya dapat dibuka langsung di Colab; repository di-clone otomatis
+bila data belum ada. Untuk alur Drive, buka `notebooks/01_preprocessing_travelfit.ipynb`. Di Colab folder dasar:
 `/content/drive/MyDrive/TravelFit`. Pertahankan struktur berikut, bukan hanya upload
 notebook atau CSV tunggal:
 
