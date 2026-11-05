@@ -5,5 +5,6 @@ from recommender import views
 urlpatterns = [
     path("", views.rekomendasi, name="beranda"),
     path("peta/", views.peta, name="peta"),
+    path("model/", views.model_kmeans, name="model"),
     path("tentang/", views.tentang, name="tentang"),
 ]

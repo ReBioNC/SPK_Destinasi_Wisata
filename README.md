@@ -238,7 +238,8 @@ preprocessing → impor → training; importer/trainer menolak artifact yang usa
 mengubah destinasi/label/laporan; preprocessing memang mengekspor output.
 
 Halaman: [rekomendasi](http://127.0.0.1:8000/),
-[peta Jawa](http://127.0.0.1:8000/peta/), [metode & data](http://127.0.0.1:8000/tentang/).
+[peta Jawa](http://127.0.0.1:8000/peta/), [model K-Means](http://127.0.0.1:8000/model/),
+[metode & data](http://127.0.0.1:8000/tentang/).
 Server development bukan konfigurasi deployment publik; jangan mengaktifkan
 DEBUG atau memakai secret development sebagai konfigurasi produksi.
 

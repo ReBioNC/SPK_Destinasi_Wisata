@@ -46,6 +46,8 @@ manage.py train_clusters [--dry-run]          # writes cluster_label + reports/c
 
 The four AHP profiles are defined as upper-triangle Saaty matrices in `spk/profiles.py`. Their weights and CR are computed at import time, and a profile with CR ≥ 0.1 is silently dropped. When a user moves the weight sliders, the view normalizes the slider values directly. That path does not run AHP. Results follow POST-Redirect-GET: they are stored once in the session under `flash_hasil`. AJAX requests (`X-Requested-With`) get JSON with rendered partials instead. A session's `dataset_fingerprint` (`ticket-v1:` + pipeline fingerprint) clears stale results after a re-import.
 
+**Model page (`/model/`, `recommender/model_report.py`).** It reads `kmeans_evaluation.json` and the processed CSVs, recomputes per-destination silhouette values, and prepares SVG charts as preformatted strings so Django does not localize coordinates. It never trains; `train_clusters` shares its `silhouette_samples`.
+
 **Modules under `recommender/spk/`.** These are mostly stdlib-only pure functions: `ahp`, `topsis`, `geo` (Haversine distance used for C3), `similarity` (Jaccard index used for C6) and `validation` (SAW/Spearman, used only by tests). The modules `spk/biaya.py`, `transport.py`, `jarak.py` and the `JarakCache` model are **historical code**. They modelled travel cost and OSRM road distance and are no longer called by the active recommendation. Their tests are kept. See `docs/decisions/2026-10-05-ticket-budget.md`: budget covers only one destination's ticket per person.
 
 **Other areas.**

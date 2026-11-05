@@ -1,11 +1,13 @@
 """View rekomendasi: form preferensi + ranking TOPSIS."""
 
 import math
+from django.conf import settings
 from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 
+from recommender import model_report
 from recommender.forms import KOTA_ASAL, PreferensiForm
 from recommender.kota_asal import PROVINSI_KOTA
 from recommender.models import Destination
@@ -374,6 +376,11 @@ def peta(request):
     state = _dataset_state()
     _sync_session(request, state)
     return render(request, "recommender/peta.html", {**state, **_map_context(request)})
+
+
+def model_kmeans(request):
+    """Grafik dan perhitungan model K-Means; tidak melatih ulang."""
+    return render(request, "recommender/model.html", {"model": model_report.load_report(settings.BASE_DIR)})
 
 
 def tentang(request):
