@@ -171,6 +171,14 @@ Alternatif diurutkan berdasarkan $V_i$ terbesar. Implementasi:
 6. Tampilkan maksimal 10 rekomendasi beserta rincian kriteria, sisa alokasi tiket,
    catatan kualitas data, label segmen, dan hasil pada peta.
 
+Setiap rekomendasi menampilkan estimasi bensin motor dan mobil sebagai informasi
+tambahan: jarak garis lurus ÷ konsumsi BBM (motor 1:17, 1:18, 1:22, 1:25; mobil 1:10,
+1:12, 1:14, 1:16 km/liter) × Rp15.000/liter, untuk sekali jalan dan pulang-pergi.
+Estimasi ini tidak memengaruhi TOPSIS maupun budget tiket, dan jarak jalan biasanya
+lebih jauh dari garis lurus. Setiap rekomendasi juga menampilkan pratinjau peta Google Maps
+(iframe, dimuat saat kartu terlihat) beserta tautan lokasi dan rute dari kota asal
+berdasarkan koordinat.
+
 Website juga menyediakan slider bobot. Jika diubah, bobotnya dinormalisasi agar
 berjumlah 1 dan menjadi bobot langsung kustom, **bukan perhitungan AHP baru**.
 CR profil tidak berlaku untuk bobot slider. Jika semua slider nol, aplikasi

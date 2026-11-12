@@ -62,6 +62,50 @@ class RekomendasiViewTest(TestCase):
         self.assertTrue(all(not h['simulasi'] for h in r.context['hasil']))
         self.assertContains(r, "garis lurus")
 
+    def test_estimasi_bensin_motor_dan_mobil(self):
+        from recommender import views
+        from recommender.spk import geo
+        r = self.post_valid()
+        h = r.context["hasil"][0]
+        d = Destination.objects.get(nama=h["nama"])
+        olat, olon = KOTA_ASAL["Bandung"]
+        km = geo.haversine(olat, olon, d.latitude, d.longitude)
+        motor = round(km / 22 * 15000 / 100) * 100
+        mobil = round(km / 12 * 15000 / 100) * 100
+        self.assertEqual(views.estimasi_bensin(km, 22), motor)
+        self.assertEqual([b["moda"] for b in h["bensin"]], ["motor", "mobil"])
+        self.assertEqual(h["bensin"][0]["sekali_fmt"], views._rupiah(motor))
+        self.assertEqual(h["bensin"][1]["pp_fmt"], views._rupiah(2 * mobil))
+        for rasio in ("1:17", "1:18", "1:22", "1:25", "1:10", "1:12", "1:14", "1:16"):
+            self.assertContains(r, f">{rasio}</option>")
+        self.assertContains(r, 'value="22" selected')
+        self.assertContains(r, 'value="12" selected')
+        self.assertContains(r, f'data-km="{km:.3f}"')
+        self.assertContains(r, "Tidak memengaruhi peringkat atau budget tiket")
+
+    def test_bensin_tidak_mengubah_peringkat(self):
+        from unittest.mock import patch
+        before = [h["nama"] for h in self.post_valid().context["hasil"]]
+        with patch("recommender.views.HARGA_BENSIN", 1):
+            after = [h["nama"] for h in self.post_valid().context["hasil"]]
+        self.assertEqual(before, after)
+
+    def test_tautan_google_maps_tiap_rekomendasi(self):
+        r = self.post_valid()
+        h = r.context["hasil"][0]
+        d = Destination.objects.get(nama=h["nama"])
+        olat, olon = KOTA_ASAL["Bandung"]
+        tujuan = f"{d.latitude:.6f}%2C{d.longitude:.6f}"
+        self.assertEqual(h["maps"]["lokasi"], f"https://www.google.com/maps/search/?api=1&query={tujuan}")
+        self.assertIn(f"origin={olat:.6f}%2C{olon:.6f}", h["maps"]["rute"])
+        self.assertIn(f"destination={tujuan}", h["maps"]["rute"])
+        self.assertEqual(h["maps"]["embed"], f"https://maps.google.com/maps?q={tujuan}&z=15&hl=id&output=embed")
+        self.assertContains(r, '<iframe src="https://maps.google.com/maps?q=', count=len(r.context["hasil"]))
+        self.assertContains(r, f'title="Peta lokasi {h["nama"]}" loading="lazy"')
+        self.assertContains(r, "Lihat di Google Maps", count=len(r.context["hasil"]))
+        self.assertContains(r, "Rute dari Bandung", count=len(r.context["hasil"]))
+        self.assertContains(r, 'rel="noopener noreferrer"')
+
     def test_budget_format_ribuan_diterima(self):
         for b in ["250.000", "Rp 250000", "250,000"]:
             r = self.post_valid(budget=b)
