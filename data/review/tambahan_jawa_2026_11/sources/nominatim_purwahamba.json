@@ -1,0 +1,10 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Purwahamba+Indah%2C+Tegal%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Purwahamba Indah, Tegal, Indonesia",
+  "accessed_at_utc": "2026-11-16T14:17:21.133198+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "results": []
+}

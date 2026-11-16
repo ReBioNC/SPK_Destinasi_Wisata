@@ -1,0 +1,35 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Linggoasri%2C+Pekalongan%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Linggoasri, Pekalongan, Indonesia",
+  "accessed_at_utc": "2026-11-16T14:17:09.696928+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "4e3326517a4e7746288b62c6f67337a850a00b99132fb169c311fc1344814433",
+  "results": [
+    {
+      "place_id": 31686691,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 1308673992,
+      "lat": "-7.1021509",
+      "lon": "109.5827396",
+      "category": "place",
+      "type": "village",
+      "place_rank": 19,
+      "importance": 0.22489365626900393,
+      "addresstype": "village",
+      "name": "Linggoasri",
+      "display_name": "Linggoasri, Pekalongan, Jawa Tengah, Indonesia",
+      "extratags": {
+        "wikidata": "Q11018372"
+      },
+      "boundingbox": [
+        "-7.1221509",
+        "-7.0821509",
+        "109.5627396",
+        "109.6027396"
+      ]
+    }
+  ]
+}

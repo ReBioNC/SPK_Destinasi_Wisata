@@ -22,6 +22,30 @@ SEARCHES = {
     "popoh": ("Popoh", (-8.30, 111.75, -8.22, 111.85)),
     "tawun": ("Tawun", (-7.45, 111.45, -7.38, 111.52)),
     "minizoo_purworejo": ("([Mm]ini ?[Zz]oo|[Kk]ebun [Bb]inatang)", (-7.76, 109.95, -7.66, 110.08)),
+    # Batch 2
+    "colo_kudus": ("[Cc]olo", (-6.73, 110.85, -6.65, 110.93)),
+    "tamanria_kudus": ("[Tt]aman [Rr]ia", (-6.86, 110.79, -6.77, 110.89)),
+    "batu_seribu": ("[Bb]atu [Ss]eribu", (-7.90, 110.75, -7.60, 111.00)),
+    "makam_balakan": ("[Bb]alakan", (-7.90, 110.70, -7.55, 111.05)),
+    "maskemambang": ("[Mm]askemambang", (-7.34, 109.20, -7.28, 109.26)),
+    "argowilis": ("[Aa]rgo ?[Ww]ilis", (-8.35, 111.60, -7.95, 112.10)),
+    "maskemambang_purwokerto": ("[Kk]emambang", (-7.46, 109.19, -7.39, 109.28)),
+    # Batch 3
+    "pandanaran": ("[Pp]andanaran", (-7.80, 110.60, -7.73, 110.70)),
+    "cokro": ("[Cc]okro", (-7.62, 110.54, -7.54, 110.62)),
+    "sidoguro": ("[Ss]idoguro|[Rr]awa [Jj]ombor|[Nn]yi [Aa]geng [Rr]akit", (-7.80, 110.58, -7.72, 110.66)),
+    "jolotundo": ("[Jj]olotundo", (-7.66, 110.52, -7.55, 110.66)),
+    "deles": ("[Dd]eles", (-7.63, 110.44, -7.56, 110.52)),
+    "linggoasri": ("[Ll]inggo ?[Aa]sri", (-7.14, 109.54, -7.06, 109.62)),
+    "depok_pekalongan": ("[Dd]epok", (-6.88, 109.58, -6.80, 109.74)),
+    "guci": ("[Gg]uci", (-7.25, 109.12, -7.17, 109.20)),
+    "purwahamba": ("[Pp]urwahamba|[Pp]ur.in", (-6.87, 109.18, -6.77, 109.30)),
+    "goa_lowo": ("[Ll]owo", (-8.28, 111.45, -8.05, 111.75)),
+    "karanggongso": ("[Kk]aranggongso", (-8.33, 111.70, -8.25, 111.77)),
+    "karanggongso_pasir_putih": ("[Pp]asir [Pp]utih", (-8.33, 111.70, -8.25, 111.77)),
+    # Batch 4
+    "linggarjati": ("[Ll]ingga ?r?jati", (-6.92, 108.44, -6.84, 108.53)),
+    "kebunraya_kuningan": ("[Kk]ebun [Rr]aya", (-7.15, 108.30, -6.80, 108.70)),
 }
 
 

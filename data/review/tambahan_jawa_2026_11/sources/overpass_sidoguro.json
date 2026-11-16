@@ -1,0 +1,49 @@
+{
+  "_endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25];nwr[\"name\"~\"[Ss]idoguro|[Rr]awa [Jj]ombor|[Nn]yi [Aa]geng [Rr]akit\"](-7.8,110.58,-7.72,110.66);out center tags;",
+  "accessed_at_utc": "2026-11-16T14:29:42.807793+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "2dc53d169ab76b2164c254de1bbeba27435d03ea8538e80e4b688e2c4507a422",
+  "elements": [
+    {
+      "type": "way",
+      "id": 170065163,
+      "center": {
+        "lat": -7.7679423,
+        "lon": 110.6290623
+      },
+      "tags": {
+        "highway": "tertiary",
+        "name": "Jalan Krakitan - Rawa Jombor",
+        "ref": "187"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1224015261,
+      "center": {
+        "lat": -7.7563141,
+        "lon": 110.6345528
+      },
+      "tags": {
+        "leisure": "park",
+        "name": "Plasa Sunset Rawa Jombor"
+      }
+    },
+    {
+      "type": "relation",
+      "id": 20197232,
+      "center": {
+        "lat": -7.7563324,
+        "lon": 110.6347368
+      },
+      "tags": {
+        "name": "Taman Nyi Ageng Rakit Krakitan",
+        "tourism": "theme_park",
+        "type": "multipolygon"
+      }
+    }
+  ]
+}

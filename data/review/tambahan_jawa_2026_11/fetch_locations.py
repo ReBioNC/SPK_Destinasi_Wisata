@@ -32,6 +32,38 @@ QUERIES = {
     "kiskendo_short": "Kiskendo",
     "popoh_indah": "Pantai Indah Popoh, Besole, Besuki, Tulungagung",
     "sidem_short": "Sidem, Besole, Tulungagung",
+    # Batch 2
+    "krida_kudus": "Taman Krida Wisata, Kudus, Indonesia",
+    "colo_kudus": "Colo, Dawe, Kudus, Indonesia",
+    "tamanria_kudus": "Taman Ria, Kudus, Indonesia",
+    "museum_kretek": "Museum Kretek, Kudus, Indonesia",
+    "batu_seribu": "Batu Seribu, Sukoharjo, Indonesia",
+    "makam_balakan": "Makam Balakan, Sukoharjo, Indonesia",
+    "menara_teratai": "Menara Teratai, Purwokerto, Banyumas, Indonesia",
+    "maskemambang": "Taman Maskemambang, Banyumas, Indonesia",
+    "argowilis": "Pesanggrahan Argowilis, Tulungagung, Indonesia",
+    "selokambang": "Selokambang, Lumajang, Indonesia",
+    "ranu_klakah": "Ranu Klakah, Lumajang, Indonesia",
+    "ranu_pakis": "Ranu Pakis, Lumajang, Indonesia",
+    "maskemambang_purwokerto": "Taman Mas Kemambang, Purwokerto, Banyumas, Indonesia",
+    # Batch 3
+    "pandanaran": "Makam Sunan Pandanaran, Bayat, Klaten, Indonesia",
+    "cokro": "Mata Air Cokro, Klaten, Indonesia",
+    "sidoguro": "Bukit Sidoguro, Klaten, Indonesia",
+    "jolotundo": "Umbul Jolotundo, Klaten, Indonesia",
+    "deles": "Deles Indah, Klaten, Indonesia",
+    "linggoasri": "Linggoasri, Pekalongan, Indonesia",
+    "depok_pekalongan": "Pantai Depok, Pekalongan, Indonesia",
+    "guci": "Guci, Bumijawa, Tegal, Indonesia",
+    "purwahamba": "Purwahamba Indah, Tegal, Indonesia",
+    "cacaban": "Waduk Cacaban, Tegal, Indonesia",
+    "goa_lowo": "Goa Lowo, Trenggalek, Indonesia",
+    "karanggongso": "Pantai Karanggongso, Trenggalek, Indonesia",
+    "prigi": "Pantai Prigi, Trenggalek, Indonesia",
+    "pelang": "Pantai Pelang, Trenggalek, Indonesia",
+    # Batch 4
+    "linggarjati": "Gedung Naskah Linggarjati, Kuningan, Indonesia",
+    "kebunraya_kuningan": "Kebun Raya Kuningan, Indonesia",
 }
 
 

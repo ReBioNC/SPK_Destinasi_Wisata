@@ -1,0 +1,79 @@
+{
+  "_endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25];nwr[\"name\"~\"[Pp]andanaran\"](-7.8,110.6,-7.73,110.7);out center tags;",
+  "accessed_at_utc": "2026-11-16T14:29:02.671535+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "d82fb984c16857918717227b19a3d550410c132631d16547461a8c63e0658977",
+  "elements": [
+    {
+      "type": "node",
+      "id": 3596067165,
+      "lat": -7.7839966,
+      "lon": 110.6336534,
+      "tags": {
+        "amenity": "parking",
+        "name": "Parkiran Kompleks Makam Sunan Pandanaran"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3596067166,
+      "lat": -7.7830452,
+      "lon": 110.6337392,
+      "tags": {
+        "amenity": "community_centre",
+        "name": "Pendopo Kompleks Makam Sunan Pandanaran"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5738527145,
+      "lat": -7.7844557,
+      "lon": 110.6301473,
+      "tags": {
+        "name": "Pandanaran Mart by Alfamart",
+        "shop": "supermarket"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12533292567,
+      "lat": -7.7735023,
+      "lon": 110.6152129,
+      "tags": {
+        "amenity": "fuel",
+        "brand": "Pertamina",
+        "brand:wikidata": "Q1641044",
+        "name": "SPBU Pertamina 43.574.28 Pandanaran"
+      }
+    },
+    {
+      "type": "way",
+      "id": 353802782,
+      "center": {
+        "lat": -7.7812593,
+        "lon": 110.6330633
+      },
+      "tags": {
+        "landuse": "cemetery",
+        "name": "Kompleks Makam Sunan Pandanaran"
+      }
+    },
+    {
+      "type": "way",
+      "id": 462702644,
+      "center": {
+        "lat": -7.7843184,
+        "lon": 110.6321265
+      },
+      "tags": {
+        "amenity": "place_of_worship",
+        "building": "yes",
+        "name": "Kompleks Masjid Sunan Pandanaran",
+        "religion": "muslim"
+      }
+    }
+  ]
+}

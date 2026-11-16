@@ -1,0 +1,36 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Ranu+Klakah%2C+Lumajang%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Ranu Klakah, Lumajang, Indonesia",
+  "accessed_at_utc": "2026-11-16T13:34:43.589314+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "b03d05962e147128f3ff594c705b38f7bc41b32567ba2b87fd9e5f75f23eda20",
+  "results": [
+    {
+      "place_id": 29887780,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 157021421,
+      "lat": "-7.9855533",
+      "lon": "113.2715604",
+      "category": "natural",
+      "type": "water",
+      "place_rank": 22,
+      "importance": 0.10671601052872508,
+      "addresstype": "water",
+      "name": "Ranu Klakah",
+      "display_name": "Ranu Klakah, Tegalrandu, Lumajang, Jawa Timur, Indonesia",
+      "extratags": {
+        "boundary": "protected_area",
+        "protect_class": "6"
+      },
+      "boundingbox": [
+        "-7.9884964",
+        "-7.9825717",
+        "113.2686032",
+        "113.2747151"
+      ]
+    }
+  ]
+}

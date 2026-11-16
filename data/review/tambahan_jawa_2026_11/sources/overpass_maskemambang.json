@@ -1,0 +1,10 @@
+{
+  "_endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25];nwr[\"name\"~\"[Mm]askemambang\"](-7.34,109.2,-7.28,109.26);out center tags;",
+  "accessed_at_utc": "2026-11-16T13:37:59.615567+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "95f032c4b0b217ceb2acbc29f86023bec26941ff2920b8f7e972a1a1fa515933",
+  "elements": []
+}

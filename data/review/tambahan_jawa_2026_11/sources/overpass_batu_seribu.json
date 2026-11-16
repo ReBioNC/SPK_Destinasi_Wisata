@@ -1,0 +1,10 @@
+{
+  "_endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25];nwr[\"name\"~\"[Bb]atu [Ss]eribu\"](-7.9,110.75,-7.6,111.0);out center tags;",
+  "accessed_at_utc": "2026-11-16T13:36:52.200910+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "3e8534baad7e0ddc6fa1fea533b0d79a25bcb5717ef490168b16115697c49f90",
+  "elements": []
+}

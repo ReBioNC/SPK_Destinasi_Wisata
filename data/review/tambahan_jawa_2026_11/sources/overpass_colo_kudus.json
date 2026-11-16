@@ -1,0 +1,24 @@
+{
+  "_endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25];nwr[\"name\"~\"[Cc]olo\"](-6.73,110.85,-6.65,110.93);out center tags;",
+  "accessed_at_utc": "2026-11-16T13:35:50.180890+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "9222aacfb57e8be64886387a39aaa04625985d36e247b3e85dd2aa059e3225f7",
+  "elements": [
+    {
+      "type": "node",
+      "id": 1308683639,
+      "lat": -6.6699462,
+      "lon": 110.9040814,
+      "tags": {
+        "admin_level": "7",
+        "name": "Colo",
+        "place": "village",
+        "ref": "33.19.09.2018",
+        "wikidata": "Q11171732"
+      }
+    }
+  ]
+}

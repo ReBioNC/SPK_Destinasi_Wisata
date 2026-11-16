@@ -1,0 +1,47 @@
+{
+  "_endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25];nwr[\"name\"~\"[Dd]eles\"](-7.63,110.44,-7.56,110.52);out center tags;",
+  "accessed_at_utc": "2026-11-16T14:23:12.462273+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "b9517ce0d46b715014bb46b9f856943548dffe4455a45b0a7175ec936cf88a6f",
+  "elements": [
+    {
+      "type": "node",
+      "id": 10980585781,
+      "lat": -7.5803916,
+      "lon": 110.4716062,
+      "tags": {
+        "name": "Deles",
+        "place": "hamlet"
+      }
+    },
+    {
+      "type": "way",
+      "id": 366627844,
+      "center": {
+        "lat": -7.6252122,
+        "lon": 110.4998576
+      },
+      "tags": {
+        "highway": "secondary",
+        "name": "Jalan Deles Indah",
+        "ref": "032"
+      }
+    },
+    {
+      "type": "way",
+      "id": 367733451,
+      "center": {
+        "lat": -7.5966241,
+        "lon": 110.4806952
+      },
+      "tags": {
+        "highway": "tertiary",
+        "name": "Jalan Deles Indah",
+        "ref": "033"
+      }
+    }
+  ]
+}

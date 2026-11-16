@@ -1,0 +1,55 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Deles+Indah%2C+Klaten%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Deles Indah, Klaten, Indonesia",
+  "accessed_at_utc": "2026-11-16T14:17:07.828530+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "bc5467e1f50203a321d2bb0ac4a64e5dd46e99bb746557e4b63bede78bbcfca3",
+  "results": [
+    {
+      "place_id": 32375512,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 367733451,
+      "lat": "-7.5957727",
+      "lon": "110.4804368",
+      "category": "highway",
+      "type": "tertiary",
+      "place_rank": 26,
+      "importance": 0.053383334859235486,
+      "addresstype": "tertiary",
+      "name": "Jalan Deles Indah",
+      "display_name": "Jalan Deles Indah, Karang Gondang, Karang, Sidorejo, Kemalang, Klaten, Jawa Tengah, 55583, Indonesia",
+      "extratags": null,
+      "boundingbox": [
+        "-7.6132681",
+        "-7.5799800",
+        "110.4689488",
+        "110.4924416"
+      ]
+    },
+    {
+      "place_id": 32129061,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 366627844,
+      "lat": "-7.6248991",
+      "lon": "110.5005624",
+      "category": "highway",
+      "type": "secondary",
+      "place_rank": 26,
+      "importance": 0.053383334859235486,
+      "addresstype": "secondary",
+      "name": "Jalan Deles Indah",
+      "display_name": "Jalan Deles Indah, Bumiharjo, Sidorejo, Kemalang, Klaten, Jawa Tengah, 57483, Indonesia",
+      "extratags": null,
+      "boundingbox": [
+        "-7.6371563",
+        "-7.6132681",
+        "110.4924416",
+        "110.5072735"
+      ]
+    }
+  ]
+}

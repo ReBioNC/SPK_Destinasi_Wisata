@@ -2,7 +2,7 @@
 
 Tanggal penelitian: **16 November 2026**. Status: **draft review, belum diimpor**.
 
-File `kandidat_kaggle_review.csv` berisi **10 kandidat** dengan header 13 kolom yang sama persis dengan CSV Kaggle. Data utama 443 destinasi, preprocessing, database, model K-Means, dan website **tidak diubah**. ID 444–453 hanya ID lokal untuk review.
+File `kandidat_kaggle_review.csv` berisi **23 kandidat** (batch 1: ID 444–453; batch 2: ID 454–459; batch 3: ID 460–466) dengan header 13 kolom yang sama persis dengan CSV Kaggle. Data utama 443 destinasi, preprocessing, database, model K-Means, dan website **tidak diubah**. ID 444–466 hanya ID lokal untuk review.
 
 Setiap kandidat wajib punya tiga bukti yang bisa diakses publik: tarif dari dokumen peraturan resmi, lokasi dari OpenStreetMap, dan pemeriksaan nama terhadap 443 destinasi yang sudah ada. Rating diperiksa terpisah di Google Maps. Kandidat yang lokasinya tidak bisa dipastikan **ditunda**, bukan ditebak.
 
@@ -10,7 +10,7 @@ Setiap kandidat wajib punya tiga bukti yang bisa diakses publik: tarif dari doku
 
 | ID | Destinasi | Kabupaten | Provinsi | Kategori | Price (Rp/orang) | Rating Google Maps |
 | --- | --- | --- | --- | --- | --- | --- |
-| 444 | Situs Taman Tasikardi | Serang | Banten | Budaya | 10.000 | 4,0 (1.059) — perlu keputusan |
+| 444 | Situs Taman Tasikardi | Serang | Banten | Budaya | 5.000 | 4,0 (1.059) — perlu keputusan |
 | 445 | Taman Hutan Raya Gunung Kunci | Sumedang | Jawa Barat | Cagar Alam | 10.000 | 4,4 (1.733) — cocok |
 | 446 | Lokawisata Baturraden | Banyumas | Jawa Tengah | Taman Hiburan | 20.000 | 4,5 (30.310) — perlu keputusan |
 | 447 | Taman Botani Baturraden | Banyumas | Jawa Tengah | Cagar Alam | 15.000 | Tidak teramati |
@@ -20,6 +20,19 @@ Setiap kandidat wajib punya tiga bukti yang bisa diakses publik: tarif dari doku
 | 451 | Pantai Popoh | Tulungagung | Jawa Timur | Bahari | 8.500 | 3,9 (2.858) — perlu keputusan |
 | 452 | Pantai Sine | Tulungagung | Jawa Timur | Bahari | 8.500 | 4,4 (6.040) — cocok |
 | 453 | Taman Rekreasi Tawun | Ngawi | Jawa Timur | Taman Hiburan | 10.000 | 4,2 (2.007) — cocok |
+| 454 | Taman Krida Wisata | Kudus | Jawa Tengah | Taman Hiburan | 3.000 | 4,2 (2.084) — cocok |
+| 455 | Museum Kretek | Kudus | Jawa Tengah | Budaya | 4.000 | 4,3 (4.206) — cocok |
+| 456 | Menara Pandang Teratai | Banyumas | Jawa Tengah | Taman Hiburan | 20.000 | 4,6 (8.798) — cocok |
+| 457 | Pemandian Alam Selokambang | Lumajang | Jawa Timur | Taman Hiburan | 7.000 | 4,4 (2.712) — cocok |
+| 458 | Ranu Klakah | Lumajang | Jawa Timur | Cagar Alam | 4.000 | 4,4 (1.517) — cocok |
+| 459 | Ranu Pakis | Lumajang | Jawa Timur | Cagar Alam | 4.000 | 4,5 (133) — perlu keputusan |
+| 460 | Makam Sunan Pandanaran | Klaten | Jawa Tengah | Tempat Ibadah | 2.000 | 4,5 (1.786) — cocok |
+| 461 | Taman Nyi Ageng Rakit | Klaten | Jawa Tengah | Taman Hiburan | 10.000 | 4,5 (1.047) — cocok |
+| 462 | Waduk Cacaban | Tegal | Jawa Tengah | Cagar Alam | 8.400 | 4,4 (682) — perlu keputusan |
+| 463 | Objek Wisata Guci | Tegal | Jawa Tengah | Taman Hiburan | 14.400 | 4,3 (14.547) — perlu keputusan |
+| 464 | Pantai Prigi | Trenggalek | Jawa Timur | Bahari | 10.000 | 4,3 (4.760) — cocok |
+| 465 | Pantai Pelang | Trenggalek | Jawa Timur | Bahari | 10.000 | 4,4 (2.089) — cocok |
+| 466 | Taman Mas Kemambang | Banyumas | Jawa Tengah | Taman Hiburan | 2.000 | 4,5 (8.932) — cocok |
 
 DKI Jakarta tidak mendapat kandidat. Museum yang tarifnya disebut untuk Perda DKI 1/2024 (Museum Bahari, Wayang, Tekstil, Seni Rupa dan Keramik, Joang 45, Taman Prasasti, Sumpah Pemuda) **sudah ada** di data Kaggle, dan lampiran tarif Perda tersebut tidak berhasil diperoleh dari sumber resmi.
 
@@ -27,7 +40,7 @@ DKI Jakarta tidak mendapat kandidat. Museum yang tarifnya disebut untuk Perda DK
 
 | Field | Asal / aturan |
 | --- | --- |
-| `Place_Id` | ID lokal 444–453, tidak berbenturan dengan 1–443. |
+| `Place_Id` | ID lokal 444–466, tidak berbenturan dengan 1–443. |
 | `Place_Name` | Nama objek pada tabel tarif atau nama OSM bila tabel memakai nama umum (mis. "Wisata Tawun"). |
 | `Description` | Kalimat baru: jenis objek, wilayah, dasar tarif, dan batasan koordinat. Tidak menyalin teks situs lain. Karena tidak menyebut fasilitas, C4 kandidat akan bernilai 0 bila diimpor. |
 | `Category` | Crosswalk penyusun ke kategori Kaggle, bukan label resmi pemerintah. |
@@ -42,12 +55,17 @@ Semua tarif diperiksa langsung pada halaman PDF resmi, dan halaman tersebut disi
 
 | Dokumen | Halaman PDF | Kandidat | Catatan |
 | --- | --- | --- | --- |
-| [Perbup Serang 271/2023](https://peraturan.bpk.go.id/Download/349205/PERBUP%20NOMOR%20271%20TAHUN%202023%20TENTANG%20PENINJAUAN_TARIF_REKREASI_DAN_OLAHRAGA.pdf) | 3 | Tasikardi Rp10.000 dewasa | Mengubah Perda 2/2016. Perda PDRD Kab. Serang 7/2023 berlaku sesudahnya dan lampirannya belum diperiksa. |
+| [Perda Kab. Serang 7/2023](https://peraturan.bpk.go.id/Download/349067/PERDA%20NOMOR%207%20TAHUN%202023%20TENTANG%20PAJAK%20DAERAH%20DAN%20RETRIBUSI%20DAERAH%20FIX%20(2).pdf) | 821 | Tasikardi Rp5.000 dewasa | Menggantikan Perbup Serang 271/2023 (Rp10.000), yang tetap disimpan sebagai jejak riwayat. |
 | [Perda Sumedang 1/2024](https://portal-skpd.sumedangkab.go.id/storage/regulasi/PERDA%20NO%201%20TAHUN%202024.070224_07_33_59pdf.pdf) | 164 (Lampiran VIII) | Tahura tiket umum Rp10.000 | Lampiran menyebut "Taman Hutan Raya" tanpa nama kawasan. |
-| [Perbup Banyumas 41/2023](https://peraturan.bpk.go.id/Download/326447/Perbup%20Bms%2041_2023.pdf) | 4 | Lokawisata Baturraden Rp20.000 (Sabtu–Minggu Rp25.000); Taman Botani Rp15.000 | Perubahan kelima Perbup 81/2021. |
+| [Perbup Banyumas 41/2023](https://peraturan.bpk.go.id/Download/326447/Perbup%20Bms%2041_2023.pdf) | 4 | Lokawisata Baturraden dan Menara Teratai Rp20.000 (Sabtu–Minggu Rp25.000); Taman Botani Rp15.000; Taman Maskemambang Rp2.000 | Perubahan kelima Perbup 81/2021. |
 | [Perda Kulon Progo 6/2023](https://peraturan.bpk.go.id/Download/336306/Perda%20Kulon%20Progo%20No%206%20Tahun%202023.pdf) | 373 | Waduk Sermo, Puncak Suroloyo, Pantai Trisik Rp10.000 | Rp9.500 jasa sarana + Rp500 asuransi. Perubahan Perda 1/2026 belum diperiksa. |
 | [Perda Tulungagung 11/2023](https://peraturan.go.id/files/perda-kabupaten-tulung-agung-no-11-tahun-2023.pdf) | 123 (Lampiran X) | Pantai Popoh, Pantai Sine Rp8.500 (Sabtu–Minggu Rp10.000) | Popoh dan Sidem berbagi satu baris tarif. |
 | [Perda Ngawi 10/2023](https://bakeu.ngawikab.go.id/home/public/files/ppd/PERDA%20NO%2010%20TAHUN%202023.pdf) | 122 (Lampiran II) | Wisata Tawun Rp10.000 | Dokumen sama dengan sumber Museum Trinil. Wahana dikenai tarif terpisah. |
+| [Perda Kudus 4/2023](https://peraturan.go.id/files/perda-kabupaten-kudus-no-4-tahun-2023.pdf) | 120 (Bagian 5) | Taman Krida Wisata Rp3.000; Museum Kretek Rp4.000 | Tarif selain hari Minggu/besar; Minggu/besar Rp4.000 dan Rp5.000. |
+| [Perda Lumajang 1/2024](https://www.peraturan.go.id/files/perda-kabupaten-lumajang-no-1-tahun-2024.pdf) | 141 | Selokambang Rp7.000; Ranu Klakah dan Ranu Pakis Rp4.000 | Tarif dewasa; Selokambang hari tertentu Rp15.000. |
+| [Perda Klaten 15/2023](https://peraturan.bpk.go.id/Download/335721/2023pd3310015.pdf) | 187–188 | Makam Sunan Pandanaran Rp2.000; Taman Nyi Ageng Rakit Rp10.000 | Tarif domestik; Bukit Sidoguro dan Taman Nyi Ageng Rakit satu baris tarif. |
+| [Perda Tegal 11/2023](https://peraturan.bpk.go.id/Download/335762/1705299302_2023pd3328011.pdf) | 240 (Lampiran X) | Guci Rp14.400; Cacaban Rp8.400 | Dewasa hari biasa; hari libur Rp19.400 dan Rp9.400. |
+| [Perda Trenggalek 8/2023](https://peraturan.bpk.go.id/Download/350255/Peraturan%20Daerah%20Kabupaten%20Trenggalek%20Nomor%208%20Tahun%202023%20tentang%20Pajak%20Daerah%20dan%20Retribusi%20Daerah.pdf) | 504 | Pantai Prigi dan Pantai Pelang Rp10.000 | Tarif dewasa sudah termasuk asuransi. |
 
 SHA-256 setiap PDF ada di `provenance.json`. PDF tidak disalin ke repo karena ukurannya besar (sampai 12,5 MB); unduh ulang dari URL di atas dan cocokkan hash-nya.
 
@@ -64,7 +82,7 @@ Tarif adalah nilai dokumen hukum yang diperiksa, bukan jaminan harga transaksi h
 
 `google_maps_rating_review.json` mencatat hasil observasi manual melalui browser: nama listing, rating, jumlah ulasan, URL tempat, koordinat listing, dan keputusan pencocokan. Tidak memakai API atau scraper massal.
 
-Enam rating cocok nama dan lokasi (`matched_name_location`). Empat lainnya **jangan dipakai otomatis**:
+Enam belas rating cocok nama dan lokasi (`matched_name_location`). Tujuh lainnya **jangan dipakai otomatis**:
 
 | ID | Alasan |
 | --- | --- |
@@ -72,6 +90,9 @@ Enam rating cocok nama dan lokasi (`matched_name_location`). Empat lainnya **jan
 | 446 Lokawisata Baturraden | Listing bernama "Baturraden" (pemandian air panas dan air terjun). Lokasinya cocok, namanya berbeda. |
 | 447 Taman Botani Baturraden | Panel tempat tidak tampil di browser. Dua listing "Baturraden Botanical Garden" kemungkinan objek lain. |
 | 451 Pantai Popoh | Koordinat listing cocok, tetapi alamat listing menyebut Watulimo (Trenggalek). |
+| 459 Ranu Pakis | Ada beberapa listing kecil (133, 83, dan 17 ulasan) tanpa listing utama yang jelas. |
+| 462 Waduk Cacaban | Dua listing besar (waduk 682 ulasan, taman 562 ulasan) di titik berbeda. |
+| 463 Objek Wisata Guci | Kawasan punya beberapa listing besar (14.547, 12.041, dan 8.870 ulasan). |
 
 Rating Google Maps adalah agregat ulasan pihak ketiga, bukan data resmi atau data terbuka, dan nilainya bisa berubah.
 
@@ -86,6 +107,15 @@ Rating Google Maps adalah agregat ulasan pihak ketiga, bukan data resmi atau dat
 | Mini Zoo dan Art Centre Purworejo | Tarif terbukti di Perda Purworejo 1/2026, tetapi tidak ditemukan di OSM. |
 | Kawah Sikidang/Candi Arjuna, Bromo, Goa Gong, Pantai Klayar | Sumber tarif resmi terbaru tidak ditemukan; yang ada berita atau aturan lama. |
 | Pantai Congot | Sudah ada di data Kaggle (ID 210). |
+| Objek Wisata Colo dan Taman Ria, Kudus | Tarif terbukti di Perda Kudus 4/2023; OSM hanya punya desa Colo dan tidak punya Taman Ria. |
+| Batu Seribu dan Makam Balakan, Sukoharjo | Tarif terbukti di Perda Sukoharjo 10/2023 (halaman PDF 143); tidak ada objek OSM. |
+| Pesanggrahan Argowilis, Tulungagung | Tarif Rp5.000 terbukti; tidak ada objek OSM. |
+| Linggoasri dan Pantai Depok, Pekalongan | Tarif terbukti di Perda Pekalongan 11/2023 (Rp7.250 dan Rp4.750); OSM hanya punya titik desa. |
+| Mata Air Cokro, Bukit Sidoguro, Umbul Jolotundo, Deles Indah (Klaten) | Tarif terbukti di Perda Klaten 15/2023; tidak ada objek OSM (Deles hanya dusun). |
+| Purwahamba Indah (Pur'in), Tegal | Tarif Rp4.400 terbukti; tidak ada objek OSM. |
+| Gedung Naskah Linggarjati dan Kebun Raya Kuningan | Tarif terbukti di Perda Kuningan 1/2024 (Rp10.000 dan Rp9.000); OSM hanya punya desa dan Taman Wisata Alam Linggarjati, bukan objeknya. |
+| Goa Lowo dan Pantai Karanggongso, Trenggalek | Tarif terbukti (Rp10.000 dan Rp15.000); tidak ada objek OSM. Karanggongso punya listing Google Maps (4,6; 6.180 ulasan). |
+| Jawa Barat dan Banten tambahan | Perda Kota Bogor 11/2023 tidak memuat tarif objek wisata, teks Perda Kota Bandung 1/2024 tidak terbaca (hasil pindai), dan PDF resmi Cianjur serta Cilegon tidak bisa diunduh. |
 
 ## Validasi
 

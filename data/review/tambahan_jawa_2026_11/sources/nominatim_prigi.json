@@ -1,0 +1,36 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Pantai+Prigi%2C+Trenggalek%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Pantai Prigi, Trenggalek, Indonesia",
+  "accessed_at_utc": "2026-11-16T14:17:33.402677+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "3822afc1d74d7fd91e7b02ad8bf913c8c2baa30630ad5093c9ad22185c0d606d",
+  "results": [
+    {
+      "place_id": 30390640,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 323567992,
+      "lat": "-8.2889106",
+      "lon": "111.7172087",
+      "category": "natural",
+      "type": "beach",
+      "place_rank": 22,
+      "importance": 0.10670666742961774,
+      "addresstype": "beach",
+      "name": "Pantai Prigi",
+      "display_name": "Pantai Prigi, Tasikmadu, Trenggalek, Jawa Timur, Indonesia",
+      "extratags": {
+        "access": "yes",
+        "surface": "sand"
+      },
+      "boundingbox": [
+        "-8.2912444",
+        "-8.2865810",
+        "111.7135280",
+        "111.7270659"
+      ]
+    }
+  ]
+}

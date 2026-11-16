@@ -1,0 +1,165 @@
+{
+  "_endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25];nwr[\"name\"~\"[Gg]uci\"](-7.25,109.12,-7.17,109.2);out center tags;",
+  "accessed_at_utc": "2026-11-16T14:34:34.935851+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "60c28ada81a173470f824fb944ae21b1b819f89de38bc8ce75f6a98f94b6d3c7",
+  "elements": [
+    {
+      "type": "node",
+      "id": 3908320968,
+      "lat": -7.1975209,
+      "lon": 109.1643132,
+      "tags": {
+        "leisure": "water_park",
+        "name": "Air Panas Guci"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11082745354,
+      "lat": -7.1979363,
+      "lon": 109.1598987,
+      "tags": {
+        "name": "Guci",
+        "place": "village"
+      }
+    },
+    {
+      "type": "way",
+      "id": 813495934,
+      "center": {
+        "lat": -7.1987108,
+        "lon": 109.1615187
+      },
+      "tags": {
+        "addr:city": "Tegal",
+        "addr:postcode": "52466",
+        "addr:street": "Jalan Lingkar Barat Desa Wisata Guci",
+        "building": "yes",
+        "ele": "1247",
+        "image": "https://g.page/permadiofficial",
+        "name": "Basecamp Permadi Guci"
+      }
+    },
+    {
+      "type": "way",
+      "id": 815488648,
+      "center": {
+        "lat": -7.2256908,
+        "lon": 109.1932788
+      },
+      "tags": {
+        "highway": "path",
+        "name": "Jalur Nonaktif Pendakian Gunung Slamet via Guci",
+        "surface": "dirt",
+        "trail_visibility": "no"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1302033236,
+      "center": {
+        "lat": -7.222293,
+        "lon": 109.177095
+      },
+      "tags": {
+        "highway": "path",
+        "name": "Jalur Pendakian Gunung Slamet via Guci",
+        "surface": "ground",
+        "width": "1.5"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1302033237,
+      "center": {
+        "lat": -7.2456315,
+        "lon": 109.2042521
+      },
+      "tags": {
+        "access": "no",
+        "bicycle": "yes",
+        "foot": "yes",
+        "highway": "path",
+        "name": "Jalur Pendakian Gunung Slamet via Guci",
+        "surface": "ground",
+        "width": "1"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1302034676,
+      "center": {
+        "lat": -7.2458957,
+        "lon": 109.1939854
+      },
+      "tags": {
+        "highway": "path",
+        "name": "Jalur Pendakian Gunung Slamet via Guci",
+        "surface": "dirt",
+        "width": "1.5"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1302034677,
+      "center": {
+        "lat": -7.2146968,
+        "lon": 109.1710719
+      },
+      "tags": {
+        "highway": "path",
+        "name": "Jalur Pendakian Gunung Slamet via Guci",
+        "surface": "ground",
+        "width": "1.5"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1302037319,
+      "center": {
+        "lat": -7.218747,
+        "lon": 109.191136
+      },
+      "tags": {
+        "highway": "path",
+        "name": "Jalur Alternatif Pendakian Gunung Slamet via Guci",
+        "surface": "ground",
+        "width": "1.5"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1350907312,
+      "center": {
+        "lat": -7.1994092,
+        "lon": 109.1653651
+      },
+      "tags": {
+        "boundary": "national_park",
+        "leisure": "nature_reserve",
+        "name": "Guci",
+        "natural": "wood"
+      }
+    },
+    {
+      "type": "relation",
+      "id": 17253990,
+      "center": {
+        "lat": -7.2247408,
+        "lon": 109.1947233
+      },
+      "tags": {
+        "name": "Gunung Slamet (Guci BC)",
+        "network": "rwn",
+        "network:type": "rwn",
+        "route": "hiking",
+        "type": "route",
+        "website": "https://creedaz.in/"
+      }
+    }
+  ]
+}

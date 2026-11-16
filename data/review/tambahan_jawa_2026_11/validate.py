@@ -65,7 +65,10 @@ def main():
         assert -9 < lat < -5.5 and 105 < lon < 115, f"{pid} di luar Pulau Jawa"
         assert snapshot_point(record["location_snapshot"], record["osm_type"], record["osm_id"]) == (lat, lon)
         source = provenance["sources"][record["price_source"]]
-        assert (HERE / source["evidence_png"]).is_file() and len(source["sha256"]) == 64
+        evidence = source["evidence_png"]
+        for png in evidence if isinstance(evidence, list) else [evidence]:
+            assert (HERE / png).is_file(), png
+        assert len(source["sha256"]) == 64
 
     ratings = {r["place_id"]: r for r in receipt["records"]}
     assert set(ratings) == set(ids)
