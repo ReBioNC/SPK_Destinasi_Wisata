@@ -1,0 +1,59 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Tawun%2C+Kasreman%2C+Ngawi%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Tawun, Kasreman, Ngawi, Indonesia",
+  "accessed_at_utc": "2026-11-16T12:48:34.434401+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "6e5dbaa7678a245131360ef0aa83c94c02fe538b0ac5bb74f9f199748308b586",
+  "results": [
+    {
+      "place_id": 32215264,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 13592223054,
+      "lat": "-7.4125537",
+      "lon": "111.4882452",
+      "category": "highway",
+      "type": "trunk",
+      "place_rank": 30,
+      "importance": 3.750133516437045e-05,
+      "addresstype": "highway",
+      "name": "Lampu Merah Tawun",
+      "display_name": "Lampu Merah Tawun, 30, Pucang, Kasreman, Ngawi, Jawa Timur, 63211, Indonesia",
+      "extratags": {
+        "junction": "yes"
+      },
+      "boundingbox": [
+        "-7.4126037",
+        "-7.4125037",
+        "111.4881952",
+        "111.4882952"
+      ]
+    },
+    {
+      "place_id": 32239659,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 2389784520,
+      "lat": "-7.4125665",
+      "lon": "111.4893898",
+      "category": "amenity",
+      "type": "hospital",
+      "place_rank": 30,
+      "importance": 3.750133516437045e-05,
+      "addresstype": "amenity",
+      "name": "Puskesmas Tawun",
+      "display_name": "Puskesmas Tawun, Jalan Raya Ngawi - Caruban, Pucang, Kasreman, Ngawi, Jawa Timur, 63211, Indonesia",
+      "extratags": {
+        "emergency": "no"
+      },
+      "boundingbox": [
+        "-7.4126165",
+        "-7.4125165",
+        "111.4893398",
+        "111.4894398"
+      ]
+    }
+  ]
+}

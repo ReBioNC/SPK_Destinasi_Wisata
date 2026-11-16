@@ -1,0 +1,35 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Pantai+Trisik%2C+Kulon+Progo%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Pantai Trisik, Kulon Progo, Indonesia",
+  "accessed_at_utc": "2026-11-16T12:48:26.883107+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "9f43b25a86892ed1e313048fa9d45d578e2521d06ad479684c95b5f9e30094da",
+  "results": [
+    {
+      "place_id": 31772402,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 582737420,
+      "lat": "-7.9737370",
+      "lon": "110.1926449",
+      "category": "natural",
+      "type": "beach",
+      "place_rank": 22,
+      "importance": 0.13618373728802152,
+      "addresstype": "beach",
+      "name": "Pantai Trisik",
+      "display_name": "Pantai Trisik, Banaran, Galur, Kulonprogo, Daerah Istimewa Yogyakarta, Indonesia",
+      "extratags": {
+        "wikipedia": "id:Pantai Trisik"
+      },
+      "boundingbox": [
+        "-7.9757328",
+        "-7.9719051",
+        "110.1902885",
+        "110.1949560"
+      ]
+    }
+  ]
+}

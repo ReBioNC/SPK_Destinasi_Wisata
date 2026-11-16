@@ -1,0 +1,44 @@
+{
+  "_endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25];nwr[\"name\"~\"Kunci\"](-6.88,107.88,-6.82,107.95);out center tags;",
+  "accessed_at_utc": "2026-11-16T12:50:43.669407+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "8ce006f214e55e703af0ee00fb0e8588120fe648c18ff70cfe317b0ce1732f6e",
+  "elements": [
+    {
+      "type": "way",
+      "id": 362008336,
+      "center": {
+        "lat": -6.8551806,
+        "lon": 107.9176424
+      },
+      "tags": {
+        "boundary": "protected_area",
+        "leaf_cycle": "evergreen",
+        "leaf_type": "mixed",
+        "leisure": "park",
+        "name": "Gunung Kunci",
+        "protect_class": "6",
+        "tourism": "attraction"
+      }
+    },
+    {
+      "type": "relation",
+      "id": 10748932,
+      "center": {
+        "lat": -6.8557273,
+        "lon": 107.9131688
+      },
+      "tags": {
+        "boundary": "protected_area",
+        "name": "Taman Hutan Raya Gunung Palasari-Kunci",
+        "name:en": "Gunung Palasari-Kunci Grand Forest Park",
+        "operator": "Pemerintah Daerah Provinsi Jawa Barat",
+        "protect_class": "6",
+        "type": "boundary"
+      }
+    }
+  ]
+}

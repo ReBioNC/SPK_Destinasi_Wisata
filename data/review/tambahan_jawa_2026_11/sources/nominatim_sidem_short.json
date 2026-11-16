@@ -1,0 +1,33 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Sidem%2C+Besole%2C+Tulungagung&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Sidem, Besole, Tulungagung",
+  "accessed_at_utc": "2026-11-16T12:53:56.408272+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "8ecc2381962e4a6445de9f3a87fb133c9a0546fa9b75d2b6080b433569ec173a",
+  "results": [
+    {
+      "place_id": 30709582,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 228482489,
+      "lat": "-8.2558978",
+      "lon": "111.7985507",
+      "category": "amenity",
+      "type": "school",
+      "place_rank": 30,
+      "importance": 3.750133516437045e-05,
+      "addresstype": "amenity",
+      "name": "SD SIDEM",
+      "display_name": "SD SIDEM, Jalan Pantai Popoh, Besole, Tulungagung, Jawa Timur, Indonesia",
+      "extratags": null,
+      "boundingbox": [
+        "-8.2560664",
+        "-8.2557293",
+        "111.7984665",
+        "111.7986349"
+      ]
+    }
+  ]
+}

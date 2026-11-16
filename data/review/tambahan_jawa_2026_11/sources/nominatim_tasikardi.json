@@ -1,0 +1,37 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Tasikardi%2C+Serang%2C+Banten%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Tasikardi, Serang, Banten, Indonesia",
+  "accessed_at_utc": "2026-11-16T12:48:13.447847+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "e0bb2ceaa33459120394c84bd6ae81f25f9a842d52550c9af258532de997ed04",
+  "results": [
+    {
+      "place_id": 30763731,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 1376959215,
+      "lat": "-6.0536834",
+      "lon": "106.1434508",
+      "category": "leisure",
+      "type": "park",
+      "place_rank": 24,
+      "importance": 0.08003750133516438,
+      "addresstype": "park",
+      "name": "Situs Taman Tasikardi",
+      "display_name": "Situs Taman Tasikardi, Margasana, Kab Serang, Banten, Indonesia",
+      "extratags": {
+        "area": "yes",
+        "historic": "yes",
+        "description": "Tempat sultan Banten menyepi. Awal didirikan oleh Sultan Ageng."
+      },
+      "boundingbox": [
+        "-6.0540178",
+        "-6.0534301",
+        "106.1431567",
+        "106.1437300"
+      ]
+    }
+  ]
+}

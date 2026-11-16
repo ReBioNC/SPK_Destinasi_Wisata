@@ -1,0 +1,33 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Taman+Botani+Baturraden%2C+Banyumas%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Taman Botani Baturraden, Banyumas, Indonesia",
+  "accessed_at_utc": "2026-11-16T12:48:19.400329+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "ac02c0a69277a8642cef788ad7732906abb74b7bb642d75d813848d86a0f450f",
+  "results": [
+    {
+      "place_id": 31878879,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 297126827,
+      "lat": "-7.3090412",
+      "lon": "109.2290459",
+      "category": "leisure",
+      "type": "park",
+      "place_rank": 24,
+      "importance": 0.08004766689555197,
+      "addresstype": "park",
+      "name": "Taman Botani Baturraden",
+      "display_name": "Taman Botani Baturraden, Baturaden, Banyumas, Jawa Tengah, Indonesia",
+      "extratags": null,
+      "boundingbox": [
+        "-7.3120579",
+        "-7.3060480",
+        "109.2265934",
+        "109.2306313"
+      ]
+    }
+  ]
+}

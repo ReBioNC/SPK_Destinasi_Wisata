@@ -1,0 +1,123 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Pantai+Popoh%2C+Tulungagung%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Pantai Popoh, Tulungagung, Indonesia",
+  "accessed_at_utc": "2026-11-16T12:48:28.516909+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "90b4c0d9555854e858fba369ece076a7a1be2bcae61286ac943e4198da1e8f3d",
+  "results": [
+    {
+      "place_id": 30797536,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 159265218,
+      "lat": "-8.2449972",
+      "lon": "111.8105410",
+      "category": "highway",
+      "type": "tertiary",
+      "place_rank": 26,
+      "importance": 0.05337333409628439,
+      "addresstype": "tertiary",
+      "name": "Jalan Pantai Popoh",
+      "display_name": "Jalan Pantai Popoh, Besole, Tulungagung, Jawa Timur, Indonesia",
+      "extratags": null,
+      "boundingbox": [
+        "-8.2546032",
+        "-8.2392395",
+        "111.8065361",
+        "111.8125955"
+      ]
+    },
+    {
+      "place_id": 419015719,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 1525706834,
+      "lat": "-8.2575711",
+      "lon": "111.8029237",
+      "category": "highway",
+      "type": "tertiary",
+      "place_rank": 26,
+      "importance": 0.053370834668497714,
+      "addresstype": "tertiary",
+      "name": "Jalan Pantai Popoh",
+      "display_name": "Jalan Pantai Popoh, Tulungagung, Jawa Timur, Indonesia",
+      "extratags": null,
+      "boundingbox": [
+        "-8.2579689",
+        "-8.2560192",
+        "111.8012384",
+        "111.8061459"
+      ]
+    },
+    {
+      "place_id": 419015718,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 1525706833,
+      "lat": "-8.2551961",
+      "lon": "111.8060611",
+      "category": "highway",
+      "type": "residential",
+      "place_rank": 26,
+      "importance": 0.053370834668497714,
+      "addresstype": "residential",
+      "name": "Jalan Pantai Popoh",
+      "display_name": "Jalan Pantai Popoh, Tulungagung, Jawa Timur, Indonesia",
+      "extratags": null,
+      "boundingbox": [
+        "-8.2560475",
+        "-8.2546032",
+        "111.8060547",
+        "111.8065361"
+      ]
+    },
+    {
+      "place_id": 30606934,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 228483846,
+      "lat": "-8.2632672",
+      "lon": "111.8033164",
+      "category": "amenity",
+      "type": "parking",
+      "place_rank": 30,
+      "importance": 9.99999999995449e-06,
+      "addresstype": "amenity",
+      "name": "PARKIR PANTAI POPOH",
+      "display_name": "PARKIR PANTAI POPOH, Jalan Pantai Popoh, Besole, Tulungagung, Jawa Timur, Indonesia",
+      "extratags": {
+        "parking": "surface"
+      },
+      "boundingbox": [
+        "-8.2635985",
+        "-8.2629982",
+        "111.8030601",
+        "111.8035767"
+      ]
+    },
+    {
+      "place_id": 30565320,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 232567515,
+      "lat": "-8.2619603",
+      "lon": "111.8036124",
+      "category": "building",
+      "type": "residential",
+      "place_rank": 30,
+      "importance": 9.99999999995449e-06,
+      "addresstype": "building",
+      "name": "pendopo pantai popoh",
+      "display_name": "pendopo pantai popoh, Jalan Pantai Popoh, Besole, Tulungagung, Jawa Timur, Indonesia",
+      "extratags": null,
+      "boundingbox": [
+        "-8.2621437",
+        "-8.2617675",
+        "111.8034791",
+        "111.8038630"
+      ]
+    }
+  ]
+}

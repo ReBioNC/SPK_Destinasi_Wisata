@@ -1,0 +1,33 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Pantai+Sine%2C+Tulungagung%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Pantai Sine, Tulungagung, Indonesia",
+  "accessed_at_utc": "2026-11-16T12:48:32.287824+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "39a44e07eba03bd26212da5cb5395e27b672d1bd222a6dbd33a91f9f90e2bf7d",
+  "results": [
+    {
+      "place_id": 30826752,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 12606517986,
+      "lat": "-8.2810482",
+      "lon": "111.9402444",
+      "category": "natural",
+      "type": "bay",
+      "place_rank": 22,
+      "importance": 0.10670666742961774,
+      "addresstype": "bay",
+      "name": "Pantai Sine",
+      "display_name": "Pantai Sine, Tulungagung, Jawa Timur, Indonesia",
+      "extratags": null,
+      "boundingbox": [
+        "-8.2810982",
+        "-8.2809982",
+        "111.9401944",
+        "111.9402944"
+      ]
+    }
+  ]
+}

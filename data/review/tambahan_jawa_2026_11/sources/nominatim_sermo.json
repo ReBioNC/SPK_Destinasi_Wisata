@@ -1,0 +1,38 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Waduk+Sermo%2C+Kulon+Progo%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Waduk Sermo, Kulon Progo, Indonesia",
+  "accessed_at_utc": "2026-11-16T12:48:21.105302+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "42be04c9d70cff288e28357452a0c0db8a230e4e1a1f75fc696d1ef6a7bd456d",
+  "results": [
+    {
+      "place_id": 31863673,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 714723255,
+      "lat": "-7.8213640",
+      "lon": "110.1195129",
+      "category": "water",
+      "type": "reservoir",
+      "place_rank": 20,
+      "importance": 0.31568281446101826,
+      "addresstype": "reservoir",
+      "name": "Waduk Sermo",
+      "display_name": "Waduk Sermo, Sidowayah, Hargowilis, Kokap, Kulonprogo, Daerah Istimewa Yogyakarta, Indonesia",
+      "extratags": {
+        "fishing": "yes",
+        "natural": "water",
+        "wikidata": "Q12523802",
+        "wikipedia": "id:Waduk Sermo"
+      },
+      "boundingbox": [
+        "-7.8310727",
+        "-7.8116497",
+        "110.1037310",
+        "110.1241793"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Puncak+Suroloyo%2C+Kulon+Progo%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Puncak Suroloyo, Kulon Progo, Indonesia",
+  "accessed_at_utc": "2026-11-16T12:48:25.179711+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "4a216dc346cdc8e1179f2e0bac2b41a0b019b9c982235f161f7a429a110f524b",
+  "results": [
+    {
+      "place_id": 31836152,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 5071290686,
+      "lat": "-7.6475662",
+      "lon": "110.1813747",
+      "category": "amenity",
+      "type": "parking",
+      "place_rank": 30,
+      "importance": 5.000152590214416e-05,
+      "addresstype": "amenity",
+      "name": "Puncak Suroloyo",
+      "display_name": "Puncak Suroloyo, Bigaran, Wonolelo, Sidoharjo, Samigaluh, Kulonprogo, Daerah Istimewa Yogyakarta, 56553, Indonesia",
+      "extratags": null,
+      "boundingbox": [
+        "-7.6476162",
+        "-7.6475162",
+        "110.1813247",
+        "110.1814247"
+      ]
+    }
+  ]
+}

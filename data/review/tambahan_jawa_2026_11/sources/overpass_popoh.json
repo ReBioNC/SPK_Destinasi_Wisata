@@ -1,0 +1,72 @@
+{
+  "_endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25];nwr[\"name\"~\"Popoh\"](-8.3,111.75,-8.22,111.85);out center tags;",
+  "accessed_at_utc": "2026-11-16T12:52:42.892428+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "3ebf9dbb15e0aed92891f25f67782f30605c77269dcb394e0bfa4f61a3c08db2",
+  "elements": [
+    {
+      "type": "way",
+      "id": 159265218,
+      "center": {
+        "lat": -8.2469214,
+        "lon": 111.8095658
+      },
+      "tags": {
+        "highway": "tertiary",
+        "name": "Jalan Pantai Popoh",
+        "source": "Bing"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1525706831,
+      "center": {
+        "lat": -8.2554572,
+        "lon": 111.8067641
+      },
+      "tags": {
+        "highway": "tertiary",
+        "name": "Jalan Pantai Popoh"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1525706832,
+      "center": {
+        "lat": -8.256194,
+        "lon": 111.8065691
+      },
+      "tags": {
+        "highway": "tertiary",
+        "name": "Jalan Pantai Popoh"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1525706833,
+      "center": {
+        "lat": -8.2553253,
+        "lon": 111.8062954
+      },
+      "tags": {
+        "highway": "residential",
+        "name": "Jalan Pantai Popoh"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1525706834,
+      "center": {
+        "lat": -8.256994,
+        "lon": 111.8036922
+      },
+      "tags": {
+        "highway": "tertiary",
+        "name": "Jalan Pantai Popoh"
+      }
+    }
+  ]
+}
