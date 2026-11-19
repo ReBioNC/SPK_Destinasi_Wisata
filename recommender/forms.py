@@ -56,7 +56,8 @@ class PreferensiForm(forms.Form):
         self.fields["wilayah"].choices = [(w, w) for w in wilayah]
         self.fields["kategori_utama"].choices = [(k, k) for k in kategori]
         self.fields["kategori_sekunder"].choices = [(k, k) for k in kategori]
-        self.fields["hobi"].choices = [(t, t) for t in tags]
+        # Value tetap tag asli; label hanya dirapikan untuk tampilan (rekreasi_keluarga -> rekreasi keluarga).
+        self.fields["hobi"].choices = [(t, t.replace("_", " ")) for t in tags]
         self.fields["profil"].choices = [(k, v["label"]) for k, v in profiles.ACTIVE_PROFILES.items()]
 
     def clean_budget(self):

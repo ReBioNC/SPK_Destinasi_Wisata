@@ -1,0 +1,24 @@
+{
+  "_endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25];nwr[\"name\"~\"[Ll]inggo ?[Aa]sri\"](-7.14,109.54,-7.06,109.62);out center tags;",
+  "accessed_at_utc": "2026-11-16T14:23:46.565675+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "dfe7d3314143af34494049e9f68ea6457a8a24839d23e8cb488a3f88bf5b72cf",
+  "elements": [
+    {
+      "type": "node",
+      "id": 1308673992,
+      "lat": -7.1021509,
+      "lon": 109.5827396,
+      "tags": {
+        "admin_level": "7",
+        "name": "Linggoasri",
+        "place": "village",
+        "ref": "33.26.08.2003",
+        "wikidata": "Q11018372"
+      }
+    }
+  ]
+}

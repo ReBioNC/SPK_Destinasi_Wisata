@@ -21,15 +21,15 @@ Input user ─► filter (provinsi + tiket ≤ budget) ─► matriks C1–C6 �
 
 | Hal | Nilai |
 | --- | --- |
-| Total destinasi | **443** = 437 Kaggle + 6 kurasi Jawa |
+| Total destinasi | **466** = 437 Kaggle + 6 kurasi Jawa + 23 kurasi Jawa November 2026 |
 | Provinsi tujuan | 6 (Banten, DKI, Jabar, Jateng, DIY, Jatim) |
 | Kriteria | 6: C1 harga, C3 jarak (**cost**); C2 rating, C4 fasilitas, C5 kategori, C6 hobi (**benefit**) |
 | Profil AHP | 4: Seimbang (**kuesioner 28 responden**), Hemat, Kualitas, Petualang (preset). Semua **CR < 0,1** |
 | RI (n = 6) | 1,24 |
-| Hasil K-Means | **k = 2** (414 & 29 anggota), silhouette **0,54302** |
-| Fitur K-Means | 8: harga (cap P99 Rp275.800 + Z-score), rating (Z-score), 6 one-hot kategori |
+| Hasil K-Means | **k = 2** (441 & 25 anggota), silhouette **0,57581** |
+| Fitur K-Means | 8: harga (cap P99 Rp273.500 + Z-score), rating (Z-score), 6 one-hot kategori |
 | Output | Maksimal **10** rekomendasi |
-| Tiket gratis | 137 dari 443 destinasi (Rp0) |
+| Tiket gratis | 137 dari 466 destinasi (Rp0) |
 
 ### Bobot profil (hasil AHP)
 
@@ -52,7 +52,7 @@ benefit sekaligus, dan **tidak rusak oleh nilai nol**. Data kita banyak berisi n
 | --- | --- | --- |
 | **SAW** | Jumlah terbobot dari nilai ternormalisasi | Normalisasi cost `min/x` **tidak terdefinisi kalau ada x = 0** (tiket gratis). Hanya mengukur "skor total", tidak ada konsep jarak ke ideal. **Tetap dipakai sebagai pembanding internal** (`spk/validation.py` + Spearman) |
 | **WP** (Weighted Product) | Perkalian nilai berpangkat bobot | Nilai 0 membuat hasil kali = 0, dan cost berpangkat negatif `0^(-w)` **tidak terdefinisi**. Padahal banyak C1/C5/C6 = 0 |
-| **AHP penuh** (untuk alternatif juga) | Bandingkan semua alternatif berpasangan | 443 destinasi → 443×442/2 ≈ **97.903 perbandingan per kriteria**. Mustahil, dan kandidat berubah tiap input user |
+| **AHP penuh** (untuk alternatif juga) | Bandingkan semua alternatif berpasangan | 466 destinasi → 466×465/2 ≈ **108.345 perbandingan per kriteria**. Mustahil, dan kandidat berubah tiap input user |
 | **VIKOR** | Solusi kompromi (utility S, regret R, Q) | Perlu parameter tambahan *v* dan syarat penerimaan, jadi lebih rumit dijelaskan ke user awam. Kebutuhan kita cukup dengan ranking |
 | **ELECTRE / PROMETHEE** | Outranking dengan threshold dan fungsi preferensi | Butuh threshold indifference/preference per kriteria yang tidak punya dasar data. Hasil bisa parsial (tidak semua alternatif terurut) |
 
@@ -83,14 +83,14 @@ benefit sekaligus, dan **tidak rusak oleh nilai nol**. Data kita banyak berisi n
 
 - Tujuannya **segmentasi tanpa label** (unsupervised), yaitu mengelompokkan destinasi yang mirip harga, rating, dan kategori.
 - Sederhana, centroid mudah dijelaskan ("cluster harga rendah vs tinggi"), dan cocok untuk fitur numerik yang sudah distandardisasi.
-- k dipilih secara objektif: coba **k = 2..6**, ambil **silhouette tertinggi**, dengan syarat ukuran cluster minimal **22** (5% dari 443).
+- k dipilih secara objektif: coba **k = 2..6**, ambil **silhouette tertinggi**, dengan syarat ukuran cluster minimal **23** (5% dari 466).
 - k-means++, 10 inisialisasi, **seed 42** → hasil reprodusibel.
 - Harga di-**cap P99** karena K-Means sensitif terhadap outlier. Cap **hanya untuk fitur clustering**; C1 TOPSIS tetap memakai harga asli.
 - **Bukan metode ranking**: label cluster tidak memfilter kandidat dan tidak mengubah bobot.
-- Silhouette 0,543 = evaluasi internal bentuk cluster, **bukan akurasi rekomendasi**.
+- Silhouette 0,576 = evaluasi internal bentuk cluster, **bukan akurasi rekomendasi**.
 
 Kenapa bukan DBSCAN atau hierarchical? DBSCAN butuh `eps/minPts` dan bisa
-menandai titik sebagai noise, padahal semua 443 destinasi wajib berlabel.
+menandai titik sebagai noise, padahal semua 466 destinasi wajib berlabel.
 Hierarchical lebih berat dan label akhirnya tetap perlu dipotong manual.
 
 ## 6. Kenapa kriteria dihitung seperti itu?
@@ -98,7 +98,7 @@ Hierarchical lebih berat dan label akhirnya tetap perlu dipotong manual.
 | Kriteria | Pilihan | Alasan |
 | --- | --- | --- |
 | C1 Harga | Harga tiket asli 1 destinasi/orang | Budget = batas **tiket**, bukan total perjalanan. Ongkos transport/makan/inap tidak punya data yang terkalibrasi |
-| C2 Rating | Rating sumber; Tahura diimputasi median 4,5 | Lebih baik daripada membuang destinasi; imputasi dicatat di data, tidak ditampilkan di kartu hasil |
+| C2 Rating | Rating sumber; Tahura + 7 kandidat November 2026 diimputasi median 4,5 | Lebih baik daripada membuang destinasi; imputasi dicatat di data, tidak ditampilkan di kartu hasil |
 | C3 Jarak | **Haversine** (garis lurus, R = 6371 km) | Deterministik, tanpa API eksternal (OSRM ada rate limit). Konsekuensinya bukan jarak jalan |
 | C4 Fasilitas | Jumlah penyebutan di deskripsi ÷ 6 | Tidak ada data fasilitas lapangan. **0 = tidak disebut**, bukan pasti tidak ada |
 | C5 Kategori | Utama 1, sekunder 0,5, lain 0 | Sederhana dan mengakomodasi dua minat |
@@ -114,9 +114,10 @@ preparation. CRISP-DM adalah **kerangka**, bukan algoritma.
 
 ## 8. Keputusan data penting
 
-- **Semua 443 ID dipertahankan.** Data bermasalah tidak dihapus, tapi diberi flag dan catatan kualitas.
+- **Semua 466 ID dipertahankan.** Data bermasalah tidak dihapus, tapi diberi flag dan catatan kualitas.
 - **Pelabuhan Marina**: label Jakarta, tapi koordinat sumber di luar Jawa (dekat Batam). Dipertahankan dan diberi flag review.
-- **Tahura**: rating kosong → diimputasi median 4,5 untuk model. Rating sumber tetap kosong.
+- **Kebun Tanaman Obat Sari Alam (ID323)**: deskripsi di Ciwidey, Bandung, tapi koordinat Kaggle di sekitar Bogor (±114 km). Koordinat tidak dipindahkan; diberi flag review.
+- **Tahura + 7 kandidat November 2026**: rating kosong/listing belum cocok → diimputasi median 4,5 (dari 458 rating teramati) untuk model. Rating sumber tetap kosong.
 - **Pipeline ber-hash/fingerprint**: importer dan trainer menolak data olahan yang usang, jadi DB dan model tidak memakai hasil preprocessing lama.
 
 ## 9. Stack singkat

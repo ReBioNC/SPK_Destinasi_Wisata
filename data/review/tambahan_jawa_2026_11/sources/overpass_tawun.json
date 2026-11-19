@@ -1,0 +1,78 @@
+{
+  "_endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25];nwr[\"name\"~\"Tawun\"](-7.45,111.45,-7.38,111.52);out center tags;",
+  "accessed_at_utc": "2026-11-16T12:53:28.604612+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "3827805e6c9d3e98bffd1ab17693927ad48d36aa676860133b47d2217175566f",
+  "elements": [
+    {
+      "type": "node",
+      "id": 1308668646,
+      "lat": -7.3975536,
+      "lon": 111.4894621,
+      "tags": {
+        "admin_level": "7",
+        "name": "Tawun",
+        "place": "village",
+        "ref": "35.21.19.2007",
+        "wikidata": "Q13542218"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1643965205,
+      "lat": -7.4128431,
+      "lon": 111.489585,
+      "tags": {
+        "junction": "yes",
+        "name": "Simpang Tiga Tawun",
+        "traffic_signals:direction": "both"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2230344007,
+      "lat": -7.3971382,
+      "lon": 111.4909627,
+      "tags": {
+        "covered": "no",
+        "name": "Taman Rekreasi Tawun",
+        "tourism": "theme_park"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2389784520,
+      "lat": -7.4125665,
+      "lon": 111.4893898,
+      "tags": {
+        "amenity": "hospital",
+        "emergency": "no",
+        "name": "Puskesmas Tawun"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13592223054,
+      "lat": -7.4125537,
+      "lon": 111.4882452,
+      "tags": {
+        "highway": "trunk",
+        "junction": "yes",
+        "name": "Lampu Merah Tawun"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13810066378,
+      "lat": -7.3960154,
+      "lon": 111.491144,
+      "tags": {
+        "name": "Sendang Tawun",
+        "natural": "spring"
+      }
+    }
+  ]
+}

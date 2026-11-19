@@ -1,0 +1,38 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Lokawisata+Baturraden%2C+Banyumas%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Lokawisata Baturraden, Banyumas, Indonesia",
+  "accessed_at_utc": "2026-11-16T12:48:17.813481+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "a2ce9969bb51890ebe9985da47b847ff8a20eb9486395a6ef74fe2846c25491f",
+  "results": [
+    {
+      "place_id": 31839868,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 988461595,
+      "lat": "-7.3121569",
+      "lon": "109.2278105",
+      "category": "leisure",
+      "type": "park",
+      "place_rank": 24,
+      "importance": 0.08004766689555197,
+      "addresstype": "park",
+      "name": "Lokawisata Baturraden",
+      "display_name": "Lokawisata Baturraden, Purwokerto, Banyumas, Jawa Tengah, 53151, Indonesia",
+      "extratags": {
+        "email": "lokawisatabaturraden@gmail.com",
+        "operator": "Dinas Pemuda Olahraga Budaya Pariwisata Banyumas",
+        "description": "Lokawisata Baturraden is Natural Tourist Spot in Banyumas Regency",
+        "opening_hours": "Mo-Su 07:00-17:00"
+      },
+      "boundingbox": [
+        "-7.3139760",
+        "-7.3106319",
+        "109.2258137",
+        "109.2297502"
+      ]
+    }
+  ]
+}

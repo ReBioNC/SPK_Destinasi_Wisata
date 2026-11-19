@@ -1,0 +1,79 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Selokambang%2C+Lumajang%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Selokambang, Lumajang, Indonesia",
+  "accessed_at_utc": "2026-11-16T13:34:41.528381+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "733213b5fdce4cd91ee9956ca7e559c4fe8d2ddc4ce52e275bf23c9858839aa2",
+  "results": [
+    {
+      "place_id": 30617330,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 194443491,
+      "lat": "-8.1407166",
+      "lon": "113.1729188",
+      "category": "natural",
+      "type": "water",
+      "place_rank": 22,
+      "importance": 0.10671601052872508,
+      "addresstype": "water",
+      "name": "Pemandian Alam Selokambang",
+      "display_name": "Pemandian Alam Selokambang, Mojosari, Lumajang, Jawa Timur, Indonesia",
+      "extratags": null,
+      "boundingbox": [
+        "-8.1409381",
+        "-8.1404524",
+        "113.1724908",
+        "113.1732830"
+      ]
+    },
+    {
+      "place_id": 30503613,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 194979214,
+      "lat": "-8.1412614",
+      "lon": "113.1738525",
+      "category": "amenity",
+      "type": "parking",
+      "place_rank": 30,
+      "importance": 4.934386205839654e-05,
+      "addresstype": "amenity",
+      "name": "Parkir Selokambang",
+      "display_name": "Parkir Selokambang, Jalan Mahameru, Sentul, Lumajang, Jawa Timur, 67352, Indonesia",
+      "extratags": {
+        "parking": "surface"
+      },
+      "boundingbox": [
+        "-8.1415612",
+        "-8.1409615",
+        "113.1735999",
+        "113.1740556"
+      ]
+    },
+    {
+      "place_id": 30587945,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 2101295449,
+      "lat": "-8.1408126",
+      "lon": "113.1738886",
+      "category": "tourism",
+      "type": "picnic_site",
+      "place_rank": 30,
+      "importance": 4.934386205839654e-05,
+      "addresstype": "tourism",
+      "name": "Pemandian Alam Selokambang",
+      "display_name": "Pemandian Alam Selokambang, Jalan Mahameru, Sentul, Lumajang, Jawa Timur, 67352, Indonesia",
+      "extratags": null,
+      "boundingbox": [
+        "-8.1408626",
+        "-8.1407626",
+        "113.1738386",
+        "113.1739386"
+      ]
+    }
+  ]
+}

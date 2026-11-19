@@ -1,0 +1,10 @@
+{
+  "_endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25];nwr[\"name\"~\"[Jj]olotundo\"](-7.66,110.52,-7.55,110.66);out center tags;",
+  "accessed_at_utc": "2026-11-16T14:30:25.184787+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "568ae0fe1a3673f1d6643128c689a61f793b4580559e21c910d6b825cedb294e",
+  "elements": []
+}

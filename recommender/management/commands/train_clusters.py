@@ -1,4 +1,4 @@
-"""Offline K-Means on every Java443 destination, using shared preprocessing."""
+"""Offline K-Means on every Java destination, using shared preprocessing."""
 import json
 import os
 import tempfile
@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction, DatabaseError
-from recommender.data_pipeline import validate_artifacts
+from recommender.data_pipeline import TOTAL_DESTINATIONS, validate_artifacts
 from recommender.model_report import silhouette_samples
 from recommender.models import Destination
 
@@ -95,7 +95,7 @@ def _silhouette(data, labels):
 
 
 class Command(BaseCommand):
-    help = "Latih seluruh 443 destinasi, evaluasi k=2..6, dan simpan label segmen."
+    help = "Latih seluruh destinasi, evaluasi k=2..6, dan simpan label segmen."
 
     def add_arguments(self, parser):
         parser.add_argument("--dry-run", action="store_true")
@@ -109,8 +109,8 @@ class Command(BaseCommand):
             raise CommandError(str(error)) from error
         destinations = list(Destination.objects.order_by("source_id"))
         fingerprint = result.manifest["pipeline_fingerprint"]
-        if len(destinations) != 443 or [d.source_id for d in destinations] != list(range(1,444)):
-            raise CommandError("Database harus tepat 443 ID; jalankan import_destinations.")
+        if [d.source_id for d in destinations] != list(range(1, TOTAL_DESTINATIONS + 1)):
+            raise CommandError(f"Database harus tepat {TOTAL_DESTINATIONS} ID; jalankan import_destinations.")
         for destination, row in zip(destinations, result.destinations.to_dict("records")):
             if (destination.pipeline_fingerprint != fingerprint
                 or destination.harga_tiket != row["price"]
@@ -152,10 +152,10 @@ class Command(BaseCommand):
                              "mean_facility_score": round(float(np.mean([d.facility_score() for d in members])),3)})
         report = {
             "method": "K-Means, k-means++ initialization, 10 starts, seed 42",
-            "training_source": "437 Kaggle + 6 curated Java",
-            "training_rows": 443, "assigned_rows": 443, "assigned_simulation_rows": 0,
+            "training_source": f"437 Kaggle + {TOTAL_DESTINATIONS - 437} curated Java",
+            "training_rows": TOTAL_DESTINATIONS, "assigned_rows": TOTAL_DESTINATIONS, "assigned_simulation_rows": 0,
             "pipeline_version": result.manifest["pipeline_version"], "pipeline_fingerprint": fingerprint,
-            "source_hashes": result.manifest["source_hashes"], "place_ids": list(range(1,444)),
+            "source_hashes": result.manifest["source_hashes"], "place_ids": list(range(1, TOTAL_DESTINATIONS + 1)),
             "rating_imputation": result.manifest["rating_imputation"],
             "features": columns, "feature_parameters": parameters,
             "ticket_price_cap_p99": parameters["ticket_price_cap_p99"],
@@ -168,10 +168,10 @@ class Command(BaseCommand):
             "candidates": [{"k": item[0], "silhouette": round(item[1],5), "inertia": round(item[2],5),
                             "smallest_cluster": item[5]} for item in candidates],
             "clusters": clusters, "excluded_feature": parameters["excluded"],
-            "limitation": "Rating Tahura diimputasi, C4/tag heuristik, koordinat Marina perlu review. Silhouette bukan akurasi rekomendasi; segmen tidak menyaring TOPSIS.",
+            "limitation": "Rating model Tahura dan tujuh kandidat November 2026 diimputasi median, C4/tag heuristik, koordinat Marina perlu review. Silhouette bukan akurasi rekomendasi; segmen tidak menyaring TOPSIS.",
         }
         if not options["dry_run"]:
             path = root / "reports/clustering/kmeans_evaluation.json"
             _save_labels_and_report(destinations, labels, names, report, path)
-        self.stdout.write(f"training=443 assigned=443 k={k} silhouette={score:.4f} inertia={inertia:.2f}"
+        self.stdout.write(f"training={TOTAL_DESTINATIONS} assigned={TOTAL_DESTINATIONS} k={k} silhouette={score:.4f} inertia={inertia:.2f}"
                           + (" (dry-run)" if options["dry_run"] else " — label dan laporan tersimpan"))

@@ -36,20 +36,20 @@ class Java443TrainingTests(TestCase):
     def test_report_and_labels_include_all_443(self):
         self.train()
         report = json.loads((self.root / 'reports/clustering/kmeans_evaluation.json').read_text(encoding='utf-8'))
-        self.assertEqual(report['training_rows'], 443)
-        self.assertEqual(report['assigned_rows'], 443)
+        self.assertEqual(report['training_rows'], 466)
+        self.assertEqual(report['assigned_rows'], 466)
         self.assertEqual(report['assigned_simulation_rows'], 0)
-        self.assertEqual(report['rating_imputation']['imputed_ids'], [438])
+        self.assertEqual(report['rating_imputation']['imputed_ids'], [438, 444, 446, 447, 451, 459, 462, 463])
         self.assertEqual(report['features'], self.result.manifest['feature_parameters']['feature_columns'])
-        self.assertEqual(sum(c['all_rows'] for c in report['clusters']), 443)
-        self.assertEqual(Destination.objects.exclude(cluster_label='').count(), 443)
+        self.assertEqual(sum(c['all_rows'] for c in report['clusters']), 466)
+        self.assertEqual(Destination.objects.exclude(cluster_label='').count(), 466)
 
     def test_dry_run_does_not_change_labels_or_report(self):
         Destination.objects.update(cluster_label='unchanged')
         path = self.root / 'reports/clustering/kmeans_evaluation.json'
         old = path.read_bytes() if path.exists() else None
         self.train(dry_run=True)
-        self.assertEqual(Destination.objects.filter(cluster_label='unchanged').count(), 443)
+        self.assertEqual(Destination.objects.filter(cluster_label='unchanged').count(), 466)
         self.assertEqual(path.read_bytes() if path.exists() else None, old)
 
     def test_missing_extra_or_stale_database_rejected(self):
@@ -80,7 +80,7 @@ class Java443TrainingTests(TestCase):
         with patch('os.replace',side_effect=PermissionError('locked report')):
             with self.assertRaises(CommandError):
                 call_command('train_clusters',project_root=str(self.root),stdout=io.StringIO())
-        self.assertEqual(Destination.objects.filter(cluster_label='previous label').count(),443)
+        self.assertEqual(Destination.objects.filter(cluster_label='previous label').count(),466)
         self.assertEqual(path.read_bytes(),b'previous report')
 
     def test_staging_write_failure_does_not_change_labels_or_report(self):
@@ -91,7 +91,7 @@ class Java443TrainingTests(TestCase):
         with patch.object(Path,'write_text',side_effect=PermissionError('disk denied')):
             with self.assertRaises((OSError,CommandError)):
                 call_command('train_clusters',project_root=str(self.root),stdout=io.StringIO())
-        self.assertEqual(Destination.objects.filter(cluster_label='previous label').count(),443)
+        self.assertEqual(Destination.objects.filter(cluster_label='previous label').count(),466)
         self.assertEqual(path.read_bytes(),b'previous report')
 
     def test_transaction_exit_failure_restores_previous_report_and_labels(self):
@@ -109,5 +109,5 @@ class Java443TrainingTests(TestCase):
         with patch('recommender.management.commands.train_clusters.transaction.atomic',side_effect=failing_exit):
             with self.assertRaises(CommandError):
                 call_command('train_clusters',project_root=str(self.root),stdout=io.StringIO())
-        self.assertEqual(Destination.objects.filter(cluster_label='previous label').count(),443)
+        self.assertEqual(Destination.objects.filter(cluster_label='previous label').count(),466)
         self.assertEqual(path.read_bytes(),b'previous report')

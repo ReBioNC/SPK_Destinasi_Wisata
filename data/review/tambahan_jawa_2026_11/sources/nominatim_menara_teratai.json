@@ -1,0 +1,36 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Menara+Teratai%2C+Purwokerto%2C+Banyumas%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Menara Teratai, Purwokerto, Banyumas, Indonesia",
+  "accessed_at_utc": "2026-11-16T13:34:35.242575+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "8eebc67c99a932c418143ecfdc863361b5cd76a6fe0c01e3a1a5bf53eaf47ff5",
+  "results": [
+    {
+      "place_id": 32016641,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 10015798855,
+      "lat": "-7.4314537",
+      "lon": "109.2326047",
+      "category": "tourism",
+      "type": "viewpoint",
+      "place_rank": 30,
+      "importance": 4.766689555194961e-05,
+      "addresstype": "tourism",
+      "name": "Menara Pandang Teratai Purwokerto",
+      "display_name": "Menara Pandang Teratai Purwokerto, Jalan Bung Karno, Kota Baru Purwokerto, Purwokerto, Banyumas, Jawa Tengah, 53141, Indonesia",
+      "extratags": {
+        "man_made": "tower",
+        "tower:type": "observation"
+      },
+      "boundingbox": [
+        "-7.4315037",
+        "-7.4314037",
+        "109.2325547",
+        "109.2326547"
+      ]
+    }
+  ]
+}

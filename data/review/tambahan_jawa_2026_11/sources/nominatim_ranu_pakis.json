@@ -1,0 +1,36 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Ranu+Pakis%2C+Lumajang%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Ranu Pakis, Lumajang, Indonesia",
+  "accessed_at_utc": "2026-11-16T13:34:45.920151+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "9eb70081311d43e91c65075669aac3ce15a6cff4192dda24650811d41bb35d8c",
+  "results": [
+    {
+      "place_id": 29843085,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 43388445,
+      "lat": "-7.9980227",
+      "lon": "113.2694974",
+      "category": "natural",
+      "type": "water",
+      "place_rank": 22,
+      "importance": 0.10671601052872508,
+      "addresstype": "water",
+      "name": "Ranu Pakis",
+      "display_name": "Ranu Pakis, Ranupakis, Lumajang, Jawa Timur, Indonesia",
+      "extratags": {
+        "boundary": "protected_area",
+        "protect_class": "6"
+      },
+      "boundingbox": [
+        "-8.0014902",
+        "-7.9943293",
+        "113.2660493",
+        "113.2730314"
+      ]
+    }
+  ]
+}

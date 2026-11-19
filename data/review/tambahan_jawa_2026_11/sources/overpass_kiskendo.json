@@ -1,0 +1,10 @@
+{
+  "_endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25];nwr[\"name\"~\"Kiskendo\"](-7.8,110.05,-7.7,110.15);out center tags;",
+  "accessed_at_utc": "2026-11-16T12:51:22.698929+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "58e8a5ad3e92659da7b34a7cb6b5d84e1a4840c6b2955177d6f00c5533afebf8",
+  "elements": []
+}

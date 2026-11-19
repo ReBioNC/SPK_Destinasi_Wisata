@@ -1,0 +1,10 @@
+{
+  "_endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25];nwr[\"name\"~\"Sidem\"](-8.3,111.75,-8.22,111.85);out center tags;",
+  "accessed_at_utc": "2026-11-16T12:52:02.854200+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "5dce4a07d67699719f092b4ba9d1b253e21064ccb1d1ad7fd94078157bdc9cf2",
+  "elements": []
+}

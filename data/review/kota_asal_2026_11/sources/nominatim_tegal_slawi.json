@@ -1,0 +1,53 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Slawi%2C+Kabupaten+Tegal%2C+Jawa+Tengah%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id",
+  "query": "Slawi, Kabupaten Tegal, Jawa Tengah, Indonesia",
+  "accessed_at_utc": "2026-11-19T04:38:05.951168+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "b61efbe3ca9455618f45fcf0ec1dec8eba8d76886ee12eb18f2417a07c2c3533",
+  "results": [
+    {
+      "place_id": 32623572,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 10957525366,
+      "lat": "-6.9829139",
+      "lon": "109.1363731",
+      "category": "place",
+      "type": "town",
+      "place_rank": 18,
+      "importance": 0.33155205287302,
+      "addresstype": "town",
+      "name": "Slawi",
+      "display_name": "Slawi, Tegal, Jawa Tengah, 52419, Indonesia",
+      "boundingbox": [
+        "-7.0229139",
+        "-6.9429139",
+        "109.0963731",
+        "109.1763731"
+      ]
+    },
+    {
+      "place_id": 32686028,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 1239880309,
+      "lat": "-6.9818975",
+      "lon": "109.1365597",
+      "category": "railway",
+      "type": "station",
+      "place_rank": 30,
+      "importance": 0.24632300460320036,
+      "addresstype": "railway",
+      "name": "Slawi",
+      "display_name": "Slawi, Jalan Samanhudi, Slawi, Tegal, Jawa Tengah, 52419, Indonesia",
+      "boundingbox": [
+        "-6.9868975",
+        "-6.9768975",
+        "109.1315597",
+        "109.1415597"
+      ]
+    }
+  ]
+}

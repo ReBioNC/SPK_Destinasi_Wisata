@@ -29,13 +29,13 @@ class PreprocessingRetentionTests(unittest.TestCase):
 
     def test_all_443_source_ids_survive_preprocessing(self):
         actual = self.scope['destinations']
-        self.assertEqual(len(actual), 443)
-        self.assertEqual(set(actual.place_id), set(range(1, 444)))
+        self.assertEqual(len(actual), 466)
+        self.assertEqual(set(actual.place_id), set(range(1, 467)))
         self.assertTrue(actual.place_id.is_unique)
 
     def test_feature_matrix_retains_the_same_443_destinations(self):
-        self.assertEqual(set(self.scope['kmeans_ready'].place_id), set(range(1, 444)))
-        self.assertEqual(len(self.scope['kmeans_ready']), 443)
+        self.assertEqual(set(self.scope['kmeans_ready'].place_id), set(range(1, 467)))
+        self.assertEqual(len(self.scope['kmeans_ready']), 466)
 
     def test_ambiguous_tahura_rating_stays_missing_without_losing_the_row(self):
         actual = self.scope['destinations'].set_index('place_id')
@@ -53,6 +53,16 @@ class PreprocessingRetentionTests(unittest.TestCase):
                     self.assertEqual(actual.loc[place_id, 'rating'], rating)
                     self.assertTrue(actual.loc[place_id, 'rating_source_url'].startswith('https://www.google.com/maps/place/'))
 
+    def test_unmatched_november_ratings_stay_missing_and_use_median(self):
+        actual = self.scope['destinations'].set_index('place_id')
+        for place_id in (444, 446, 447, 451, 459, 462, 463):
+            with self.subTest(place_id=place_id):
+                self.assertTrue(pd.isna(actual.loc[place_id, 'rating']))
+                self.assertEqual(actual.loc[place_id, 'rating_status'], 'pending_identity')
+                self.assertEqual(actual.loc[place_id, 'c2_rating_for_model'], 4.5)
+        self.assertEqual(actual.loc[445, 'rating_status'], 'google_maps_matched')
+        self.assertFalse(actual.loc[445, 'rating_imputed'])
+
     def test_tahura_uses_median_only_in_calculation_column(self):
         row = self.scope['destinations'].set_index('place_id').loc[438]
         self.assertEqual(row.get('c2_rating_for_model'), 4.5)
@@ -64,7 +74,7 @@ class PreprocessingRetentionTests(unittest.TestCase):
         features = self.scope['kmeans_ready']
         values = features.drop(columns='place_id').to_numpy()
         self.assertTrue(np.isfinite(values).all())
-        self.assertEqual(len(values), 443)
+        self.assertEqual(len(values), 466)
 
     def test_observed_ratings_are_not_replaced_with_median(self):
         actual = self.scope['destinations']
@@ -72,7 +82,7 @@ class PreprocessingRetentionTests(unittest.TestCase):
         if 'c2_rating_for_model' in actual.columns:
             known = actual['rating'].notna()
             pd.testing.assert_series_equal(actual.loc[known, 'rating'], actual.loc[known, 'c2_rating_for_model'], check_names=False)
-            self.assertEqual(set(actual.loc[actual.rating_imputed, 'place_id']), {438})
+            self.assertEqual(set(actual.loc[actual.rating_imputed, 'place_id']), set([438, 444, 446, 447, 451, 459, 462, 463]))
 
     def test_marina_remains_with_original_coordinates_and_review_flag(self):
         row = self.scope['destinations'].set_index('place_id').loc[9]
@@ -80,6 +90,16 @@ class PreprocessingRetentionTests(unittest.TestCase):
         self.assertEqual(row['place_name'], 'Pelabuhan Marina')
         self.assertAlmostEqual(row['lat'], 1.07888)
         self.assertAlmostEqual(row['long'], 103.931398)
+
+    def test_kto_sari_alam_keeps_source_coordinates_with_review_flag(self):
+        actual = self.scope['destinations'].set_index('place_id')
+        row = actual.loc[323]
+        self.assertEqual(row['place_name'], 'Kebun Tanaman Obat Sari Alam')
+        self.assertTrue(row['coordinate_review_required'])
+        self.assertIn('Ciwidey', row['coordinate_review_note'])
+        self.assertAlmostEqual(row['lat'], -6.601321)
+        self.assertAlmostEqual(row['long'], 106.632734)
+        self.assertEqual(set(actual.index[actual.coordinate_review_required.astype(bool)]), {9, 323})
 
     def test_imputation_median_is_calculated_not_hardcoded(self):
         raw = pd.read_csv(ROOT / 'data/raw/tourism_with_id.csv').head(4).copy()

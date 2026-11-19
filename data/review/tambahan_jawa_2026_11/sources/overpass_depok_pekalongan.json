@@ -1,0 +1,21 @@
+{
+  "_endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25];nwr[\"name\"~\"[Dd]epok\"](-6.88,109.58,-6.8,109.74);out center tags;",
+  "accessed_at_utc": "2026-11-16T14:24:20.438963+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "1673e7295b65855569396a14e3dced8247b561d3cdbd67cf8d98db2c0319f048",
+  "elements": [
+    {
+      "type": "node",
+      "id": 1308679100,
+      "lat": -6.8690689,
+      "lon": 109.594961,
+      "tags": {
+        "name": "Depok",
+        "place": "village"
+      }
+    }
+  ]
+}

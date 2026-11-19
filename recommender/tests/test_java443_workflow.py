@@ -35,14 +35,14 @@ class Java443WorkflowTests(TestCase):
             call_command('preprocess_destinations', project_root=str(root), stdout=io.StringIO())
             call_command('import_destinations', project_root=str(root), stdout=io.StringIO())
             call_command('train_clusters', project_root=str(root), stdout=io.StringIO())
-            self.assertEqual(list(Destination.objects.order_by('source_id').values_list('source_id',flat=True)),list(range(1,444)))
-            self.assertEqual(Destination.objects.exclude(cluster_label='').count(),443)
+            self.assertEqual(list(Destination.objects.order_by('source_id').values_list('source_id',flat=True)),list(range(1,467)))
+            self.assertEqual(Destination.objects.exclude(cluster_label='').count(),466)
             response=self.client.post('/',{'budget':'20000000','kota_asal':'Jakarta','wilayah':'Banten',
                 'kategori_utama':'alam','kategori_sekunder':'budaya','profil':'seimbang',
                 'hari':1,'moda':'mobil','mode_antar':'termurah'},follow=True)
             self.assertTrue(response.context['hasil'])
             self.assertTrue(any(h['rating_imputed'] for h in response.context['hasil']))
-            self.assertEqual(len(self.client.get('/peta/').context['map_destinations']),443)
+            self.assertEqual(len(self.client.get('/peta/').context['map_destinations']),466)
             report=json.loads((root/'reports/clustering/kmeans_evaluation.json').read_text())
             manifest=json.loads((root/'reports/preprocessing/preprocessing_java443_manifest.json').read_text())
             self.assertEqual(report['pipeline_fingerprint'],manifest['pipeline_fingerprint'])

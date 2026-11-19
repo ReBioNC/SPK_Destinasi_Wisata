@@ -1,0 +1,35 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Taman+Krida+Wisata%2C+Kudus%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Taman Krida Wisata, Kudus, Indonesia",
+  "accessed_at_utc": "2026-11-16T13:34:20.403336+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "0124f92d1d308395074c67edf16ee0c20e809e623daa0d0eee693afaa5c816c1",
+  "results": [
+    {
+      "place_id": 32549080,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 627817343,
+      "lat": "-6.8143869",
+      "lon": "110.8505061",
+      "category": "leisure",
+      "type": "park",
+      "place_rank": 24,
+      "importance": 0.0800550019073777,
+      "addresstype": "park",
+      "name": "Taman Krida Wisata",
+      "display_name": "Taman Krida Wisata, Karangpakis, Wergu Weta, Kudus, Jawa Tengah, Indonesia",
+      "extratags": {
+        "landuse": "recreation_ground"
+      },
+      "boundingbox": [
+        "-6.8151097",
+        "-6.8138267",
+        "110.8496804",
+        "110.8516898"
+      ]
+    }
+  ]
+}

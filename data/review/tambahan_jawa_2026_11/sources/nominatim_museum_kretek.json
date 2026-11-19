@@ -1,0 +1,66 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Museum+Kretek%2C+Kudus%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Museum Kretek, Kudus, Indonesia",
+  "accessed_at_utc": "2026-11-16T13:34:27.829478+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "574908d4b6492b2feff3146c64200b42f425fc17556fb98e79f53f17d472445c",
+  "results": [
+    {
+      "place_id": 32906756,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 628586671,
+      "lat": "-6.8263339",
+      "lon": "110.8377134",
+      "category": "tourism",
+      "type": "museum",
+      "place_rank": 30,
+      "importance": 0.1773516541617975,
+      "addresstype": "tourism",
+      "name": "Museum Kretek",
+      "display_name": "Museum Kretek, Jalan Sentot Prawidorejo, Jatikulon Krajan, Getas Pejaten, Kudus, Jawa Tengah, 59343, Indonesia",
+      "extratags": {
+        "museum": "local",
+        "building": "yes",
+        "operator": "Asosiasi Museum Indonesia",
+        "wikidata": "Q19729525",
+        "wikipedia": "en:Kretek Museum",
+        "wheelchair": "yes",
+        "operator:type": "association",
+        "tactile_paving": "no"
+      },
+      "boundingbox": [
+        "-6.8265027",
+        "-6.8261651",
+        "110.8375454",
+        "110.8378813"
+      ]
+    },
+    {
+      "place_id": 32815430,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 628586670,
+      "lat": "-6.8264774",
+      "lon": "110.8379715",
+      "category": "leisure",
+      "type": "park",
+      "place_rank": 24,
+      "importance": 0.0800550019073777,
+      "addresstype": "park",
+      "name": "Museum Kretek",
+      "display_name": "Museum Kretek, Jatikulon Krajan, Getas Pejaten, Kudus, Jawa Tengah, Indonesia",
+      "extratags": {
+        "landuse": "recreation_ground"
+      },
+      "boundingbox": [
+        "-6.8274885",
+        "-6.8254444",
+        "110.8369215",
+        "110.8389959"
+      ]
+    }
+  ]
+}

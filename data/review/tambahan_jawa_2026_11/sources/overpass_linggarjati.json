@@ -1,0 +1,106 @@
+{
+  "_endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25];nwr[\"name\"~\"[Ll]ingga ?r?jati\"](-6.92,108.44,-6.84,108.53);out center tags;",
+  "accessed_at_utc": "2026-11-16T14:41:31.485773+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "c0c61db1257fa8f182f523390f2cdcf44c27855b0c556d962e36d712b66d2a12",
+  "elements": [
+    {
+      "type": "node",
+      "id": 1308666798,
+      "lat": -6.8793444,
+      "lon": 108.4739776,
+      "tags": {
+        "name": "Linggajati",
+        "place": "village"
+      }
+    },
+    {
+      "type": "way",
+      "id": 176744305,
+      "center": {
+        "lat": -6.8877218,
+        "lon": 108.4360605
+      },
+      "tags": {
+        "highway": "path",
+        "name": "Jalur Pendakian Gunung Ciremai via Linggajati"
+      }
+    },
+    {
+      "type": "way",
+      "id": 563740736,
+      "center": {
+        "lat": -6.8854477,
+        "lon": 108.4934041
+      },
+      "tags": {
+        "addr:city": "Kuningan",
+        "addr:housenumber": "(0232) 614885",
+        "addr:postcode": "45556",
+        "addr:street": "Jl. Raya Bandorasa No. 27A, Bandorasa Wetan, Kec. Cilimus, Kabupaten Kuningan, Jawa Barat.",
+        "amenity": "hospital",
+        "contact:phone": "+62 232-6148-85",
+        "electricity": "generator",
+        "email": "rsud-linggarjati@kuningankab.go.id",
+        "emergency": "yes",
+        "health_amenity:type": "laboratory",
+        "healthcare": "birthing_center;clinic;doctor;hospital;laboratory;pharmacy",
+        "healthcare:speciality": "blood_check;general;internal;radiology;surgery;surgical_oncology;vaccination",
+        "insurance:health": "private;public",
+        "name": "RSUD Linggajati",
+        "notes": "https://rsud-linggarjati.kuningankab.go.id/",
+        "opening_hours": "24/7",
+        "operator": "Government",
+        "operator:type": "government",
+        "phone": "+62 822-9536-6255",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "way",
+      "id": 569103481,
+      "center": {
+        "lat": -6.8830875,
+        "lon": 108.4787595
+      },
+      "tags": {
+        "leisure": "park",
+        "name": "Linggarjati Indah"
+      }
+    },
+    {
+      "type": "way",
+      "id": 775381152,
+      "center": {
+        "lat": -6.8830435,
+        "lon": 108.4778789
+      },
+      "tags": {
+        "boundary": "protected_area",
+        "name": "Taman Wisata Alam Linggarjati",
+        "name:en": "Linggarjati Nature Recreation Park",
+        "operator": "Balai Besar Konservasi Sumber Daya Alam Jawa Barat"
+      }
+    },
+    {
+      "type": "relation",
+      "id": 18299963,
+      "center": {
+        "lat": -6.8882281,
+        "lon": 108.4319236
+      },
+      "tags": {
+        "from": "Linggajati",
+        "name": "Gunung Ciremai via Linggajati",
+        "network": "rwn",
+        "network:type": "rwn",
+        "route": "hiking",
+        "to": "Puncak Gunung Ciremai",
+        "type": "route"
+      }
+    }
+  ]
+}

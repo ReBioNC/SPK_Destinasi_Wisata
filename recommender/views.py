@@ -1,6 +1,8 @@
 """View rekomendasi: form preferensi + ranking TOPSIS."""
 
 import math
+from urllib.parse import urlencode
+
 from django.conf import settings
 from django.db.models import Count
 from django.http import JsonResponse
@@ -19,6 +21,11 @@ TOP_N = 10
 FAS_LABEL = [("fas_toilet", "Toilet"), ("fas_parkir", "Parkir"), ("fas_warung", "Warung"),
              ("fas_mushola", "Tempat ibadah"), ("fas_accessibility", "Aksesibilitas"),
              ("fas_information_center", "Pusat informasi")]
+
+# Estimasi bensin hanya informasi tambahan: tidak memengaruhi TOPSIS maupun budget tiket.
+HARGA_BENSIN = 15000  # Rp per liter, harga rata-rata yang diasumsikan.
+KONSUMSI_BBM = {"motor": (17, 18, 22, 25), "mobil": (10, 12, 14, 16)}  # km per liter
+KONSUMSI_DEFAULT = {"motor": 22, "mobil": 12}
 
 JAVA_PROVINCES = ('Banten', 'DKI Jakarta', 'Jawa Barat', 'Jawa Tengah',
                   'Daerah Istimewa Yogyakarta', 'Jawa Timur')
@@ -81,6 +88,29 @@ def _quality_notes(destination):
 def _rupiah(nilai):
     """Format 'Rp 150.000'."""
     return "Rp " + f"{int(nilai):,}".replace(",", ".")
+
+
+def estimasi_bensin(jarak_km, km_per_liter):
+    """Biaya bensin sekali jalan dari jarak garis lurus, dibulatkan ke Rp100."""
+    return int(round(jarak_km / km_per_liter * HARGA_BENSIN / 100) * 100)
+
+
+def _bensin(jarak_km):
+    rows = []
+    for moda, label in (("motor", "Motor"), ("mobil", "Mobil")):
+        sekali = estimasi_bensin(jarak_km, KONSUMSI_DEFAULT[moda])
+        rows.append({"moda": moda, "label": label, "rasio": KONSUMSI_DEFAULT[moda],
+                     "sekali_fmt": _rupiah(sekali), "pp_fmt": _rupiah(2 * sekali)})
+    return rows
+
+
+def _google_maps(olat, olon, lat, lon):
+    """Tautan Google Maps Search, Directions, dan pratinjau embed memakai koordinat."""
+    tujuan = f"{lat:.6f},{lon:.6f}"
+    return {"embed": "https://maps.google.com/maps?" + urlencode({"q": tujuan, "z": 15, "hl": "id", "output": "embed"}),
+            "lokasi": "https://www.google.com/maps/search/?" + urlencode({"api": 1, "query": tujuan}),
+            "rute": "https://www.google.com/maps/dir/?" + urlencode(
+                {"api": 1, "origin": f"{olat:.6f},{olon:.6f}", "destination": tujuan})}
 
 
 def _daftar_pilihan():
@@ -194,7 +224,9 @@ def rekomendasi(request):
                "bobot_persen": [round(w * 100) for w in
                                 profiles.ACTIVE_PROFILES["seimbang"]["weights"]],
                "cluster_list": [], "ringkasan": None,
-               "cur": _seleksi_saat_ini(request, form), **state, **_map_context(request)}
+               "cur": _seleksi_saat_ini(request, form), **state, **_map_context(request),
+               "konsumsi_bbm": KONSUMSI_BBM, "konsumsi_default": KONSUMSI_DEFAULT,
+               "harga_bensin_fmt": _rupiah(HARGA_BENSIN)}
     form.fields['kota_asal'].choices = konteks['kota_list']
     selected_profile = profiles.ACTIVE_PROFILES.get(konteks['cur']['profil'], profiles.ACTIVE_PROFILES['seimbang'])
     defaults = [round(w * 100) for w in selected_profile['weights']]
@@ -309,6 +341,8 @@ def rekomendasi(request):
                       "jarak_km": round(baris[2], 1),
                       "jarak_txt": f"± {baris[2]:.0f} km garis lurus dari {cd['kota_asal']} (Haversine; bukan jarak jalan)",
                       "rincian_txt": rincian_txt,
+                      "jarak_attr": f"{baris[2]:.3f}", "bensin": _bensin(baris[2]),
+                      "maps": _google_maps(olat, olon, d.latitude, d.longitude),
                       "cluster": d.cluster_label or "Belum dikelompokkan",
                       "simulasi": False,
                       "alasan": (_bangun_alasan(r["gap"], r["span"]) if len(kandidat) > 1
@@ -342,7 +376,7 @@ def rekomendasi(request):
                  "profil": profiles.ACTIVE_PROFILES[cd["profil"]]["label"],
                  "n": len(kandidat),
                  "n_simulasi": 0}
-    konteks.update({"hasil": hasil, "bobot_efektif": bobot, "mode_custom": mode_custom,
+    konteks.update({"hasil": hasil, "bobot_efektif": bobot, "mode_custom": mode_custom, "kota_asal": cd["kota_asal"],
                     "bobot_persen": [round(w * 100) for w in bobot],
                     "cluster_list": sorted({h["cluster"] for h in hasil}),
                     "ringkasan": ringkasan})
@@ -350,7 +384,7 @@ def rekomendasi(request):
         return _ajax_results(request, konteks, len(hasil))
     # POST-Redirect-GET: hasil tampil sekali, refresh berikutnya bersih.
     request.session["flash_hasil"] = {
-        "hasil": hasil, "mode_custom": mode_custom,
+        "hasil": hasil, "mode_custom": mode_custom, "kota_asal": cd["kota_asal"],
         "pesan": konteks["pesan"], "pesan_class": konteks["pesan_class"],
         "bobot_persen": [round(w * 100) for w in bobot],
         "cluster_list": sorted({h["cluster"] for h in hasil}),

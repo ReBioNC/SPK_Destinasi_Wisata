@@ -15,11 +15,11 @@ class Java443ImportTests(TestCase):
 
     def test_exact_443_and_idempotence(self):
         self.import_data()
-        self.assertEqual(Destination.objects.count(), 443)
+        self.assertEqual(Destination.objects.count(), 466)
         self.import_data()
-        self.assertEqual(set(Destination.objects.values_list('source_id', flat=True)), set(range(1,444)))
+        self.assertEqual(set(Destination.objects.values_list('source_id', flat=True)), set(range(1,467)))
         self.assertEqual(Destination.objects.filter(sumber_data='kaggle_java').count(), 437)
-        self.assertEqual(Destination.objects.filter(sumber_data='curated_java').count(), 6)
+        self.assertEqual(Destination.objects.filter(sumber_data='curated_java').count(), 29)
 
     def test_tahura_raw_null_model_median(self):
         self.import_data()
@@ -70,7 +70,7 @@ class Java443ImportTests(TestCase):
         actual = Destination.objects.get(source_id=1)
         self.assertEqual(actual.pk, old.pk)
         self.assertEqual(actual.rating, 4.6)
-        self.assertEqual(Destination.objects.count(), 443)
+        self.assertEqual(Destination.objects.count(), 466)
 
     def test_marina_retained_and_legacy_removed(self):
         Destination.objects.create(nama='Legacy', kota='X', provinsi='Bali', kategori='alam', harga_tiket=0, rating=4)

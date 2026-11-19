@@ -8,7 +8,9 @@ import pandas as pd
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connection, transaction
 
-from recommender.data_pipeline import validate_artifacts
+import json
+
+from recommender.data_pipeline import ADDITIONAL_IDS, TOTAL_DESTINATIONS, validate_artifacts
 from recommender.models import Destination
 
 BASE_DIR = Path(__file__).resolve().parents[3]
@@ -26,6 +28,17 @@ TICKET_SOURCES = {
     442: ("https://peraturan.bpk.go.id/Download/414805/3306pd2026001.pdf", 242, "Hari biasa Rp8.000; hari besar/libur Rp10.000"),
     443: ("https://bakeu.ngawikab.go.id/home/public/files/ppd/PERDA%20NO%2010%20TAHUN%202023.pdf", 122, "Domestik dewasa per kunjungan"),
 }
+
+
+def _additional_ticket_sources(project_root):
+    """Bukti tarif kandidat November 2026 dari provenance review: URL, halaman PDF, item tabel."""
+    path = Path(project_root) / "data/review/tambahan_jawa_2026_11/provenance.json"
+    if not path.is_file():
+        return {}
+    provenance = json.loads(path.read_text(encoding="utf-8"))
+    return {record["place_id"]: (provenance["sources"][record["price_source"]]["url"],
+                                 record["pdf_page_one_based"], record["price_table_item"])
+            for record in provenance["records"] if record["place_id"] in ADDITIONAL_IDS}
 
 
 def kanon_provinsi(nama):
@@ -54,8 +67,8 @@ def _text(value):
     return "" if pd.isna(value) else str(value)
 
 
-def _defaults(row, fingerprint):
-    ticket_url, page, tariff_note = TICKET_SOURCES.get(int(row["place_id"]),
+def _defaults(row, fingerprint, ticket_sources=TICKET_SOURCES):
+    ticket_url, page, tariff_note = ticket_sources.get(int(row["place_id"]),
         (row["source_url"], None, "Harga snapshot dataset Kaggle; bukan jaminan tarif transaksi terkini."))
     provenance = {key: _text(row[key]) for key in
         ("source_dataset", "source_url", "rating_status", "rating_source_url", "rating_access_date")}
@@ -85,7 +98,7 @@ def _defaults(row, fingerprint):
 
 
 class Command(BaseCommand):
-    help = "Impor atomik 437 Kaggle + 6 destinasi kurasi Jawa; backup sebelum penggantian."
+    help = "Impor atomik 437 Kaggle + destinasi kurasi Jawa; backup sebelum penggantian."
 
     def add_arguments(self, parser):
         parser.add_argument("--project-root", default=str(BASE_DIR))
@@ -111,16 +124,17 @@ class Command(BaseCommand):
         matched = [by_id.get(int(row["place_id"])) or by_name.get((row["place_name"], row["city"])) for row in rows]
         retained_pks = {record["pk"] for record in matched if record}
         created = sum(record is None for record in matched)
-        updated, deleted = 443 - created, len(existing) - len(retained_pks)
+        updated, deleted = TOTAL_DESTINATIONS - created, len(existing) - len(retained_pks)
+        ticket_sources = {**TICKET_SOURCES, **_additional_ticket_sources(root)}
         if options["dry_run"]:
-            self.stdout.write(f"DRY RUN: input=443 created={created} updated={updated} deleted={deleted}; tanpa perubahan.")
+            self.stdout.write(f"DRY RUN: input={TOTAL_DESTINATIONS} created={created} updated={updated} deleted={deleted}; tanpa perubahan.")
             return
         backup = backup_sqlite(root)
         if backup:
             self.stdout.write(f"Backup: {backup}")
         with transaction.atomic():
             for row, record in zip(rows, matched):
-                defaults = _defaults(row, fingerprint)
+                defaults = _defaults(row, fingerprint, ticket_sources)
                 # Keep training only on an unchanged snapshot.
                 if record is None or record["pipeline_fingerprint"] != fingerprint:
                     defaults["cluster_label"] = ""
@@ -130,6 +144,7 @@ class Command(BaseCommand):
                     setattr(destination, key, value)
                 destination.save()
             Destination.objects.exclude(source_id__in=ids).delete()
-            if Destination.objects.count() != 443:
+            if Destination.objects.count() != TOTAL_DESTINATIONS:
                 raise CommandError("Retensi database gagal; transaksi dibatalkan.")
-        self.stdout.write(f"input=443 created={created} updated={updated} deleted={deleted} total=443 fingerprint={fingerprint}")
+        self.stdout.write(f"input={TOTAL_DESTINATIONS} created={created} updated={updated} deleted={deleted} "
+                          f"total={TOTAL_DESTINATIONS} fingerprint={fingerprint}")

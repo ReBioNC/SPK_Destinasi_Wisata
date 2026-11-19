@@ -1,0 +1,33 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Pantai+Pelang%2C+Trenggalek%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Pantai Pelang, Trenggalek, Indonesia",
+  "accessed_at_utc": "2026-11-16T14:17:35.419293+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "95a445688372a939d0ebbecc3d8e95521b86acb6de34f626843a05621c1971e8",
+  "results": [
+    {
+      "place_id": 30639207,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 3370309446,
+      "lat": "-8.2587216",
+      "lon": "111.4248831",
+      "category": "natural",
+      "type": "beach",
+      "place_rank": 22,
+      "importance": 0.10670666742961774,
+      "addresstype": "beach",
+      "name": "Pantai Pelang",
+      "display_name": "Pantai Pelang, Panggul, Trenggalek, Jawa Timur, 66364, Indonesia",
+      "extratags": null,
+      "boundingbox": [
+        "-8.2587716",
+        "-8.2586716",
+        "111.4248331",
+        "111.4249331"
+      ]
+    }
+  ]
+}

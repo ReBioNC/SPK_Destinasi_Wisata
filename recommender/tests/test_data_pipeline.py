@@ -12,7 +12,10 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[2]
 SOURCES = ['data/raw/tourism_with_id.csv', 'data/raw/tourism_rating.csv',
            'data/review/gabungan_jawa/destinasi_jawa_review.csv',
-           'data/review/gabungan_jawa/google_maps_rating_review.json']
+           'data/review/gabungan_jawa/google_maps_rating_review.json',
+           'data/review/tambahan_jawa_2026_11/kandidat_kaggle_review.csv',
+           'data/review/tambahan_jawa_2026_11/google_maps_rating_review.json',
+           'data/review/tambahan_jawa_2026_11/provenance.json']
 
 
 def copy_sources(root):
@@ -32,14 +35,14 @@ class DataPipelineTests(unittest.TestCase):
 
     def test_exact_source_ids_retained(self):
         result = self.pipeline.build_pipeline(ROOT)
-        self.assertEqual(len(result.destinations), 443)
-        self.assertEqual(set(result.destinations.place_id), set(range(1, 444)))
+        self.assertEqual(len(result.destinations), 466)
+        self.assertEqual(set(result.destinations.place_id), set(range(1, 467)))
         self.assertTrue(result.destinations.place_id.is_unique)
 
     def test_model_features_exclude_c4(self):
         result = self.pipeline.build_pipeline(ROOT)
         columns = result.manifest['feature_parameters']['feature_columns']
-        self.assertEqual(len(result.features), 443)
+        self.assertEqual(len(result.features), 466)
         self.assertEqual(columns[:2], ['c1_ticket_price_z', 'c2_rating_z'])
         self.assertTrue(all(c.startswith('category_') for c in columns[2:]))
         self.assertTrue(np.isfinite(result.features[columns].to_numpy()).all())
@@ -62,7 +65,7 @@ class DataPipelineTests(unittest.TestCase):
         frame.loc[frame.place_id.eq(1), 'c2_rating_for_model'] = np.nan
         with self.assertRaisesRegex(ValueError, '(?i)fitur|feature'):
             self.pipeline.build_features(frame)
-        self.assertEqual(len(frame), 443)
+        self.assertEqual(len(frame), 466)
 
     def test_constant_numeric_scale_is_one(self):
         frame = pd.DataFrame({'place_id': [1,2], 'c1_ticket_price': [0,0],

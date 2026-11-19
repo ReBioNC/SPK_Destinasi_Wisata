@@ -1,0 +1,40 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Waduk+Cacaban%2C+Tegal%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Waduk Cacaban, Tegal, Indonesia",
+  "accessed_at_utc": "2026-11-16T14:17:23.723390+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "972eed8599ff5410aab1911b259dc0ddd52afdc2ed10679550f8c588dda2ce13",
+  "results": [
+    {
+      "place_id": 31652355,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 12933948,
+      "lat": "-7.0081554",
+      "lon": "109.1921446",
+      "category": "water",
+      "type": "reservoir",
+      "place_rank": 20,
+      "importance": 0.31977730603466514,
+      "addresstype": "reservoir",
+      "name": "Waduk Cacaban",
+      "display_name": "Waduk Cacaban, Penujah, Tegal, Jawa Tengah, Indonesia",
+      "extratags": {
+        "salt": "no",
+        "tidal": "no",
+        "natural": "water",
+        "wikidata": "Q11133631",
+        "wikipedia": "id:Waduk Cacaban",
+        "intermittent": "no"
+      },
+      "boundingbox": [
+        "-7.0220775",
+        "-6.9942366",
+        "109.1843109",
+        "109.2287591"
+      ]
+    }
+  ]
+}

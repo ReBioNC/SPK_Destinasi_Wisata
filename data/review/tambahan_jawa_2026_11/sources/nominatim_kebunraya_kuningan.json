@@ -1,0 +1,35 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Kebun+Raya+Kuningan%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Kebun Raya Kuningan, Indonesia",
+  "accessed_at_utc": "2026-11-16T14:40:30.673461+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "ae017d1e62f9c037dcce1a0325cd44690204f953daf923f927a57baebfbf8a0a",
+  "results": [
+    {
+      "place_id": 32943032,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 13390522301,
+      "lat": "-6.8531270",
+      "lon": "108.4979734",
+      "category": "craft",
+      "type": "gardener",
+      "place_rank": 30,
+      "importance": 5.634622720679053e-05,
+      "addresstype": "craft",
+      "name": "Kebun KELOR Cigoak",
+      "display_name": "Kebun KELOR Cigoak, Jalan Raya Mandirancan, Caracas, Kuningan, Jawa Barat, 45556, Indonesia",
+      "extratags": {
+        "opening_hours": "Mo-Su 09:00-15:00"
+      },
+      "boundingbox": [
+        "-6.8531770",
+        "-6.8530770",
+        "108.4979234",
+        "108.4980234"
+      ]
+    }
+  ]
+}

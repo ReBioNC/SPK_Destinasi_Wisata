@@ -1,0 +1,85 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Kiskendo&format=jsonv2&limit=5&countrycodes=id&extratags=1",
+  "query": "Kiskendo",
+  "accessed_at_utc": "2026-11-16T12:53:52.568148+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "dcfb19c504b5a59b9aef39f246b78131af32e5c257411600bc8b4041c62de1b4",
+  "results": [
+    {
+      "place_id": 32450730,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 445853538,
+      "lat": "-7.0594491",
+      "lon": "110.2407090",
+      "category": "tourism",
+      "type": "camp_site",
+      "place_rank": 30,
+      "importance": 4.0000762951049326e-05,
+      "addresstype": "tourism",
+      "name": "kiskendo",
+      "display_name": "kiskendo, Jalan Raya Kaliwungu-Boja, Broyo Timur, Kertosari, Kendal, Jawa Tengah, Indonesia",
+      "extratags": {
+        "stars": "3",
+        "smoking": "outside",
+        "wheelchair": "no",
+        "internet_access": "no",
+        "sanitary_dump_station": "public"
+      },
+      "boundingbox": [
+        "-7.0598058",
+        "-7.0591084",
+        "110.2403140",
+        "110.2411368"
+      ]
+    },
+    {
+      "place_id": 32769474,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 1070160868,
+      "lat": "-5.9618000",
+      "lon": "106.0732900",
+      "category": "natural",
+      "type": "peak",
+      "place_rank": 18,
+      "importance": 0.16003929732204164,
+      "addresstype": "peak",
+      "name": "Gunung Kiskendo",
+      "display_name": "Gunung Kiskendo, Pengarengan, Kab Serang, Banten, 42413, Indonesia",
+      "extratags": {
+        "gns:dsg": "HLL"
+      },
+      "boundingbox": [
+        "-5.9618500",
+        "-5.9617500",
+        "106.0732400",
+        "106.0733400"
+      ]
+    },
+    {
+      "place_id": 32416262,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 12861115329,
+      "lat": "-7.0584656",
+      "lon": "110.2400672",
+      "category": "waterway",
+      "type": "waterfall",
+      "place_rank": 20,
+      "importance": 0.1333733340962844,
+      "addresstype": "waterfall",
+      "name": "Curug Kiskendo",
+      "display_name": "Curug Kiskendo, Trayu, Kendal, Jawa Tengah, Indonesia",
+      "extratags": null,
+      "boundingbox": [
+        "-7.0585156",
+        "-7.0584156",
+        "110.2400172",
+        "110.2401172"
+      ]
+    }
+  ]
+}

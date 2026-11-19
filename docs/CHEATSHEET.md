@@ -2,7 +2,7 @@
 
 > Sistem Pendukung Keputusan rekomendasi destinasi wisata Jawa.
 > **Django 5.2 + SQLite + Python 3.11** · AHP (bobot) → TOPSIS (peringkat) · K-Means (segmen, bukan peringkat)
-> Data aktif **443 destinasi Jawa** (437 Kaggle + 6 kurasi) · branch aktif: `new`
+> Data aktif **466 destinasi Jawa** (437 Kaggle + 29 kurasi) · branch aktif: `new`
 > Teori lengkap: [README.md](../README.md) · Sumber & batasan atribut: [Dokumentasi.md](../Dokumentasi.md)
 
 ---
@@ -132,7 +132,7 @@ recommender/       app utama
   views.py         rekomendasi, peta, tentang
   forms.py         PreferensiForm (budget, kota, provinsi, kategori, hobi, profil, slider w1..w6)
   urls.py          3 route
-  data_pipeline.py preprocess bersama (PIPELINE_VERSION = "java443-v1")
+  data_pipeline.py preprocess bersama (PIPELINE_VERSION = "java466-v2")
   kota_asal.py     muat data/kota_indonesia.csv -> KOTA_ASAL, PROVINSI_KOTA
   spk/             ahp, topsis, geo, similarity, profiles, validation, biaya
   management/commands/  preprocess_destinations, import_destinations, train_clusters
@@ -246,12 +246,12 @@ Method penting: `facility_score()`, `calculation_rating()` (validasi 1–5, else
 
 | Parameter | Nilai |
 | --- | --- |
-| Fitur | 8 = harga (cap **P99 Rp275.800** + Z-score), rating (Z-score), 6 one-hot kategori |
+| Fitur | 8 = harga (cap **P99 Rp273.500** + Z-score), rating (Z-score), 6 one-hot kategori |
 | Z-score | `(x - μ)/σ`, σ populasi (`ddof=0`) |
 | Inisialisasi | k-means++, 10 inisialisasi, **seed 42** |
 | Kandidat k | 2–6, pilih silhouette tertinggi |
 | Syarat | ukuran minimum cluster **22 anggota** |
-| Hasil aktif | **2 cluster (414 & 29)**, silhouette **0,54302** |
+| Hasil aktif | **2 cluster (441 & 25)**, silhouette **0,57581** |
 
 > Cap P99 **hanya untuk fitur pelatihan**, bukan untuk C1 TOPSIS.
 > Label cluster tidak menyaring kandidat TOPSIS dan tidak menentukan bobot AHP.
@@ -322,7 +322,7 @@ bingkai: 220 <= x <= 462,  287 <= y <= 384
 ```
 
 Koordinat tampilan **tidak** menimpa koordinat geografis di DB.
-443 destinasi tetap terdaftar; 442 titik dalam bingkai (Pelabuhan Marina di luar).
+466 destinasi tetap terdaftar; 465 titik dalam bingkai (Pelabuhan Marina di luar).
 
 ---
 

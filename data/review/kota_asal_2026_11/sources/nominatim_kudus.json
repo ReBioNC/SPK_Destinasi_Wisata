@@ -1,0 +1,32 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Kudus%2C+Kabupaten+Kudus%2C+Jawa+Tengah%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id",
+  "query": "Kudus, Kabupaten Kudus, Jawa Tengah, Indonesia",
+  "accessed_at_utc": "2026-11-19T04:38:00.932784+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "2637344bfdae3976776c3fb34a125fb685bcdfd0695af5c8cc13d27668db0c61",
+  "results": [
+    {
+      "place_id": 416618937,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 262265665,
+      "lat": "-6.8078233",
+      "lon": "110.8416866",
+      "category": "place",
+      "type": "city",
+      "place_rank": 16,
+      "importance": 0.3476412868877268,
+      "addresstype": "city",
+      "name": "Kudus",
+      "display_name": "Kudus, Jawa Tengah, 59318, Indonesia",
+      "boundingbox": [
+        "-6.9678233",
+        "-6.6478233",
+        "110.6816866",
+        "111.0016866"
+      ]
+    }
+  ]
+}
