@@ -114,15 +114,6 @@
 <tr><td>Jarak antarpusat</td><td>d(c₁, c₂)</td><td class="num">{{ model.metrics.center_distance }}</td><td>Jarak Euclidean kedua centroid.</td></tr>
 </tbody></table></div></section>
 
-<section class="panel report-section" id="batasan"><p class="eyebrow">07 / Batasan</p><h2>Yang perlu diingat</h2><ul>
-<li>Variasi terjelaskan hanya {{ model.metrics.explained }}%: dua segmen ini ringkasan kasar, terutama pembagian harga, bukan pengelompokan minat wisata yang rinci.</li>
-<li>Segmen 2 kecil ({{ model.clusters.1.size }} destinasi) dan berisi destinasi dengan harga jauh di atas mayoritas.</li>
-<li>K-Means sensitif terhadap skala dan pencilan, karena itu harga dibatasi P99 dan distandardisasi.</li>
-<li>Label segmen tidak menyaring kandidat dan tidak mengubah skor TOPSIS.</li>
-<li>Tidak ada data acuan, sehingga evaluasi ini internal dan bukan akurasi.</li>
-<li>Rating dan harga adalah snapshot sumber. Rating Taman Hutan Raya Banten diisi median untuk pelatihan.</li>
-</ul><p class="source-note">Sumber: <code>reports/clustering/kmeans_evaluation.json</code> dan <code>data/processed/destinations_kmeans_features_java443.csv</code>. Metode: {{ model.method }}. Fingerprint pipeline: <code class="fingerprint">{{ model.fingerprint }}</code></p></section>
-
 <details class="panel report-section data-table"><summary>Data lengkap {{ model.rows_count }} destinasi</summary>
 <div class="table-scroll tall" tabindex="0"><table><thead><tr><th class="num">ID</th><th>Destinasi</th><th>Kategori</th><th class="num">Harga</th><th class="num">Rating</th><th>Segmen</th><th class="num">a(i)</th><th class="num">b(i)</th><th class="num">s(i)</th></tr></thead><tbody>
 {% for r in model.rows %}<tr><td class="num">{{ r.id }}</td><td>{{ r.nama }}</td><td>{{ r.kategori }}</td><td class="num">{{ r.harga }}</td><td class="num">{{ r.rating }}</td><td>{{ r.slot }}</td><td class="num">{{ r.a_text }}</td><td class="num">{{ r.b_text }}</td><td class="num">{{ r.s_text }}</td></tr>
