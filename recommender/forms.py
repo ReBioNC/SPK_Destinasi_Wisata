@@ -32,7 +32,7 @@ class PreferensiForm(forms.Form):
     # Tanpa max_length: format ribuan dari JS menambah karakter, batas dicek secara numerik di parse_budget.
     budget = forms.CharField(label="Budget maksimal tiket masuk (Rp/orang)",
         widget=forms.TextInput(attrs={"inputmode": "numeric", "autocomplete": "off"}),
-        help_text="Contoh: 500000. Batas harga tiket satu destinasi per orang, maksimal Rp 1.000.000.000. Nilai 0 tetap menerima destinasi gratis.")
+        help_text="Contoh: 500000. Nilai 0 tetap menerima destinasi gratis.")
     kota_asal = forms.ChoiceField(label="Kota asal", choices=[],
         help_text="Titik berangkat Anda; menentukan jarak garis lurus (C3) ke setiap destinasi.")
     wilayah = forms.ChoiceField(label="Wilayah tujuan (provinsi)", choices=[],
