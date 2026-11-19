@@ -112,6 +112,23 @@ class RekomendasiViewTest(TestCase):
             self.assertEqual(r.status_code, 200)
             self.assertIn("hasil", r.context)
 
+    def test_budget_besar_berformat_ribuan_diterima(self):
+        # Format ribuan dari JS (blur) menambah karakter; tidak boleh ditolak karena panjang teks.
+        for b in ["1.000.000.000", "Rp 1.000.000.000", "1,000,000,000", "1000000000"]:
+            with self.subTest(budget=b):
+                r = self.post_valid(budget=b)
+                self.assertEqual(r.status_code, 200)
+                self.assertTrue(r.context["hasil"])
+                self.assertEqual(r.context["ringkasan"]["budget_fmt"], "Rp 1.000.000.000")
+
+    def test_budget_di_atas_batas_ditolak_dengan_pesan(self):
+        for b in ["1.000.000.001", "1.000.000.000.000.000", "99999999999999999999999999"]:
+            with self.subTest(budget=b):
+                r = self.post_valid(budget=b)
+                self.assertContains(r, "Budget maksimal Rp 1.000.000.000 per orang")
+                self.assertNotContains(r, "paling banyak")
+                self.assertIsNone(r.context["hasil"])
+
     def test_budget_invalid_ada_pesan(self):
         r = self.post_valid(budget="gratis")
         self.assertContains(r, "Masukkan budget dalam angka")

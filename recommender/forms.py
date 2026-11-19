@@ -8,20 +8,31 @@ from recommender.models import Destination
 from recommender.spk import profiles
 
 
+# Batas atas budget tiket per orang. Jauh di atas tiket termahal di dataset (Rp 900.000),
+# jadi tidak menyaring destinasi; hanya mencegah angka ekstrem.
+MAX_BUDGET = 1_000_000_000
+
+
 def parse_budget(value):
     """Terima '250000', '250.000', '250,000', 'Rp 250000' -> int.
 
-    Tanda minus di depan ditolak (budget negatif tidak masuk akal).
+    Tanda minus di depan ditolak (budget negatif tidak masuk akal). Budget di atas
+    MAX_BUDGET ditolak dengan pesan yang menyebut batasnya.
     """
     teks = str(value).strip()
     if not re.fullmatch(r"(?:Rp\s*)?(?:\d+|\d{1,3}(?:[.,]\d{3})+)", teks, re.IGNORECASE):
         raise forms.ValidationError("Masukkan budget dalam angka, contoh: 250000.")
-    return int(re.sub(r"[.,]", "", re.sub(r"^Rp\s*", "", teks, flags=re.IGNORECASE)))
+    budget = int(re.sub(r"[.,]", "", re.sub(r"^Rp\s*", "", teks, flags=re.IGNORECASE)))
+    if budget > MAX_BUDGET:
+        raise forms.ValidationError("Budget maksimal Rp 1.000.000.000 per orang.")
+    return budget
 
 
 class PreferensiForm(forms.Form):
-    budget = forms.CharField(label="Budget maksimal tiket masuk (Rp/orang)", max_length=20,
-        help_text="Contoh: 500000. Batas harga tiket satu destinasi per orang. Nilai 0 tetap menerima destinasi gratis.")
+    # Tanpa max_length: format ribuan dari JS menambah karakter, batas dicek secara numerik di parse_budget.
+    budget = forms.CharField(label="Budget maksimal tiket masuk (Rp/orang)",
+        widget=forms.TextInput(attrs={"inputmode": "numeric", "autocomplete": "off"}),
+        help_text="Contoh: 500000. Batas harga tiket satu destinasi per orang, maksimal Rp 1.000.000.000. Nilai 0 tetap menerima destinasi gratis.")
     kota_asal = forms.ChoiceField(label="Kota asal", choices=[],
         help_text="Titik berangkat Anda; menentukan jarak garis lurus (C3) ke setiap destinasi.")
     wilayah = forms.ChoiceField(label="Wilayah tujuan (provinsi)", choices=[],
