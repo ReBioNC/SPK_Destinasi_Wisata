@@ -1,4 +1,4 @@
-"""Pure shared Java443 transformations; no database or network side effects."""
+"""Pure shared Java transformations; no database or network side effects."""
 from dataclasses import dataclass
 import hashlib
 import json
@@ -8,13 +8,38 @@ import re
 import numpy as np
 import pandas as pd
 
-PIPELINE_VERSION = "java443-v1"
+PIPELINE_VERSION = "java466-v2"
 SOURCE_PATHS = (
     "data/raw/tourism_with_id.csv",
     "data/review/gabungan_jawa/destinasi_jawa_review.csv",
     "data/review/gabungan_jawa/google_maps_rating_review.json",
     "data/raw/tourism_rating.csv",
+    "data/review/tambahan_jawa_2026_11/kandidat_kaggle_review.csv",
+    "data/review/tambahan_jawa_2026_11/google_maps_rating_review.json",
 )
+# Rentang ID tiap sumber. Nama file output tetap *_java443 agar jalur lama tidak berubah.
+KAGGLE_IDS = range(1, 438)
+CURATED_IDS = range(438, 444)
+ADDITIONAL_IDS = range(444, 467)
+TOTAL_DESTINATIONS = len(KAGGLE_IDS) + len(CURATED_IDS) + len(ADDITIONAL_IDS)
+# Rating sumber kosong atau listing Google Maps belum cocok: rating model diisi median.
+# Nama ikut dicek agar imputasi tidak salah sasaran bila ID berubah.
+COORDINATE_REVIEW = {  # place_id: (nama, lat sumber, long sumber, catatan)
+    9: ('Pelabuhan Marina', 1.07888, 103.931398,
+        'Label Jakarta bertentangan dengan koordinat sumber di luar Jawa; baris dipertahankan sesuai keputusan pengguna.'),
+    323: ('Kebun Tanaman Obat Sari Alam', -6.601321, 106.632734,
+          'Deskripsi menyebut Jl. Raya Ciwidey, Bandung, tetapi koordinat sumber Kaggle berada di sekitar Bogor (sekitar 114 km dari Bandung); koordinat tidak dipindahkan, jarak dan peta perlu review.'),
+}
+IMPUTED_RATING_NAMES = {
+    438: "Taman Hutan Raya Banten",
+    444: "Situs Taman Tasikardi",
+    446: "Lokawisata Baturraden",
+    447: "Taman Botani Baturraden",
+    451: "Pantai Popoh",
+    459: "Ranu Pakis",
+    462: "Waduk Cacaban",
+    463: "Objek Wisata Guci",
+}
 OUTPUT_PATHS = {
     "destinations": "data/processed/destinations_clean_java443.csv",
     "features": "data/processed/destinations_kmeans_features_java443.csv",
@@ -42,8 +67,23 @@ def _fingerprint(payload):
 
 
 def _check_ids(frame):
-    if len(frame) != 443 or not frame.place_id.is_unique or set(frame.place_id) != set(range(1, 444)):
-        raise ValueError("Retensi wajib tepat 443 ID unik (1–443); ekspor/impor dibatalkan.")
+    expected = set(range(1, TOTAL_DESTINATIONS + 1))
+    if len(frame) != TOTAL_DESTINATIONS or not frame.place_id.is_unique or set(frame.place_id) != expected:
+        raise ValueError(f"Retensi wajib tepat {TOTAL_DESTINATIONS} ID unik (1–{TOTAL_DESTINATIONS}); ekspor/impor dibatalkan.")
+
+
+def _apply_rating_receipt(frame, receipt):
+    """Isi rating hanya dari listing yang cocok nama dan lokasi; selain itu tetap kosong."""
+    for record in receipt["records"]:
+        match = frame.Place_Id.eq(record["place_id"]) & frame.Place_Name.eq(record["dataset_name"])
+        if record["integration_allowed"] and record["match_status"] == "matched_name_location":
+            frame.loc[match, "Rating"] = record["rating_observed"]
+            frame.loc[match, "rating_status"] = "google_maps_matched"
+            frame.loc[match, "rating_source_url"] = record["maps_url"]
+            frame.loc[match, "rating_access_date"] = receipt["access_date"]
+        else:
+            frame.loc[match, "rating_status"] = "pending_identity"
+    return frame
 
 
 def normalize_destinations(raw: pd.DataFrame) -> pd.DataFrame:
@@ -59,13 +99,14 @@ def normalize_destinations(raw: pd.DataFrame) -> pd.DataFrame:
     for column in ['place_id', 'price', 'rating', 'time_minutes', 'lat', 'long']:
         destinations[column] = pd.to_numeric(destinations[column], errors='coerce')
 
-    # Pertahankan Marina beserta koordinat sumber; hanya tandai konflik yang diketahui.
-    destinations['coordinate_review_required'] = (destinations['place_id'].eq(9)
-        & destinations['place_name'].eq('Pelabuhan Marina')
-        & np.isclose(destinations['lat'], 1.07888)
-        & np.isclose(destinations['long'], 103.931398))
+    # Pertahankan koordinat sumber; hanya tandai konflik lokasi yang diketahui.
+    destinations['coordinate_review_required'] = False
     destinations['coordinate_review_note'] = ''
-    destinations.loc[destinations['coordinate_review_required'], 'coordinate_review_note'] = 'Label Jakarta bertentangan dengan koordinat sumber di luar Jawa; baris dipertahankan sesuai keputusan pengguna.'
+    for review_id, (review_name, review_lat, review_long, review_note) in COORDINATE_REVIEW.items():
+        mask = (destinations['place_id'].eq(review_id) & destinations['place_name'].eq(review_name)
+            & np.isclose(destinations['lat'], review_lat) & np.isclose(destinations['long'], review_long))
+        destinations.loc[mask, 'coordinate_review_required'] = True
+        destinations.loc[mask, 'coordinate_review_note'] = review_note
     QUALITY_CHECKS = {
         'id_missing': destinations['place_id'].isna(),
         'id_duplicate': destinations['place_id'].duplicated(keep=False),
@@ -88,6 +129,10 @@ def normalize_destinations(raw: pd.DataFrame) -> pd.DataFrame:
         'Surabaya': 'Jawa Timur',
         'Pandeglang': 'Banten', 'Lebak': 'Banten',
         'Purworejo': 'Jawa Tengah', 'Ngawi': 'Jawa Timur',
+        'Serang': 'Banten', 'Sumedang': 'Jawa Barat', 'Banyumas': 'Jawa Tengah',
+        'Kudus': 'Jawa Tengah', 'Klaten': 'Jawa Tengah', 'Tegal': 'Jawa Tengah',
+        'Kulon Progo': 'DI Yogyakarta', 'Tulungagung': 'Jawa Timur',
+        'Lumajang': 'Jawa Timur', 'Trenggalek': 'Jawa Timur',
     }
     CATEGORY_MAP = {
         'budaya': 'budaya', 'taman hiburan': 'hiburan',
@@ -197,8 +242,8 @@ def add_model_rating(frame: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     median = float(valid.median()) if len(valid) else None
     frame["c2_rating"] = frame.rating.astype(float)
     frame["c2_rating_for_model"] = frame.c2_rating.where(frame.c2_rating.between(1, 5))
-    frame["rating_imputed"] = (frame.place_id.eq(438)
-        & frame.place_name.eq("Taman Hutan Raya Banten") & frame.rating.isna())
+    frame["rating_imputed"] = (frame.place_id.map(IMPUTED_RATING_NAMES).eq(frame.place_name)
+        & frame.rating.isna())
     if frame.rating_imputed.any():
         if median is None or not np.isfinite(median):
             raise ValueError("Median membutuhkan rating teramati valid.")
@@ -239,10 +284,13 @@ def build_pipeline(project_root: Path) -> PipelineResult:
             raise FileNotFoundError(f"Sumber wajib tidak tersedia: {relative}; jangan lanjut dengan dataset parsial.")
     base = pd.read_csv(root / SOURCE_PATHS[0])
     additional = pd.read_csv(root / SOURCE_PATHS[1])
-    if len(base) != 437 or set(base.Place_Id) != set(range(1, 438)):
+    extension = pd.read_csv(root / SOURCE_PATHS[4])
+    if len(base) != len(KAGGLE_IDS) or set(base.Place_Id) != set(KAGGLE_IDS):
         raise ValueError("Sumber Kaggle harus 437 ID asli.")
-    if len(additional) != 6 or set(additional.Place_Id) != set(range(438, 444)):
+    if len(additional) != len(CURATED_IDS) or set(additional.Place_Id) != set(CURATED_IDS):
         raise ValueError("Tambahan Jawa harus enam ID 438–443.")
+    if len(extension) != len(ADDITIONAL_IDS) or set(extension.Place_Id) != set(ADDITIONAL_IDS):
+        raise ValueError("Tambahan Jawa November 2026 harus 23 ID 444–466.")
     base["source_dataset"] = "Indonesia Tourism Destination"
     base["source_url"] = BASE_URL
     base["rating_status"] = "dataset_original"
@@ -253,17 +301,14 @@ def build_pipeline(project_root: Path) -> PipelineResult:
     additional["rating_status"] = "missing"
     additional["rating_source_url"] = ""
     additional["rating_access_date"] = ""
-    receipt = json.loads((root / SOURCE_PATHS[2]).read_text(encoding="utf-8"))
-    for record in receipt["records"]:
-        match = additional.Place_Id.eq(record["place_id"]) & additional.Place_Name.eq(record["dataset_name"])
-        if record["integration_allowed"] and record["match_status"] == "matched_name_location":
-            additional.loc[match, "Rating"] = record["rating_observed"]
-            additional.loc[match, "rating_status"] = "google_maps_matched"
-            additional.loc[match, "rating_source_url"] = record["maps_url"]
-            additional.loc[match, "rating_access_date"] = receipt["access_date"]
-        else:
-            additional.loc[match, "rating_status"] = "pending_identity"
-    destinations = normalize_destinations(pd.concat([base, additional], ignore_index=True))
+    _apply_rating_receipt(additional, json.loads((root / SOURCE_PATHS[2]).read_text(encoding="utf-8")))
+    extension["source_dataset"] = "Tambahan Jawa November 2026: tarif peraturan daerah dan lokasi OSM"
+    extension["source_url"] = "data/review/tambahan_jawa_2026_11/Dokumentasi.md"
+    extension["rating_status"] = "missing"
+    extension["rating_source_url"] = ""
+    extension["rating_access_date"] = ""
+    _apply_rating_receipt(extension, json.loads((root / SOURCE_PATHS[5]).read_text(encoding="utf-8")))
+    destinations = normalize_destinations(pd.concat([base, additional, extension], ignore_index=True))
     _check_ids(destinations)
     destinations = destinations.sort_values("place_id").reset_index(drop=True)
     ratings = pd.read_csv(root / SOURCE_PATHS[3])
@@ -289,13 +334,15 @@ def build_pipeline(project_root: Path) -> PipelineResult:
                "feature_parameters": parameters, "rating_imputation": imputation}
     manifest = {**payload, "pipeline_fingerprint": _fingerprint(payload)}
     summary = {
-        "destination_rows": 443, "source_rows": {"kaggle": 437, "additional_java": 6},
+        "destination_rows": TOTAL_DESTINATIONS,
+        "source_rows": {"kaggle": len(KAGGLE_IDS), "additional_java": len(CURATED_IDS),
+                        "additional_java_2026_11": len(ADDITIONAL_IDS)},
         "rows_lost": 0, "missing_destination_ids": [],
         "missing_rating_ids": destinations.loc[destinations.rating.isna(), "place_id"].astype(int).tolist(),
         "imputed_rating_ids": imputation["imputed_ids"], "rating_imputation": imputation,
         "coordinate_review_ids": destinations.loc[destinations.coordinate_review_required, "place_id"].astype(int).tolist(),
         "data_quality_review_ids": destinations.loc[destinations.data_quality_issues.ne(""), "place_id"].astype(int).tolist(),
-        "model_features_complete_rows": 443, "kmeans_training_ready": True,
+        "model_features_complete_rows": TOTAL_DESTINATIONS, "kmeans_training_ready": True,
         "rating_rows_valid": len(ratings),
         "cities": sorted(destinations.city.unique().tolist()), "categories": parameters["categories"],
         "destinations_with_facility_evidence": int(destinations.c4_facility_score.gt(0).sum()),
@@ -305,7 +352,8 @@ def build_pipeline(project_root: Path) -> PipelineResult:
         "destinations_with_activity_tags": int(destinations.activity_tags.ne("").sum()),
         "facility_evidence_definition": "Penyebutan deskripsi yang diterima; bukan fasilitas terverifikasi di lapangan.",
         "feature_parameters": parameters, "pipeline_fingerprint": manifest["pipeline_fingerprint"],
-        "missing_value_policy": "Pertahankan 443 destinasi; imputasi hanya rating model Tahura. Time_Minutes boleh kosong.",
+        "missing_value_policy": (f"Pertahankan {TOTAL_DESTINATIONS} destinasi; rating model yang kosong atau listing-nya "
+                                 "belum cocok diisi median rating teramati. Time_Minutes boleh kosong."),
     }
     return PipelineResult(destinations, features, manifest, summary)
 

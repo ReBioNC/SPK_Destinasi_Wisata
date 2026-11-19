@@ -296,6 +296,14 @@ class RekomendasiViewTest(TestCase):
             self.assertTrue(-90 <= la <= 90, nama)
             self.assertTrue(-180 <= lo <= 180, nama)
 
+    def test_kota_asal_mencakup_semua_kota_destinasi(self):
+        from pathlib import Path
+        import pandas as pd
+        from recommender.kota_asal import KOTA_ASAL
+        root = Path(__file__).resolve().parents[2]
+        kota = set(pd.read_csv(root / "data/processed/destinations_clean_java443.csv")["city"])
+        self.assertEqual(sorted(kota - set(KOTA_ASAL)), [])
+
     def test_dataset_kota_file(self):
         import csv
         from pathlib import Path

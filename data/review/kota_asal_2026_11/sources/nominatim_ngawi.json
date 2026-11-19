@@ -1,0 +1,116 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Ngawi%2C+Kabupaten+Ngawi%2C+Jawa+Timur%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id",
+  "query": "Ngawi, Kabupaten Ngawi, Jawa Timur, Indonesia",
+  "accessed_at_utc": "2026-11-19T04:38:09.052254+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "0dbb934dcef73c31898640f652f9c81f4aef651053a31da39561ab999d400a68",
+  "results": [
+    {
+      "place_id": 32366085,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 676709975,
+      "lat": "-7.5091856",
+      "lon": "111.4640050",
+      "category": "highway",
+      "type": "motorway",
+      "place_rank": 26,
+      "importance": 0.3294460664555125,
+      "addresstype": "motorway",
+      "name": "Jalan Tol Ngawi–Kertosono",
+      "display_name": "Jalan Tol Ngawi–Kertosono, Simo, Ngawi, Jawa Timur, Indonesia",
+      "boundingbox": [
+        "-7.5096772",
+        "-7.5086939",
+        "111.4635278",
+        "111.4644822"
+      ]
+    },
+    {
+      "place_id": 32522463,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 657409031,
+      "lat": "-7.3822254",
+      "lon": "111.1365013",
+      "category": "highway",
+      "type": "motorway",
+      "place_rank": 26,
+      "importance": 0.3294460664555125,
+      "addresstype": "motorway",
+      "name": "Jalan Tol Solo–Ngawi",
+      "display_name": "Jalan Tol Solo–Ngawi, Gringging, Sragen, Jawa Tengah, 57254, Indonesia",
+      "boundingbox": [
+        "-7.3822329",
+        "-7.3822178",
+        "111.1363162",
+        "111.1366864"
+      ]
+    },
+    {
+      "place_id": 424663976,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 1546501701,
+      "lat": "-7.3644539",
+      "lon": "111.4939776",
+      "category": "highway",
+      "type": "trunk",
+      "place_rank": 26,
+      "importance": 0.2507397701059262,
+      "addresstype": "trunk",
+      "name": "Jalan Raya Ngawi - Padangan",
+      "display_name": "Jalan Raya Ngawi - Padangan, Tambakselo, Banyuurip, Ngawi, Margomulyo, Ngawi, Jawa Timur, Indonesia",
+      "boundingbox": [
+        "-7.3660085",
+        "-7.3642657",
+        "111.4909732",
+        "111.4974610"
+      ]
+    },
+    {
+      "place_id": 422640844,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 1488683358,
+      "lat": "-7.5311972",
+      "lon": "111.4304501",
+      "category": "bridge",
+      "type": "yes",
+      "place_rank": 26,
+      "importance": 0.2507397701059262,
+      "addresstype": "bridge",
+      "name": "Jembatan Keras II",
+      "display_name": "Jembatan Keras II, Keras Wetan, Ngawi, Jawa Timur, 63395, Indonesia",
+      "boundingbox": [
+        "-7.5313955",
+        "-7.5309989",
+        "111.4304422",
+        "111.4304579"
+      ]
+    },
+    {
+      "place_id": 424923891,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 1547175922,
+      "lat": "-7.5086616",
+      "lon": "111.4662725",
+      "category": "highway",
+      "type": "secondary",
+      "place_rank": 26,
+      "importance": 0.053370834668497714,
+      "addresstype": "secondary",
+      "name": "Jalan Raya Ngawi - Barat",
+      "display_name": "Jalan Raya Ngawi - Barat, Simo, Ngawi, Jawa Timur, Indonesia",
+      "boundingbox": [
+        "-7.5093263",
+        "-7.5079969",
+        "111.4660775",
+        "111.4664674"
+      ]
+    }
+  ]
+}

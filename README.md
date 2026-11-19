@@ -1,8 +1,9 @@
 # TravelFit — Sistem Pendukung Keputusan Rekomendasi Destinasi Wisata Jawa
 
 TravelFit membantu wisatawan memilih destinasi berdasarkan batas harga tiket,
-kota asal, kategori, hobi, dan profil prioritas. Data aktif berjumlah **443
-destinasi: 437 dari Kaggle dan 6 hasil kurasi Jawa**, dengan label tujuan pada
+kota asal, kategori, hobi, dan profil prioritas. Data aktif berjumlah **466
+destinasi: 437 dari Kaggle dan 29 hasil kurasi Jawa** (6 kurasi September 2026 dan
+23 kurasi November 2026), dengan label tujuan pada
 Banten, DKI Jakarta, Jawa Barat, Jawa Tengah, Daerah Istimewa Yogyakarta, dan
 Jawa Timur. CRISP-DM menjadi kerangka pengolahan data, K-Means mengelompokkan
 destinasi, dan AHP–TOPSIS menghasilkan rekomendasi.
@@ -130,8 +131,8 @@ Alternatif diurutkan berdasarkan $V_i$ terbesar. Implementasi:
 ### Pembentukan nilai kriteria
 
 - **C1:** harga tiket sumber; sisa alokasi = budget − harga tiket.
-- **C2:** rating model; Tahura menggunakan median 4,5, sementara rating sumber
-  tetap kosong. Status imputasi tidak ditampilkan pada kartu hasil.
+- **C2:** rating model; Tahura serta tujuh kandidat November 2026 yang listing Google Maps-nya belum cocok
+  menggunakan median 4,5 dari 458 rating teramati, sementara rating sumber tetap kosong. Status imputasi tidak ditampilkan pada kartu hasil.
 - **C3:** $d=2R\arcsin(\sqrt{a})$, dengan
   $a=\sin^2(\Delta\varphi/2)+\cos\varphi_1\cos\varphi_2\sin^2(\Delta\lambda/2)$.
   Sudut dalam radian dan $R=6371$ km. Implementasi: [geo.py](recommender/spk/geo.py).
@@ -146,19 +147,20 @@ Alternatif diurutkan berdasarkan $V_i$ terbesar. Implementasi:
 
 ### Pengolahan data dan K-Means secara offline
 
-1. Gabungkan 437 destinasi Kaggle dan 6 kurasi Jawa, bersihkan data, bentuk
-   indikator fasilitas dan tag aktivitas, lalu periksa retensi seluruh 443 ID.
+1. Gabungkan 437 destinasi Kaggle, 6 kurasi Jawa, dan 23 kurasi Jawa November 2026,
+   bersihkan data, bentuk indikator fasilitas dan tag aktivitas, lalu periksa retensi
+   seluruh 466 ID.
 2. Ekspor CSV master dan matriks fitur beserta manifest untuk validasi sumber.
-3. Bentuk delapan fitur K-Means: harga dibatasi P99 Rp275.800 dan distandardisasi
+3. Bentuk delapan fitur K-Means: harga dibatasi P99 Rp273.500 dan distandardisasi
    Z-score, rating model distandardisasi, serta enam kolom one-hot kategori.
    Z-score menggunakan $z=(x-\mu)/\sigma$ dengan simpangan baku populasi (`ddof=0`).
    Pembatasan P99 hanya berlaku untuk fitur pelatihan, bukan C1 TOPSIS.
-4. Latih seluruh 443 destinasi dengan k-means++, 10 inisialisasi, seed 42, dan
+4. Latih seluruh 466 destinasi dengan k-means++, 10 inisialisasi, seed 42, dan
    kandidat $k=2$ sampai $k=6$. Pilih silhouette tertinggi pada konfigurasi yang
-   memenuhi ukuran minimum cluster 22 anggota. Pada data aktif, semua kandidat
+   memenuhi ukuran minimum cluster 23 anggota (5% dari 466). Pada data aktif, semua kandidat
    memenuhi batas tersebut.
 5. Simpan label dan evaluasi model. Hasil saat ini adalah **2 cluster dengan
-   414 dan 29 anggota**, serta silhouette **0,54302**. Label tersimpan dalam
+   441 dan 25 anggota**, serta silhouette **0,57581**. Label tersimpan dalam
    [kmeans_evaluation.json](reports/clustering/kmeans_evaluation.json).
 
 ### Perhitungan rekomendasi secara online
@@ -193,12 +195,12 @@ bobot profil.
 - **Peringkat dapat berubah** jika budget, wilayah, kategori, hobi, kota asal,
   atau profil berubah. Hasil bukan penilaian destinasi terbaik untuk semua orang.
 - **Label cluster** menjelaskan kemiripan destinasi, bukan urutan rekomendasi.
-  Silhouette 0,54302 adalah ukuran evaluasi internal clustering, bukan akurasi SPK.
+  Silhouette 0,57581 adalah ukuran evaluasi internal clustering, bukan akurasi SPK.
 - **Kandidat kosong** menghasilkan pesan tanpa rekomendasi. Jika hanya satu
   kandidat atau semua kandidat identik, implementasi memberi $V_i=1$ untuk
   menghindari pembagian nol; nilai itu bukan kualitas sempurna.
-- **Catatan kualitas** tetap perlu dibaca: rating Tahura diimputasi, koordinat
-  Pelabuhan Marina perlu ditinjau, fasilitas dan tag aktivitas berasal dari
+- **Catatan kualitas** tetap perlu dibaca: rating model Tahura dan tujuh kandidat November 2026 diimputasi, koordinat
+  Pelabuhan Marina dan Kebun Tanaman Obat Sari Alam perlu ditinjau, fasilitas dan tag aktivitas berasal dari
   deskripsi, serta harga merupakan snapshot sumber.
 
 ## Data dan status implementasi
@@ -267,6 +269,8 @@ TravelFit/
   data/raw/tourism_rating.csv
   data/review/gabungan_jawa/destinasi_jawa_review.csv
   data/review/gabungan_jawa/google_maps_rating_review.json
+  data/review/tambahan_jawa_2026_11/kandidat_kaggle_review.csv
+  data/review/tambahan_jawa_2026_11/google_maps_rating_review.json
   notebooks/01_preprocessing_travelfit.ipynb
 ```
 
@@ -287,6 +291,8 @@ Mount Drive tetap memerlukan login/otorisasi Colab. Output disimpan ke
 Tes menggunakan database sementara dan mencakup preprocessing, impor, training,
 serta rekomendasi/peta. Kelulusan tes memeriksa fungsi aplikasi, bukan membuktikan
 tarif terkini atau kepuasan pengguna. Peta SVG merupakan visualisasi skematis
-provinsi tanpa titik destinasi; daftar di bawah peta tetap memuat 443 destinasi.
+provinsi tanpa titik destinasi; daftar di bawah peta tetap memuat 466 destinasi.
 
 </details>
+
+

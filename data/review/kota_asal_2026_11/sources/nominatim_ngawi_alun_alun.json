@@ -1,0 +1,95 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Alun-Alun+Ngawi%2C+Jawa+Timur%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id",
+  "query": "Alun-Alun Ngawi, Jawa Timur, Indonesia",
+  "accessed_at_utc": "2026-11-19T04:38:23.433260+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "1f127a1d363ef82f5469793375dc495f27af4eda3c4a7b907965b20ed410a365",
+  "results": [
+    {
+      "place_id": 32418221,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 250081987,
+      "lat": "-7.4036079",
+      "lon": "111.4445975",
+      "category": "leisure",
+      "type": "park",
+      "place_rank": 24,
+      "importance": 0.08004000076295106,
+      "addresstype": "park",
+      "name": "Alun-alun Merdeka Ngawi",
+      "display_name": "Alun-alun Merdeka Ngawi, Cabean, Ketanggi, Ngawi, Jawa Timur, Indonesia",
+      "boundingbox": [
+        "-7.4044053",
+        "-7.4017973",
+        "111.4433263",
+        "111.4460126"
+      ]
+    },
+    {
+      "place_id": 32398463,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 1337932378,
+      "lat": "-7.4039506",
+      "lon": "111.4436829",
+      "category": "amenity",
+      "type": "theatre",
+      "place_rank": 30,
+      "importance": 4.0000762951049326e-05,
+      "addresstype": "amenity",
+      "name": "Mini Amphitheatre Alun-Alun Ngawi",
+      "display_name": "Mini Amphitheatre Alun-Alun Ngawi, Jalan Imam Bonjol, Karanggeneng, Ketanggi, Ngawi, Jawa Timur, 63211, Indonesia",
+      "boundingbox": [
+        "-7.4040668",
+        "-7.4038347",
+        "111.4435385",
+        "111.4437971"
+      ]
+    },
+    {
+      "place_id": 32378992,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 13608633552,
+      "lat": "-7.4041569",
+      "lon": "111.4440043",
+      "category": "office",
+      "type": "it",
+      "place_rank": 30,
+      "importance": 4.0000762951049326e-05,
+      "addresstype": "office",
+      "name": "UPT Alun-alun Ngawi",
+      "display_name": "UPT Alun-alun Ngawi, Jalan Mohammad Husni Thamrin, Karanggeneng, Ketanggi, Ngawi, Jawa Timur, 63211, Indonesia",
+      "boundingbox": [
+        "-7.4042069",
+        "-7.4041069",
+        "111.4439543",
+        "111.4440543"
+      ]
+    },
+    {
+      "place_id": 32508043,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 13608633553,
+      "lat": "-7.4041662",
+      "lon": "111.4439030",
+      "category": "amenity",
+      "type": "fast_food",
+      "place_rank": 30,
+      "importance": 4.0000762951049326e-05,
+      "addresstype": "amenity",
+      "name": "Wifi Corner Alun-alun Ngawi",
+      "display_name": "Wifi Corner Alun-alun Ngawi, Jalan Mohammad Husni Thamrin, Karanggeneng, Ketanggi, Ngawi, Jawa Timur, 63211, Indonesia",
+      "boundingbox": [
+        "-7.4042162",
+        "-7.4041162",
+        "111.4438530",
+        "111.4439530"
+      ]
+    }
+  ]
+}

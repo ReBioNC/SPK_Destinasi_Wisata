@@ -24,7 +24,7 @@ class JavaMapTests(TestCase):
 
     def test_counts_and_province_links_prefill_form(self):
         response=self.client.get('/peta/')
-        self.assertEqual(sum(p['count'] for p in response.context['map_provinces']),443)
+        self.assertEqual(sum(p['count'] for p in response.context['map_provinces']),466)
         for province in PROVINCES:
             response=self.client.get('/',{'wilayah':province})
             self.assertEqual(response.context['form']['wilayah'].value(),province)
@@ -32,7 +32,7 @@ class JavaMapTests(TestCase):
 
     def test_marina_retained_outside_frame_and_monas_inside(self):
         response=self.client.get('/peta/')
-        self.assertEqual(len(response.context['map_destinations']),443)
+        self.assertEqual(len(response.context['map_destinations']),466)
         marina=next(d for d in response.context['map_destinations'] if d['source_id']==9)
         monas=next(d for d in response.context['map_destinations'] if d['source_id']==1)
         self.assertTrue(marina['outside_frame'])

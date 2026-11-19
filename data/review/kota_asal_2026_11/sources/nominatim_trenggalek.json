@@ -1,0 +1,32 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Trenggalek%2C+Kabupaten+Trenggalek%2C+Jawa+Timur%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id",
+  "query": "Trenggalek, Kabupaten Trenggalek, Jawa Timur, Indonesia",
+  "accessed_at_utc": "2026-11-19T04:38:10.606681+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "b8b73edb3b4f23a53b06770bd4b1c275afe36ec3d37bc97ae778f0f89b1b80f7",
+  "results": [
+    {
+      "place_id": 425553198,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 2578080305,
+      "lat": "-8.0490793",
+      "lon": "111.7090951",
+      "category": "place",
+      "type": "city",
+      "place_rank": 16,
+      "importance": 0.306026056337308,
+      "addresstype": "city",
+      "name": "Trenggalek",
+      "display_name": "Trenggalek, Jawa Timur, 66311, Indonesia",
+      "boundingbox": [
+        "-8.2090793",
+        "-7.8890793",
+        "111.5490951",
+        "111.8690951"
+      ]
+    }
+  ]
+}

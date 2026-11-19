@@ -1,16 +1,18 @@
 {
   "method": "K-Means, k-means++ initialization, 10 starts, seed 42",
-  "training_source": "437 Kaggle + 6 curated Java",
-  "training_rows": 443,
-  "assigned_rows": 443,
+  "training_source": "437 Kaggle + 29 curated Java",
+  "training_rows": 466,
+  "assigned_rows": 466,
   "assigned_simulation_rows": 0,
-  "pipeline_version": "java443-v1",
-  "pipeline_fingerprint": "c3b2f4ead1b955ed41c4be8df4ee201a374a915a5eb10823f8f58c65ace25eac",
+  "pipeline_version": "java466-v2",
+  "pipeline_fingerprint": "0aaf57f63ed7ca125421f324af680fcc71443526517deb54dca5090a1d0fda01",
   "source_hashes": {
     "data/raw/tourism_with_id.csv": "f7be2257d5f7007cd93c4ebe11f4f0182bf0782d87a0380e3a93f744a8348b7c",
     "data/review/gabungan_jawa/destinasi_jawa_review.csv": "1aef6226d01ccef43580f7b04edae06b9e64a381fee0c98c41839b4f196ba86b",
     "data/review/gabungan_jawa/google_maps_rating_review.json": "367baffad904d985a42fa3e74a12ef4916bf4936e06e0b72dc9fdae8108c969a",
-    "data/raw/tourism_rating.csv": "d2c432924f8dcb7eb5bacaf3b58c0d888390a1b2057eba29e47c62b04df17ffe"
+    "data/raw/tourism_rating.csv": "d2c432924f8dcb7eb5bacaf3b58c0d888390a1b2057eba29e47c62b04df17ffe",
+    "data/review/tambahan_jawa_2026_11/kandidat_kaggle_review.csv": "f5b28299676aa1cbd980bb250d20a320adb497ff5bc8cf963a95b38c5a0e901d",
+    "data/review/tambahan_jawa_2026_11/google_maps_rating_review.json": "1bc379c366a824e283c80645ce77fabce5c6bc8a659eae8a087051b9946395db"
   },
   "place_ids": [
     1,
@@ -455,14 +457,44 @@
     440,
     441,
     442,
-    443
+    443,
+    444,
+    445,
+    446,
+    447,
+    448,
+    449,
+    450,
+    451,
+    452,
+    453,
+    454,
+    455,
+    456,
+    457,
+    458,
+    459,
+    460,
+    461,
+    462,
+    463,
+    464,
+    465,
+    466
   ],
   "rating_imputation": {
     "method": "median_observed_valid_ratings",
     "value": 4.5,
-    "observed_rows": 442,
+    "observed_rows": 458,
     "imputed_ids": [
-      438
+      438,
+      444,
+      446,
+      447,
+      451,
+      459,
+      462,
+      463
     ],
     "calculation_column": "c2_rating_for_model",
     "source_rating_unchanged": true
@@ -496,43 +528,43 @@
       "hiburan",
       "religi"
     ],
-    "ticket_price_cap_p99": 275799.9999999998,
+    "ticket_price_cap_p99": 273500.00000000023,
     "mean": [
-      22187.358916478555,
-      4.442889390519188
+      21509.227467811157,
+      4.44206008583691
     ],
     "scale": [
-      47129.62168054756,
-      0.2076695455182245
+      45918.09582611085,
+      0.2044338057637445
     ],
     "excluded": "C4 hanya SPK; indikator deskripsi bukan fasilitas lapangan terverifikasi."
   },
-  "ticket_price_cap_p99": 275799.9999999998,
+  "ticket_price_cap_p99": 273500.00000000023,
   "capped_training_rows": 5,
-  "minimum_cluster_size": 22,
+  "minimum_cluster_size": 23,
   "selection_used_size_constraint": true,
   "selected_k": 2,
-  "silhouette": 0.54302,
-  "inertia": 876.02902,
+  "silhouette": 0.57581,
+  "inertia": 920.94021,
   "centroids": [
     [
-      -0.23291538521882704,
-      0.0028356124578013666,
-      0.2536231884057971,
-      0.10628019323671498,
-      0.036231884057971016,
-      0.2753623188405797,
-      0.28743961352657005,
-      0.04106280193236715
+      -0.20986639223952117,
+      0.00500804838036846,
+      0.25396825396825395,
+      0.1111111111111111,
+      0.034013605442176874,
+      0.2675736961451247,
+      0.2925170068027211,
+      0.04081632653061224
     ],
     [
-      3.3250679131239456,
-      -0.040480812328644325,
-      0.10344827586206896,
-      0.13793103448275862,
+      3.7020431591051595,
+      -0.08834197342968311,
+      0.12,
+      0.16,
       0.0,
-      0.1724137931034483,
-      0.5862068965517241,
+      0.12,
+      0.6,
       0.0
     ]
   ],
@@ -559,8 +591,8 @@
     },
     {
       "source_id": 5,
-      "cluster_id": 1,
-      "label": "Segmen 2 · harga tinggi · hiburan"
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
     },
     {
       "source_id": 6,
@@ -729,8 +761,8 @@
     },
     {
       "source_id": 39,
-      "cluster_id": 1,
-      "label": "Segmen 2 · harga tinggi · hiburan"
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
     },
     {
       "source_id": 40,
@@ -1409,8 +1441,8 @@
     },
     {
       "source_id": 175,
-      "cluster_id": 1,
-      "label": "Segmen 2 · harga tinggi · hiburan"
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
     },
     {
       "source_id": 176,
@@ -2584,8 +2616,8 @@
     },
     {
       "source_id": 410,
-      "cluster_id": 1,
-      "label": "Segmen 2 · harga tinggi · hiburan"
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
     },
     {
       "source_id": 411,
@@ -2751,37 +2783,152 @@
       "source_id": 443,
       "cluster_id": 0,
       "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 444,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 445,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 446,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 447,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 448,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 449,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 450,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 451,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 452,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 453,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 454,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 455,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 456,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 457,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 458,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 459,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 460,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 461,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 462,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 463,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 464,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 465,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
+    },
+    {
+      "source_id": 466,
+      "cluster_id": 0,
+      "label": "Segmen 1 · harga rendah"
     }
   ],
   "candidates": [
     {
       "k": 2,
-      "silhouette": 0.54302,
-      "inertia": 876.02902,
-      "smallest_cluster": 29
+      "silhouette": 0.57581,
+      "inertia": 920.94021,
+      "smallest_cluster": 25
     },
     {
       "k": 3,
-      "silhouette": 0.2854,
-      "inertia": 616.23473,
+      "silhouette": 0.28034,
+      "inertia": 651.70467,
       "smallest_cluster": 24
     },
     {
       "k": 4,
-      "silhouette": 0.2422,
-      "inertia": 518.22691,
+      "silhouette": 0.24617,
+      "inertia": 544.87301,
       "smallest_cluster": 24
     },
     {
       "k": 5,
-      "silhouette": 0.30824,
-      "inertia": 444.39673,
+      "silhouette": 0.31463,
+      "inertia": 462.57657,
       "smallest_cluster": 24
     },
     {
       "k": 6,
-      "silhouette": 0.35998,
-      "inertia": 379.86622,
+      "silhouette": 0.3742,
+      "inertia": 403.84407,
       "smallest_cluster": 24
     }
   ],
@@ -2789,24 +2936,24 @@
     {
       "cluster_id": 0,
       "label": "Segmen 1 · harga rendah",
-      "observed_rows": 414,
-      "all_rows": 414,
-      "mean_price": 11210.14,
+      "observed_rows": 441,
+      "all_rows": 441,
+      "mean_price": 11872.56,
       "mean_rating": 4.443,
       "dominant_category": "hiburan",
-      "mean_facility_score": 0.031
+      "mean_facility_score": 0.029
     },
     {
       "cluster_id": 1,
       "label": "Segmen 2 · harga tinggi · hiburan",
-      "observed_rows": 29,
-      "all_rows": 29,
-      "mean_price": 212551.72,
-      "mean_rating": 4.434,
+      "observed_rows": 25,
+      "all_rows": 25,
+      "mean_price": 231000.0,
+      "mean_rating": 4.424,
       "dominant_category": "hiburan",
-      "mean_facility_score": 0.011
+      "mean_facility_score": 0.013
     }
   ],
   "excluded_feature": "C4 hanya SPK; indikator deskripsi bukan fasilitas lapangan terverifikasi.",
-  "limitation": "Rating Tahura diimputasi, C4/tag heuristik, koordinat Marina perlu review. Silhouette bukan akurasi rekomendasi; segmen tidak menyaring TOPSIS."
+  "limitation": "Rating model Tahura dan tujuh kandidat November 2026 diimputasi median, C4/tag heuristik, koordinat Marina perlu review. Silhouette bukan akurasi rekomendasi; segmen tidak menyaring TOPSIS."
 }

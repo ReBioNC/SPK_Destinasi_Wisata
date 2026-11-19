@@ -1,0 +1,95 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Sumedang%2C+Kabupaten+Sumedang%2C+Jawa+Barat%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id",
+  "query": "Sumedang, Kabupaten Sumedang, Jawa Barat, Indonesia",
+  "accessed_at_utc": "2026-11-19T04:38:04.437793+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "b6a63521d1cd88a6f479554ad3bee49f396f5595a4e0c9afb1107f7de0647790",
+  "results": [
+    {
+      "place_id": 31424401,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 6786006261,
+      "lat": "-6.8258791",
+      "lon": "107.9187387",
+      "category": "highway",
+      "type": "motorway_junction",
+      "place_rank": 30,
+      "importance": 3.970931563282242e-05,
+      "addresstype": "highway",
+      "name": "Sumedang",
+      "display_name": "Sumedang, Jalan Tol Cileunyi–Sumedang–Dawuan, Situ, Sumedang, Jawa Barat, 45321, Indonesia",
+      "boundingbox": [
+        "-6.8259291",
+        "-6.8258291",
+        "107.9186887",
+        "107.9187887"
+      ]
+    },
+    {
+      "place_id": 31487910,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 3664046858,
+      "lat": "-6.8563298",
+      "lon": "107.9221018",
+      "category": "amenity",
+      "type": "post_office",
+      "place_rank": 30,
+      "importance": 3.970931563282242e-05,
+      "addresstype": "amenity",
+      "name": "Sumedang",
+      "display_name": "Sumedang, Jalan Pangeran Geusan Ulun, Kotakulon, Sumedang, Jawa Barat, 45321, Indonesia",
+      "boundingbox": [
+        "-6.8563798",
+        "-6.8562798",
+        "107.9220518",
+        "107.9221518"
+      ]
+    },
+    {
+      "place_id": 31470465,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 1125828611,
+      "lat": "-6.8642476",
+      "lon": "107.9081177",
+      "category": "landuse",
+      "type": "military",
+      "place_rank": 24,
+      "importance": 0.08003970931563284,
+      "addresstype": "military",
+      "name": "Komando Distrik Militer 0610",
+      "display_name": "Komando Distrik Militer 0610, Regol Wetan, Sumedang, Jawa Barat, Indonesia",
+      "boundingbox": [
+        "-6.8658347",
+        "-6.8627856",
+        "107.9070389",
+        "107.9093993"
+      ]
+    },
+    {
+      "place_id": 31470551,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 255641083,
+      "lat": "-6.8598337",
+      "lon": "107.9207486",
+      "category": "leisure",
+      "type": "park",
+      "place_rank": 24,
+      "importance": 0.08003970931563284,
+      "addresstype": "park",
+      "name": "Alun-Alun Sumedang",
+      "display_name": "Alun-Alun Sumedang, Sukajaya, Sumedang, Jawa Barat, Indonesia",
+      "boundingbox": [
+        "-6.8602338",
+        "-6.8591673",
+        "107.9201590",
+        "107.9213478"
+      ]
+    }
+  ]
+}

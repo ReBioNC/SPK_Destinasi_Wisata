@@ -46,9 +46,9 @@ class ModelReportTest(SimpleTestCase):
         self.assertEqual(nearest.tolist(), [a["cluster_id"] for a in stored["assignments"]])
 
     def test_semua_destinasi_ada_pada_grafik(self):
-        self.assertEqual(len(self.report["rows"]), 443)
-        self.assertEqual(len(self.report["chart_samples"]["hover"]), 443)
-        self.assertEqual(len(self.report["chart_scatter"]["points"]), 443)
+        self.assertEqual(len(self.report["rows"]), 466)
+        self.assertEqual(len(self.report["chart_samples"]["hover"]), 466)
+        self.assertEqual(len(self.report["chart_scatter"]["points"]), 466)
 
     def test_artefak_hilang_tidak_melempar_error(self):
         with TemporaryDirectory() as empty:
@@ -64,8 +64,8 @@ class ModelPageTest(SimpleTestCase):
     def test_halaman_memuat_perhitungan_dan_grafik(self):
         response = self.client.get("/model/")
         self.assertEqual(response.status_code, 200)
-        for text in ("k = 2", "0,54302", "876,03", "Mengapa k = 2", "Monumen Nasional", "bukan akurasi rekomendasi",
-                     "Calinski", "Davies", "414", "Pusat Segmen 2"):
+        for text in ("k = 2", "0,57581", "920,94", "Mengapa k = 2", "Monumen Nasional", "bukan akurasi rekomendasi",
+                     "Calinski", "Davies", "441", "Pusat Segmen 2"):
             self.assertContains(response, text)
         self.assertEqual(response.content.decode().count('<svg class="chart"'), 4)
 

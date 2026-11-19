@@ -11,15 +11,15 @@ class JavaUITests(TestCase):
 
     def test_home_has_native_form_and_source_counts(self):
         response=self.client.get('/')
-        self.assertEqual(response.context['data_count'],443)
+        self.assertEqual(response.context['data_count'],466)
         self.assertTemplateUsed(response,'recommender/base.html')
         self.assertContains(response,'Lewati ke konten')
-        self.assertContains(response,'443')
+        self.assertContains(response,'466')
         self.assertContains(response,'travelfit.css')
         self.assertNotContains(response,'cdn.tailwindcss.com')
         # Coordinates may legitimately contain the digit sequence 2337.
         self.assertNotContains(response,'2337 destinasi')
-        self.assertEqual(sum(response.context['source_counts'].values()),443)
+        self.assertEqual(sum(response.context['source_counts'].values()),466)
         self.assertContains(response,'id="form-status"')
 
     def test_invalid_form_errors_and_ajax_summary(self):

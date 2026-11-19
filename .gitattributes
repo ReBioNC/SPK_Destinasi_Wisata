@@ -5,6 +5,8 @@ data/review/banten/** text=auto eol=lf
 data/review/jawa_tambahan/** text=auto eol=lf
 data/review/jawa_tambahan/sources/nominatim_*.json text eol=crlf
 data/review/gabungan_jawa/** text=auto eol=lf
+data/review/tambahan_jawa_2026_11/** text=auto eol=lf
+data/review/kota_asal_2026_11/** text=auto eol=lf
 data/review/gabungan_jawa/destinasi_jawa_review.csv text eol=lf
 data/review/gabungan_jawa/google_maps_rating_review.json text eol=lf
 data/processed/destinations_clean_java443.csv text eol=lf

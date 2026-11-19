@@ -1,10 +1,10 @@
 from pathlib import Path
 from django.core.management.base import BaseCommand, CommandError
-from recommender.data_pipeline import build_pipeline, export_pipeline
+from recommender.data_pipeline import TOTAL_DESTINATIONS, build_pipeline, export_pipeline
 
 
 class Command(BaseCommand):
-    help = 'Preprocessing bersama: pertahankan 443 destinasi Jawa dan ekspor manifest.'
+    help = 'Preprocessing bersama: pertahankan seluruh destinasi Jawa dan ekspor manifest.'
 
     def add_arguments(self, parser):
         parser.add_argument('--project-root', default=str(Path(__file__).resolve().parents[3]))
@@ -16,6 +16,6 @@ class Command(BaseCommand):
             paths = export_pipeline(result, root)
         except (ValueError, FileNotFoundError) as error:
             raise CommandError(str(error)) from error
-        self.stdout.write('443 destinasi; 437 Kaggle + 6 kurasi; tidak ada ID hilang.')
+        self.stdout.write(f'{TOTAL_DESTINATIONS} destinasi; 437 Kaggle + {TOTAL_DESTINATIONS - 437} kurasi; tidak ada ID hilang.')
         for name, path in paths.items():
             self.stdout.write(f'{name}: {path}')

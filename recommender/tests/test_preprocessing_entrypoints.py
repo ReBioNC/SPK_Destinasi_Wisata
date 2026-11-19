@@ -26,7 +26,7 @@ class PreprocessingEntrypointsTests(unittest.TestCase):
                 self.fail(str(error))
             import pandas as pd
             frame = pd.read_csv(root / 'data/processed/destinations_clean_java443.csv')
-            self.assertEqual(len(frame), 443)
+            self.assertEqual(len(frame), 466)
             self.assertTrue((root / 'reports/preprocessing/preprocessing_java443_manifest.json').is_file())
 
     def test_notebook_calls_shared_pipeline(self):
@@ -38,8 +38,8 @@ class PreprocessingEntrypointsTests(unittest.TestCase):
             shutil.copy2(ROOT / 'recommender/data_pipeline.py', root / 'recommender/data_pipeline.py')
             scope = self.run_notebook(root)
             self.assertTrue('result' in scope, 'Notebook must use shared PipelineResult')
-            self.assertEqual(len(scope['result'].destinations), 443)
-            self.assertEqual(scope['result'].summary['imputed_rating_ids'], [438])
+            self.assertEqual(len(scope['result'].destinations), 466)
+            self.assertEqual(scope['result'].summary['imputed_rating_ids'], [438, 444, 446, 447, 451, 459, 462, 463])
 
     def test_missing_colab_module_explains_required_file(self):
         with tempfile.TemporaryDirectory() as temporary:

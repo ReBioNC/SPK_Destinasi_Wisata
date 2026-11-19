@@ -1,0 +1,53 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Tulungagung%2C+Kabupaten+Tulungagung%2C+Jawa+Timur%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id",
+  "query": "Tulungagung, Kabupaten Tulungagung, Jawa Timur, Indonesia",
+  "accessed_at_utc": "2026-11-19T04:38:12.572903+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "0e171c326dbf75a35efd32ed22c332a374ba9506cfb0c367ec0b4cb310cc96ad",
+  "results": [
+    {
+      "place_id": 30609620,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 1347886722,
+      "lat": "-8.0629684",
+      "lon": "111.9046763",
+      "category": "railway",
+      "type": "station",
+      "place_rank": 30,
+      "importance": 0.33935777253266924,
+      "addresstype": "railway",
+      "name": "Tulungagung",
+      "display_name": "Tulungagung, Jalan Pangeran Antasari, Kampungdalem, Tulungagung, Jawa Timur, 66212, Indonesia",
+      "boundingbox": [
+        "-8.0679684",
+        "-8.0579684",
+        "111.8996763",
+        "111.9096763"
+      ]
+    },
+    {
+      "place_id": 427763569,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 21360793,
+      "lat": "-8.0661437",
+      "lon": "111.9008897",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 14,
+      "importance": 0.31017616620231897,
+      "addresstype": "city",
+      "name": "Tulungagung",
+      "display_name": "Tulungagung, Jawa Timur, Indonesia",
+      "boundingbox": [
+        "-8.1110046",
+        "-8.0333800",
+        "111.8539262",
+        "111.9539953"
+      ]
+    }
+  ]
+}

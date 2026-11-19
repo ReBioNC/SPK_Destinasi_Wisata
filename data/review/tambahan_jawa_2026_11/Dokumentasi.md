@@ -1,8 +1,8 @@
 # Kandidat tambahan destinasi Jawa — November 2026
 
-Tanggal penelitian: **16 November 2026**. Status: **draft review, belum diimpor**.
+Tanggal penelitian: **16 November 2026**. Status: **terintegrasi ke dataset utama (19 November 2026)**; dataset aktif kini 466 destinasi.
 
-File `kandidat_kaggle_review.csv` berisi **23 kandidat** (batch 1: ID 444–453; batch 2: ID 454–459; batch 3: ID 460–466) dengan header 13 kolom yang sama persis dengan CSV Kaggle. Data utama 443 destinasi, preprocessing, database, model K-Means, dan website **tidak diubah**. ID 444–466 hanya ID lokal untuk review.
+File `kandidat_kaggle_review.csv` berisi **23 kandidat** (batch 1: ID 444–453; batch 2: ID 454–459; batch 3: ID 460–466) dengan header 13 kolom yang sama persis dengan CSV Kaggle. ID 444–466 kini menjadi ID tetap di dataset utama. Tujuh rating yang belum cocok (ID 444, 446, 447, 451, 459, 462, 463) tetap kosong di rating sumber dan diisi median rating teramati (4,5) hanya di kolom model.
 
 Setiap kandidat wajib punya tiga bukti yang bisa diakses publik: tarif dari dokumen peraturan resmi, lokasi dari OpenStreetMap, dan pemeriksaan nama terhadap 443 destinasi yang sudah ada. Rating diperiksa terpisah di Google Maps. Kandidat yang lokasinya tidak bisa dipastikan **ditunda**, bukan ditebak.
 

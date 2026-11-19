@@ -1,0 +1,32 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Lumajang%2C+Kabupaten+Lumajang%2C+Jawa+Timur%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id",
+  "query": "Lumajang, Kabupaten Lumajang, Jawa Timur, Indonesia",
+  "accessed_at_utc": "2026-11-19T04:38:07.473612+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "fee62bf8e31e43d0ca7379ffe64e27ff17941011491a86d2ec9e37f6f3bbaba5",
+  "results": [
+    {
+      "place_id": 426399406,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 1563563116,
+      "lat": "-8.1352050",
+      "lon": "113.2244162",
+      "category": "place",
+      "type": "city",
+      "place_rank": 16,
+      "importance": 0.3151525238377993,
+      "addresstype": "city",
+      "name": "Lumajang",
+      "display_name": "Lumajang, Jawa Timur, 67313, Indonesia",
+      "boundingbox": [
+        "-8.2952050",
+        "-7.9752050",
+        "113.0644162",
+        "113.3844162"
+      ]
+    }
+  ]
+}

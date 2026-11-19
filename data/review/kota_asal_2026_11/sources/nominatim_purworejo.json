@@ -1,0 +1,74 @@
+{
+  "source_url": "https://nominatim.openstreetmap.org/search?q=Purworejo%2C+Kabupaten+Purworejo%2C+Jawa+Tengah%2C+Indonesia&format=jsonv2&limit=5&countrycodes=id",
+  "query": "Purworejo, Kabupaten Purworejo, Jawa Tengah, Indonesia",
+  "accessed_at_utc": "2026-11-19T04:38:02.493618+00:00",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "license": "ODbL 1.0",
+  "attribution": "OpenStreetMap contributors",
+  "raw_response_sha256": "30a937dcdf354d2dd259018aa38a9a7978fa6be0d5acd1214838b17ba937ad99",
+  "results": [
+    {
+      "place_id": 416955340,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 298602937,
+      "lat": "-7.7085353",
+      "lon": "110.0111475",
+      "category": "building",
+      "type": "yes",
+      "place_rank": 30,
+      "importance": 0.3735437609124175,
+      "addresstype": "building",
+      "name": "Purworejo",
+      "display_name": "Purworejo, Jalan Mayor Jenderal Sutoyo, Kepatihan, Purworejo, Jawa Tengah, 54151, Indonesia",
+      "boundingbox": [
+        "-7.7086855",
+        "-7.7083947",
+        "110.0109199",
+        "110.0114033"
+      ]
+    },
+    {
+      "place_id": 381414203,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 17701262,
+      "lat": "-7.7130761",
+      "lon": "110.0090605",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 14,
+      "importance": 0.33113623856093605,
+      "addresstype": "city",
+      "name": "Purworejo",
+      "display_name": "Purworejo, Jawa Tengah, Indonesia",
+      "boundingbox": [
+        "-7.7688407",
+        "-7.6836820",
+        "109.9854621",
+        "110.0772473"
+      ]
+    },
+    {
+      "place_id": 32059840,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 17704009,
+      "lat": "-7.7098050",
+      "lon": "110.0143775",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 16,
+      "importance": 0.18670666742961772,
+      "addresstype": "city_district",
+      "name": "Purworejo",
+      "display_name": "Purworejo, Jawa Tengah, 54151, Indonesia",
+      "boundingbox": [
+        "-7.7203372",
+        "-7.6991058",
+        "110.0052778",
+        "110.0218749"
+      ]
+    }
+  ]
+}
